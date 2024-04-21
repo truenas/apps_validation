@@ -2,10 +2,21 @@ from jsonschema import validate as json_schema_validate, ValidationError as Json
 
 from apps_validation.exceptions import ValidationErrors
 
+from .utils import ATTRIBUTES
+
+
+class SchemaMeta(type):
+
+    def __new__(cls, name, bases, dct):
+        klass = type.__new__(cls, name, bases, dct)
+        # FEATURES[name] = klass
+        return klass
+
 
 class BaseSchema:
 
     DEFAULT_TYPE = NotImplementedError
+    SCHEMA_NAME = NotImplementedError
 
     def __init__(self, include_subquestions_attrs=True, data=None):
         self.required = self.null = self.show_if = self.ref = self.ui_ref = self.type =\

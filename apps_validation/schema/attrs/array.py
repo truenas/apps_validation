@@ -4,6 +4,7 @@ from .base import BaseSchema
 class ListSchema(BaseSchema):
 
     DEFAULT_TYPE = 'array'
+    SCHEMA_NAME = 'list'
 
     def __init__(self, data):
         self.items = []

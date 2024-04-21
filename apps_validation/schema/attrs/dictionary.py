@@ -3,6 +3,7 @@ from .base import BaseSchema
 
 class DictSchema(BaseSchema):
     DEFAULT_TYPE = 'object'
+    SCHEMA_NAME = 'dict'
 
     def __init__(self, data):
         self.attrs = []
@@ -27,3 +28,4 @@ class DictSchema(BaseSchema):
 
 class CronSchema(BaseSchema):
     DEFAULT_TYPE = 'object'
+    SCHEMA_NAME = 'cron'

@@ -3,6 +3,7 @@ from .base import BaseSchema
 
 class IntegerSchema(BaseSchema):
     DEFAULT_TYPE = 'integer'
+    SCHEMA_NAME = 'int'
 
     def __init__(self, data):
         self.min = self.max = self.enum = None
