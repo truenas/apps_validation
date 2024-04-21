@@ -2,9 +2,9 @@ from .array import ListSchema  # noqa
 from .bool import BooleanSchema  # noqa
 from .dictionary import CronSchema, DictSchema  # noqa
 from .integer import IntegerSchema  # noqa
-from .string import (
-    HostPathSchema, HostPathDirSchema, HostPathFileSchema, IPAddrSchema, PathSchema, StringSchema,
-    TextFieldSchema, URISchema,
+from .string import (  # noqa
+    HostPathSchema, HostPathDirSchema, HostPathFileSchema, IPAddrSchema, PathSchema, StringSchema,  # noqa
+    TextFieldSchema, URISchema,  # noqa
 )  # noqa
 from .utils import ATTRIBUTES_SCHEMA  # noqa
 

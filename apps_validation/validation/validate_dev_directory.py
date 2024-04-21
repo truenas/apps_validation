@@ -97,4 +97,3 @@ def validate_keep_versions(app_dir_path: str, schema: str, verrors: ValidationEr
             f'{schema}.to_keep_versions.yaml',
             f'Invalid json schema {TO_KEEP_VERSIONS} must contain list of required versions'
         )
-

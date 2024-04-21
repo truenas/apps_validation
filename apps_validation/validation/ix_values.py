@@ -57,4 +57,3 @@ def validate_ix_values_schema(schema, data):
         verrors.add(schema, f'Failed to validate schema: {e}')
 
     verrors.check()
-
