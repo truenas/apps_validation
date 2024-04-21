@@ -7,7 +7,10 @@ class FeatureMeta(type):
 
     def __new__(cls, name, bases, dct):
         klass = type.__new__(cls, name, bases, dct)
-        FEATURES[name] = klass
+        if getattr(klass, 'NAME', NotImplementedError) is NotImplementedError:
+            raise ValueError(f'Feature {name!r} must have a NAME attribute')
+
+        FEATURES[klass.NAME] = klass
         return klass
 
 
