@@ -5,7 +5,7 @@ import re
 
 from apps_validation.exceptions import ValidationErrors
 
-from .json_schema import APP_MIGRATION_SCHEMA
+from .json_schema_utils import APP_MIGRATION_SCHEMA
 
 
 MIGRATION_NAME_STR = r'^\d+\w+.json'
