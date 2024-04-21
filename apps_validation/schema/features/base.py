@@ -1,7 +1,17 @@
 from apps_validation.exceptions import ValidationErrors
 
+from .utils import FEATURES
 
-class BaseFeature:
+
+class FeatureMeta(type):
+
+    def __new__(cls, name, bases, dct):
+        klass = type.__new__(cls, name, bases, dct)
+        FEATURES[name] = klass
+        return klass
+
+
+class BaseFeature(metaclass=FeatureMeta):
 
     NAME = NotImplementedError
     VALID_SCHEMAS = []
