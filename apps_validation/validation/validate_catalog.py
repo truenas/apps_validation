@@ -5,6 +5,7 @@ import os
 from jsonschema import validate as json_schema_validate, ValidationError as JsonValidationError
 
 from apps_validation.ci.names import CACHED_CATALOG_FILE_NAME
+from apps_validation.catalog_reader.train_utils import get_train_path
 from apps_validation.exceptions import CatalogDoesNotExist, ValidationErrors
 
 from .json_schema_utils import CATALOG_JSON_SCHEMA
@@ -51,7 +52,7 @@ def validate_catalog(catalog_path: str):
 
     # FIXME: Validate library structure and files
     # FIXME: Validate ix-dev
-    trains_dir = os.path.join(catalog_path, 'trains')
+    trains_dir = get_train_path(catalog_path)
     if not os.path.exists(trains_dir):
         verrors.add('trains', 'Trains directory is missing')
     elif not os.path.isdir(trains_dir):
