@@ -48,3 +48,40 @@ class TextFieldSchema(StringSchema):
             }
         })
         return schema
+
+
+class PathSchema(Schema):
+    DEFAULT_TYPE = 'string'
+
+
+class HostPathSchema(Schema):
+    DEFAULT_TYPE = 'string'
+
+
+class HostPathDirSchema(Schema):
+    DEFAULT_TYPE = 'string'
+
+
+class HostPathFileSchema(Schema):
+    DEFAULT_TYPE = 'string'
+
+
+class URISchema(Schema):
+    DEFAULT_TYPE = 'string'
+
+
+class IPAddrSchema(Schema):
+    DEFAULT_TYPE = 'string'
+
+    def __init__(self, data):
+        self.ipv4 = self.ipv6 = self.cidr = None
+        super().__init__(data=data)
+
+    def json_schema(self):
+        schema = super().json_schema()
+        schema['properties'].update({
+            'ipv4': {'type': 'boolean'},
+            'ipv6': {'type': 'boolean'},
+            'cidr': {'type': 'boolean'},
+        })
+        return schema
