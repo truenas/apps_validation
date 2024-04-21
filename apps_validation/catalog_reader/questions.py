@@ -3,6 +3,22 @@ import itertools
 from .questions_util import ACL_QUESTION, get_custom_portal_question, IX_VOLUMES_ACL_QUESTION
 
 
+CUSTOM_PORTALS_ENABLE_KEY = 'enableIXPortals'
+CUSTOM_PORTAL_GROUP_KEY = 'iXPortalsGroupName'  # FIXME: Talk to Stavros if this is even valid now
+
+
+def normalize_questions(version_data: dict, context: dict) -> None:
+    version_data['required_features'] = set()
+    version_data['schema']['questions'].extend(
+        [
+            get_custom_portal_question(version_data['schema'][CUSTOM_PORTAL_GROUP_KEY])
+        ] if version_data['schema'].get(CUSTOM_PORTALS_ENABLE_KEY) else []
+    )
+    for question in version_data['schema']['questions']:
+        normalize_question(question, version_data, context)
+    version_data['required_features'] = list(version_data['required_features'])
+
+
 def normalize_question(question: dict, version_data: dict, context: dict) -> None:
     schema = question['schema']
     for attr in itertools.chain(*[schema.get(k, []) for k in ('attrs', 'items', 'subquestions')]):
