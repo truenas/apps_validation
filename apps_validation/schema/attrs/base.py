@@ -44,16 +44,16 @@ class BaseSchema:
         verrors.check()
 
         if '$ref' in self._schema_data:
+            from apps_validation.schema.features import FEATURES
             for index, ref in enumerate(self._schema_data['$ref']):
                 if not isinstance(ref, str):
                     verrors.add(f'{schema}.$ref.{index}', 'Must be a string')
                     continue
 
-                feature_obj = None  # get_feature(ref) FIXME: Fix this import
-                if not feature_obj:
+                if not (feature_klass := FEATURES.get(ref)):
                     continue
                 try:
-                    feature_obj.validate(self, f'{schema}.$ref.{index}')
+                    feature_klass().validate(self, f'{schema}.$ref.{index}')
                 except ValidationErrors as e:
                     verrors.extend(e)
 
