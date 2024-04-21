@@ -11,10 +11,9 @@ class DictSchema(BaseSchema):
         self._skip_data_values = ['attrs']
 
     def initialize_values(self, data):
-
+        from apps_validation.schema.variable import Variable
         super().initialize_values(data)
-        # self.attrs = [generate_variable(d) for d in (data.get('attrs') or [])]
-        # FIXME generate_variable is not defined in this file
+        self.attrs = [Variable(d) for d in (data.get('attrs') or [])]
 
     def json_schema(self):
         schema = super().json_schema()

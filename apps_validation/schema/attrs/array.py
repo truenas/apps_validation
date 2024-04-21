@@ -11,9 +11,9 @@ class ListSchema(BaseSchema):
         self._skip_data_values = ['items']
 
     def initialize_values(self, data):
+        from apps_validation.schema.variable import Variable
         super().initialize_values(data)
-        # self.items = [generate_variable(d) for d in (data.get('items') or [])]
-        # FIXME generate_variable is not defined in this file
+        self.items = [Variable(d) for d in (data.get('items') or [])]
 
     def json_schema(self):
         schema = super().json_schema()
