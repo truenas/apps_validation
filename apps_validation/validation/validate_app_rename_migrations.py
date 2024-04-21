@@ -14,6 +14,13 @@ RE_MIGRATION_NAME = re.compile(MIGRATION_NAME_STR)
 
 def validate_migrations(migration_dir: str):
     verrors = ValidationErrors()
+    if not os.path.exists(migration_dir):
+        return
+
+    if not os.path.isdir(migration_dir):
+        verrors.add('app_migrations', f'{migration_dir!r} must be a directory')
+        verrors.check()
+
     for migration_file in os.listdir(migration_dir):
         if not RE_MIGRATION_NAME.findall(migration_file):
             verrors.add(
