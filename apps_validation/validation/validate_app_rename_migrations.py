@@ -12,7 +12,7 @@ MIGRATION_NAME_STR = r'^\d+\w+.json'
 RE_MIGRATION_NAME = re.compile(MIGRATION_NAME_STR)
 
 
-def validate_migrations(migration_dir):
+def validate_migrations(migration_dir: str):
     verrors = ValidationErrors()
     for migration_file in os.listdir(migration_dir):
         if not RE_MIGRATION_NAME.findall(migration_file):
