@@ -1,5 +1,5 @@
-from .base import Schema
+from .base import BaseSchema
 
 
-class BooleanSchema(Schema):
+class BooleanSchema(BaseSchema):
     DEFAULT_TYPE = 'boolean'

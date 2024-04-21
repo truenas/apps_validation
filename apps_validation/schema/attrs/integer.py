@@ -1,7 +1,7 @@
-from .base import Schema
+from .base import BaseSchema
 
 
-class IntegerSchema(Schema):
+class IntegerSchema(BaseSchema):
     DEFAULT_TYPE = 'integer'
 
     def __init__(self, data):

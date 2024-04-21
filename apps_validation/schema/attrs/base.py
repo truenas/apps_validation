@@ -3,7 +3,7 @@ from jsonschema import validate as json_schema_validate, ValidationError as Json
 from apps_validation.exceptions import ValidationErrors
 
 
-class Schema:
+class BaseSchema:
 
     DEFAULT_TYPE = NotImplementedError
 

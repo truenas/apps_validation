@@ -1,7 +1,7 @@
-from .base import Schema
+from .base import BaseSchema
 
 
-class StringSchema(Schema):
+class StringSchema(BaseSchema):
     DEFAULT_TYPE = 'string'
 
     def __init__(self, data):
@@ -50,27 +50,27 @@ class TextFieldSchema(StringSchema):
         return schema
 
 
-class PathSchema(Schema):
+class PathSchema(BaseSchema):
     DEFAULT_TYPE = 'string'
 
 
-class HostPathSchema(Schema):
+class HostPathSchema(BaseSchema):
     DEFAULT_TYPE = 'string'
 
 
-class HostPathDirSchema(Schema):
+class HostPathDirSchema(BaseSchema):
     DEFAULT_TYPE = 'string'
 
 
-class HostPathFileSchema(Schema):
+class HostPathFileSchema(BaseSchema):
     DEFAULT_TYPE = 'string'
 
 
-class URISchema(Schema):
+class URISchema(BaseSchema):
     DEFAULT_TYPE = 'string'
 
 
-class IPAddrSchema(Schema):
+class IPAddrSchema(BaseSchema):
     DEFAULT_TYPE = 'string'
 
     def __init__(self, data):
