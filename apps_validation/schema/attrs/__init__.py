@@ -6,6 +6,7 @@ from .string import (
     HostPathSchema, HostPathDirSchema, HostPathFileSchema, IPAddrSchema, PathSchema, StringSchema,
     TextFieldSchema, URISchema,
 )  # noqa
+from .utils import ATTRIBUTES_SCHEMA  # noqa
 
 
 def get_schema(schema_data):
@@ -13,35 +14,7 @@ def get_schema(schema_data):
     if not isinstance(schema_data, dict):
         return schema
 
-    s_type = schema_data.get('type')
-    if s_type == 'boolean':
-        schema = BooleanSchema
-    elif s_type == 'string':
-        schema = StringSchema
-    elif s_type == 'text':
-        schema = TextFieldSchema
-    elif s_type == 'int':
-        schema = IntegerSchema
-    elif s_type == 'path':
-        schema = PathSchema
-    elif s_type == 'hostpath':
-        schema = HostPathSchema
-    elif s_type == 'hostpathdirectory':
-        schema = HostPathDirSchema
-    elif s_type == 'hostpathfile':
-        schema = HostPathFileSchema
-    elif s_type == 'list':
-        schema = ListSchema
-    elif s_type == 'dict':
-        schema = DictSchema
-    elif s_type == 'ipaddr':
-        schema = IPAddrSchema
-    elif s_type == 'cron':
-        schema = CronSchema
-    elif s_type == 'uri':
-        schema = URISchema
-
-    if schema:
-        schema = schema(data=schema_data)
+    if schema_klass := ATTRIBUTES_SCHEMA.get(schema_data.get('type')):
+        schema = schema_klass(data=schema_data)
 
     return schema

@@ -2,18 +2,21 @@ from jsonschema import validate as json_schema_validate, ValidationError as Json
 
 from apps_validation.exceptions import ValidationErrors
 
-from .utils import ATTRIBUTES
+from .utils import ATTRIBUTES_SCHEMA
 
 
 class SchemaMeta(type):
 
     def __new__(cls, name, bases, dct):
         klass = type.__new__(cls, name, bases, dct)
-        # FEATURES[name] = klass
+        if getattr(klass, 'SCHEMA_NAME', NotImplementedError) is NotImplementedError:
+            raise ValueError(f'{name!r} attr schema does not has SCHEMA_NAME defined')
+
+        ATTRIBUTES_SCHEMA[klass.SCHEMA_NAME] = klass
         return klass
 
 
-class BaseSchema:
+class BaseSchema(metaclass=SchemaMeta):
 
     DEFAULT_TYPE = NotImplementedError
     SCHEMA_NAME = NotImplementedError
