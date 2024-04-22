@@ -1,0 +1,5 @@
+gitpython
+jsonschema==4.10.3
+markdown
+pyyaml
+semantic_version
