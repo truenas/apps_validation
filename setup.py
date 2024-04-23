@@ -12,6 +12,8 @@ setup(
     license='GNU3',
     platforms='any',
     entry_points={
-        'console_scripts': [],
+        'console_scripts': [
+            'dev_charts_validate = apps_validation.scripts.dev_apps_validate:main',
+        ],
     },
 )
