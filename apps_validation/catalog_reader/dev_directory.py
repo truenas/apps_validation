@@ -7,6 +7,7 @@ from semantic_version import Version
 from .names import TO_KEEP_VERSIONS
 
 
+DEV_DIRECTORY_RELATIVE_PATH = 'ix-dev'
 OPTIONAL_METADATA_FILES = ['upgrade_info.json', 'upgrade_strategy', TO_KEEP_VERSIONS]
 REQUIRED_METADATA_FILES = ['item.yaml']
 REQUIRED_VERSIONS_JSON_SCHEMA = {
@@ -25,7 +26,7 @@ def get_app_version(app_path: str) -> str:
 
 
 def get_ci_development_directory(catalog_path: str) -> str:
-    return os.path.join(catalog_path, 'ix-dev')
+    return os.path.join(catalog_path, DEV_DIRECTORY_RELATIVE_PATH)
 
 
 def version_has_been_bumped(app_path: str, new_version: str) -> bool:
