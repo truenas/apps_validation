@@ -12,6 +12,7 @@ from apps_validation.catalog_reader.dev_directory import (
     get_app_version, get_ci_development_directory, get_to_keep_versions, OPTIONAL_METADATA_FILES,
     REQUIRED_METADATA_FILES, version_has_been_bumped,
 )
+from apps_validation.ci.names import CACHED_CATALOG_FILE_NAME, CACHED_VERSION_FILE_NAME
 from apps_validation.exceptions import ValidationErrors
 from apps_validation.validation.json_schema_utils import CATALOG_JSON_SCHEMA
 from apps_validation.validation.validate_app_version import validate_catalog_item_version_data
@@ -124,3 +125,23 @@ def publish_updated_apps(catalog_path: str) -> None:
                 f'[\033[92mOK\x1B[0m]\tPublished {app_name!r} having {app_version!r} version '
                 f'to {train_name!r} train successfully!'
             )
+
+
+def update_catalog_file(location: str) -> None:
+    catalog_file_path = os.path.join(location, CACHED_CATALOG_FILE_NAME)
+    catalog_data, versions_data = get_trains(location)
+    validate_train_data(catalog_data)
+    validate_versions_data(versions_data)
+
+    with open(catalog_file_path, 'w') as f:
+        f.write(json.dumps(catalog_data, indent=4))
+
+    print(f'[\033[92mOK\x1B[0m]\tUpdated {catalog_file_path!r} successfully!')
+
+    for train_name, train_data in versions_data.items():
+        for app_name, app_data in train_data.items():
+            version_path = os.path.join(location, train_name, app_name, CACHED_VERSION_FILE_NAME)
+            with open(version_path, 'w') as f:
+                f.write(json.dumps(app_data['versions'], indent=4))
+
+            print(f'[\033[92mOK\x1B[0m]\tUpdated {version_path!r} successfully!')
