@@ -13,6 +13,7 @@ from apps_validation.catalog_reader.dev_directory import (
     get_app_version, get_ci_development_directory, get_to_keep_versions, OPTIONAL_METADATA_FILES,
     REQUIRED_METADATA_FILES, version_has_been_bumped,
 )
+from apps_validation.catalog_reader.train_utils import get_train_path
 from apps_validation.ci.names import CACHED_CATALOG_FILE_NAME, CACHED_VERSION_FILE_NAME
 from apps_validation.exceptions import ValidationErrors
 from apps_validation.validation.json_schema_utils import CATALOG_JSON_SCHEMA
@@ -21,7 +22,7 @@ from apps_validation.validation.validate_app_version import validate_catalog_ite
 
 def get_trains(location: str) -> typing.Tuple[dict, dict]:
     preferred_trains: list = []
-    trains_to_traverse = retrieve_train_names(location)
+    trains_to_traverse = retrieve_train_names(get_train_path(location))
     catalog_data = {}
     versions_data = {}
     for train_name, train_data in retrieve_trains_data(
@@ -88,7 +89,7 @@ def publish_updated_apps(catalog_path: str) -> None:
 
     for train_name, apps in get_apps_to_publish(catalog_path).items():
         dev_train_path = os.path.join(ci_dev_directory, train_name)
-        publish_train_path = os.path.join(catalog_path, train_name)
+        publish_train_path = os.path.join(get_train_path(catalog_path), train_name)
         os.makedirs(publish_train_path, exist_ok=True)
 
         for app in apps:
@@ -141,7 +142,7 @@ def update_catalog_file(location: str) -> None:
 
     for train_name, train_data in versions_data.items():
         for app_name, app_data in train_data.items():
-            version_path = os.path.join(location, train_name, app_name, CACHED_VERSION_FILE_NAME)
+            version_path = os.path.join(get_train_path(location), train_name, app_name, CACHED_VERSION_FILE_NAME)
             with open(version_path, 'w') as f:
                 f.write(json.dumps(app_data['versions'], indent=4))
 

@@ -9,7 +9,7 @@ class SchemaMeta(type):
 
     def __new__(cls, name, bases, dct):
         klass = type.__new__(cls, name, bases, dct)
-        if getattr(klass, 'SCHEMA_NAME', NotImplementedError) is NotImplementedError:
+        if klass.__name__ != 'BaseSchema' and getattr(klass, 'SCHEMA_NAME', NotImplementedError) is NotImplementedError:
             raise ValueError(f'{name!r} attr schema does not has SCHEMA_NAME defined')
 
         ATTRIBUTES_SCHEMA[klass.SCHEMA_NAME] = klass

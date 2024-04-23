@@ -67,7 +67,7 @@ def validate_upgrade_strategy(app_path: str, schema: str, verrors: ValidationErr
 
 def validate_app(app_dir_path: str, schema: str) -> None:
     app_name = os.path.basename(app_dir_path)
-    chart_version_path = os.path.join(app_dir_path, 'Chart.yaml')
+    chart_version_path = os.path.join(app_dir_path, 'app.yaml')
     verrors = validate_app_version_file(ValidationErrors(), chart_version_path, schema, app_name)
     validate_keep_versions(app_dir_path, app_name, verrors)
     verrors.check()

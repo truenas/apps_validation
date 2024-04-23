@@ -81,7 +81,7 @@ class URISchema(BaseSchema):
 
 class IPAddrSchema(BaseSchema):
     DEFAULT_TYPE = 'string'
-    SCHEMA_NAME = 'uri'
+    SCHEMA_NAME = 'ipaddr'
 
     def __init__(self, data):
         self.ipv4 = self.ipv6 = self.cidr = None
