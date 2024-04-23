@@ -1,9 +1,14 @@
 import json
+import os
 import typing
+from collections import defaultdict
 
 from jsonschema import validate as json_schema_validate, ValidationError as JsonValidationError
 
 from apps_validation.catalog_reader.catalog import retrieve_train_names, retrieve_trains_data, get_apps_in_trains
+from apps_validation.catalog_reader.dev_directory import (
+    get_app_version, get_ci_development_directory, version_has_been_bumped,
+)
 from apps_validation.exceptions import ValidationErrors
 from apps_validation.validation.json_schema_utils import CATALOG_JSON_SCHEMA
 from apps_validation.validation.validate_app_version import validate_catalog_item_version_data
@@ -49,3 +54,23 @@ def validate_versions_data(versions_data):
         for app_name, app_version_data in train_data.items():
             validate_catalog_item_version_data(app_version_data['versions'], f'{train_name}.{app_name}', verrors)
     verrors.check()
+
+
+def get_apps_to_publish(catalog_path: str) -> dict:
+    ci_dev_dir = get_ci_development_directory(catalog_path)
+    to_publish_apps = defaultdict(list)
+    for train_name in os.listdir(ci_dev_dir):
+        train_path = os.path.join(ci_dev_dir, train_name)
+        if not os.path.isdir(train_path):
+            continue
+
+        for app_name in os.listdir(train_path):
+            app_path = os.path.join(train_path, app_name)
+            if not os.path.isdir(app_path):
+                continue
+
+            app_current_version = get_app_version(app_path)
+            if version_has_been_bumped(os.path.join(catalog_path, train_name, app_name), app_current_version):
+                to_publish_apps[train_name].append({'name': app_name, 'version': app_current_version})
+
+    return to_publish_apps
