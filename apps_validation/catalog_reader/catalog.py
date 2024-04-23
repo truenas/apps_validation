@@ -30,7 +30,7 @@ def get_apps_in_trains(trains_to_traverse: list, catalog_location: str) -> dict:
     for train in trains_to_traverse:
         items.update({
             f'{i}_{train}': train for i in os.listdir(os.path.join(get_train_path(catalog_location), train))
-            if os.path.isdir(os.path.join(catalog_location, train, i))
+            if os.path.isdir(os.path.join(get_train_path(catalog_location), train, i))
         })
 
     return items
