@@ -1,6 +1,11 @@
+import json
 import typing
 
+from jsonschema import validate as json_schema_validate, ValidationError as JsonValidationError
+
 from apps_validation.catalog_reader.catalog import retrieve_train_names, retrieve_trains_data, get_apps_in_trains
+from apps_validation.exceptions import ValidationErrors
+from apps_validation.validation.json_schema_utils import CATALOG_JSON_SCHEMA
 
 
 def get_trains(location: str) -> typing.Tuple[dict, dict]:
@@ -23,3 +28,15 @@ def get_trains(location: str) -> typing.Tuple[dict, dict]:
                     catalog_data[train_name][app_name][k] = v
 
     return catalog_data, versions_data
+
+
+def validate_train_data(train_data):
+    verrors = ValidationErrors()
+    try:
+        json_schema_validate(train_data, CATALOG_JSON_SCHEMA)
+    except (json.JSONDecodeError, JsonValidationError) as e:
+        verrors.add(
+            'catalog_json',
+            f'Failed to validate contents of train data: {e!r}'
+        )
+    verrors.check()
