@@ -1,3 +1,4 @@
+import argparse
 import contextlib
 import json
 import os
@@ -145,3 +146,26 @@ def update_catalog_file(location: str) -> None:
                 f.write(json.dumps(app_data['versions'], indent=4))
 
             print(f'[\033[92mOK\x1B[0m]\tUpdated {version_path!r} successfully!')
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    subparsers = parser.add_subparsers(help='sub-command help', dest='action')
+
+    publish_setup = subparsers.add_parser('publish', help='Publish apps of TrueNAS catalog')
+    publish_setup.add_argument('--path', help='Specify path of TrueNAS catalog')
+
+    parser_setup = subparsers.add_parser('update', help='Update TrueNAS catalog')
+    parser_setup.add_argument('--path', help='Specify path of TrueNAS catalog')
+
+    args = parser.parse_args()
+    if args.action == 'publish':
+        publish_updated_apps(args.path)
+    elif args.action == 'update':
+        update_catalog_file(args.path)
+    else:
+        parser.print_help()
+
+
+if __name__ == '__main__':
+    main()
