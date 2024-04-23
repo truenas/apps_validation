@@ -13,7 +13,8 @@ setup(
     platforms='any',
     entry_points={
         'console_scripts': [
-            'dev_charts_validate = apps_validation.scripts.dev_apps_validate:main',
+            'apps_catalog_validate = catalog_validation.scripts.catalog_validate:main',
+            'apps_dev_charts_validate = apps_validation.scripts.dev_apps_validate:main',  # TODO: Remove apps_prefix
         ],
     },
 )
