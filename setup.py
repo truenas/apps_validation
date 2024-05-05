@@ -25,6 +25,7 @@ setup(
             'apps_catalog_update = catalog_validation.scripts.catalog_update:main',
             'apps_catalog_validate = catalog_validation.scripts.catalog_validate:main',
             'apps_dev_charts_validate = apps_validation.scripts.dev_apps_validate:main',  # TODO: Remove apps_prefix
+            'apps_render_app = apps_validation.scripts.render_compose:main',
         ],
     },
 )
