@@ -12,6 +12,7 @@ from .app_version import validate_app_version_file
 from .ix_values import validate_ix_values_schema
 from .json_schema_utils import METADATA_JSON_SCHEMA, VERSION_VALIDATION_SCHEMA
 from .validate_questions import validate_questions_yaml
+from .validate_templates import validate_templates
 
 
 WANTED_FILES_IN_ITEM_VERSION = {
@@ -57,8 +58,7 @@ def validate_catalog_item_version(
         except ValidationErrors as v:
             verrors.extend(v)
 
-    # FIXME: We should be validating templates as well
-    # FIXME: We should be validating specified functions as well
+    validate_templates(version_path, f'{schema}.templates')
 
     # FIXME: values.yaml is probably not needed here
     for values_file in ['ix_values.yaml'] + (['values.yaml'] if validate_values else []):
