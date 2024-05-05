@@ -8,7 +8,7 @@ setup(
     description='Validate TrueNAS Apps Catalog',
     version=VERSION,
     include_package_data=True,
-    packages=find_packages(),
+    packages=find_packages(include=['apps_validation', 'catalog_reader', 'apps_validation.*', 'catalog_reader.*']),
     license='GNU3',
     platforms='any',
     entry_points={

@@ -8,12 +8,12 @@ from collections import defaultdict
 
 from jsonschema import validate as json_schema_validate, ValidationError as JsonValidationError
 
-from apps_validation.catalog_reader.catalog import retrieve_train_names, retrieve_trains_data, get_apps_in_trains
-from apps_validation.catalog_reader.dev_directory import (
+from catalog_reader.catalog import retrieve_train_names, retrieve_trains_data, get_apps_in_trains
+from catalog_reader.dev_directory import (
     get_app_version, get_ci_development_directory, get_to_keep_versions, OPTIONAL_METADATA_FILES,
     REQUIRED_METADATA_FILES, version_has_been_bumped,
 )
-from apps_validation.catalog_reader.train_utils import get_train_path
+from catalog_reader.train_utils import get_train_path
 from apps_validation.ci.names import CACHED_CATALOG_FILE_NAME, CACHED_VERSION_FILE_NAME
 from apps_validation.exceptions import ValidationErrors
 from apps_validation.validation.json_schema_utils import CATALOG_JSON_SCHEMA

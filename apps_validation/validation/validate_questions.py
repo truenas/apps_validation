@@ -1,8 +1,8 @@
 import typing
 import yaml
 
-from apps_validation.catalog_reader.questions import CUSTOM_PORTALS_ENABLE_KEY, CUSTOM_PORTAL_GROUP_KEY
-from apps_validation.catalog_reader.questions_util import CUSTOM_PORTALS_KEY
+from catalog_reader.questions import CUSTOM_PORTALS_ENABLE_KEY, CUSTOM_PORTAL_GROUP_KEY
+from catalog_reader.questions_util import CUSTOM_PORTALS_KEY
 from apps_validation.exceptions import ValidationErrors
 from apps_validation.schema.variable import Variable
 

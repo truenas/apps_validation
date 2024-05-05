@@ -2,10 +2,10 @@ import os
 import subprocess
 from collections import defaultdict
 
-from apps_validation.catalog_reader.dev_directory import (
+from catalog_reader.dev_directory import (
     DEV_DIRECTORY_RELATIVE_PATH, get_ci_development_directory, OPTIONAL_METADATA_FILES
 )
-from apps_validation.catalog_reader.train_utils import is_train_valid
+from catalog_reader.train_utils import is_train_valid
 from apps_validation.exceptions import CatalogDoesNotExist
 
 
