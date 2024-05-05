@@ -15,6 +15,8 @@ setup(
         'apps_validation.*',
         'catalog_reader',
         'catalog_reader.*'
+        'catalog_templating',
+        'catalog_templating.*',
     ]),
     license='GNU3',
     platforms='any',
