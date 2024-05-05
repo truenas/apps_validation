@@ -30,7 +30,7 @@ def render_templates(app_version_path: str, test_values: dict) -> dict:
         # env.filters['make_capital'] = lambda st: st.upper()
         rendered_templates[to_render_file.name] = env.get_template(
             to_render_file.name
-        ).render(test_values | template_libs)
+        ).render(test_values | {'ix_lib': template_libs})
 
     return rendered_templates
 
