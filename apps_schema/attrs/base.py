@@ -58,7 +58,7 @@ class BaseSchema(metaclass=SchemaMeta):
         verrors.check()
 
         if '$ref' in self._schema_data:
-            from apps_validation.schema.features import FEATURES
+            from apps_schema.features import FEATURES
             for index, ref in enumerate(self._schema_data['$ref']):
                 if not isinstance(ref, str):
                     verrors.add(f'{schema}.$ref.{index}', 'Must be a string')

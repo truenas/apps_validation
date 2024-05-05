@@ -5,8 +5,8 @@ import yaml
 from jsonschema import validate as json_schema_validate, ValidationError as JsonValidationError
 from semantic_version import Version
 
-from catalog_reader.questions_util import CUSTOM_PORTALS_KEY
 from apps_validation.exceptions import ValidationErrors
+from catalog_reader.questions_util import CUSTOM_PORTALS_KEY
 
 from .app_version import validate_app_version_file
 from .ix_values import validate_ix_values_schema

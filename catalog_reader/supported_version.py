@@ -1,4 +1,4 @@
-from apps_validation.schema.features import FEATURES
+from apps_schema.features import FEATURES
 
 
 def version_supported(version_details: dict) -> bool:

@@ -1,4 +1,4 @@
-from apps_validation.schema.attrs import DictSchema
+from apps_schema.attrs import DictSchema
 
 from .base import BaseFeature
 

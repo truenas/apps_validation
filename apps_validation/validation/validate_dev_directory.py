@@ -3,12 +3,12 @@ import yaml
 
 from jsonschema import ValidationError as JsonValidationError
 
+from apps_validation.exceptions import ValidationErrors
 from catalog_reader.dev_directory import (
     get_app_version, get_ci_development_directory, get_to_keep_versions, REQUIRED_METADATA_FILES,
     version_has_been_bumped,
 )
 from catalog_reader.names import UPGRADE_STRATEGY_FILENAME, TO_KEEP_VERSIONS
-from apps_validation.exceptions import ValidationErrors
 
 from .app_version import validate_app_version_file
 from .validate_app_version import validate_catalog_item_version

@@ -1,4 +1,4 @@
-from apps_validation.schema.attrs import IntegerSchema
+from apps_schema.attrs import IntegerSchema
 
 from .base import BaseFeature
 

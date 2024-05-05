@@ -12,7 +12,7 @@ class ListSchema(BaseSchema):
         self._skip_data_values = ['items']
 
     def initialize_values(self, data):
-        from apps_validation.schema.variable import Variable
+        from apps_schema.variable import Variable
         super().initialize_values(data)
         self.items = [Variable(d) for d in (data.get('items') or [])]
 
