@@ -38,11 +38,11 @@ def render_templates(app_version_path: str, test_values: dict) -> dict:
 def import_library(library_path: str, app_config) -> dict:
     modules_context = collections.defaultdict(dict)
     # 2 dirs which we want to import from
-    global_base_lib = os.path.join(library_path, f'base_v{app_config["lib_version"].replace(".", "_")}')
+    global_base_lib = os.path.join(library_path, f'base_v{(app_config["lib_version"] or "").replace(".", "_")}')
     app_lib = os.path.join(
         library_path, app_config['train'], app_config['name'], f'v{app_config["version"].replace(".", "_")}'
     )
-    if pathlib.Path(global_base_lib).is_dir():
+    if app_config['lib_version'] and pathlib.Path(global_base_lib).is_dir():
         modules_context['base'] = import_app_modules(global_base_lib, os.path.basename(global_base_lib))  # base_v1_0_0
     if pathlib.Path(app_lib).is_dir():
         modules_context[app_config['train']] = {
