@@ -3,11 +3,19 @@ import argparse
 import os
 import shutil
 
+from apps_validation.exceptions import ValidationErrors
 from catalog_reader.app_utils import get_values
 from catalog_templating.render import render_templates
 
 
 def render_templates_from_path(app_path: str, values_file: str) -> None:
+    verrors = ValidationErrors()
+    for k, v in (('app_path', app_path), ('values_file', values_file)):
+        if not os.path.exists(v):
+            verrors.add(k, f'{v!r} {k} does not exist')
+
+    verrors.check()
+
     rendered_data = render_templates(app_path, get_values(values_file))
     write_template_yaml(app_path, rendered_data)
 
