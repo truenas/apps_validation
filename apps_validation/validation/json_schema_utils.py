@@ -1,3 +1,43 @@
+APP_METADATA_JSON_SCHEMA = {
+    'type': 'object',
+    'properties': {
+        'name': {'type': 'string'},
+        'train': {'type': 'string'},
+        'annotations': {
+            'type': 'object',
+            'properties': {
+                'min_scale_version': {'type': 'string'},
+                'max_scale_version': {'type': 'string'},
+            },
+        },
+        'sources': {
+            'type': 'array',
+            'items': {'type': 'string'},
+        },
+        'maintainers': {
+            'type': 'array',
+            'items': {
+                'type': 'object',
+                'properties': {
+                    'name': {'type': 'string'},
+                    'email': {'type': 'string'},
+                },
+                'required': ['name', 'email'],
+            },
+        },
+        'version': {
+            'type': 'string',
+            'pattern': '[0-9]+.[0-9]+.[0-9]+',
+        },
+        'lib_version': {
+            'type': 'string',
+            'pattern': '[0-9]+.[0-9]+.[0-9]+',
+        },
+    },
+    'required': [
+        'name', 'train', 'version',
+    ],
+}
 APP_MIGRATION_SCHEMA = {
     'type': 'array',
     'items': {

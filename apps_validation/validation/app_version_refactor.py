@@ -22,7 +22,3 @@ def validate_app_version_file(
         except yaml.YAMLError:
             verrors.add(schema, 'Must be a valid yaml file')
             return verrors
-
-    
-
-
