@@ -1,4 +1,5 @@
 import os
+import pathlib
 import typing
 import yaml
 
@@ -6,6 +7,7 @@ from jsonschema import validate as json_schema_validate, ValidationError as Json
 from semantic_version import Version
 
 from apps_validation.exceptions import ValidationErrors
+from catalog_reader.app_utils import get_app_basic_details
 from catalog_reader.questions_util import CUSTOM_PORTALS_KEY
 
 from .app_version import validate_app_version_file
@@ -52,6 +54,16 @@ def validate_catalog_item_version(
 
     app_version_path = os.path.join(version_path, 'app.yaml')
     validate_app_version_file(verrors, app_version_path, schema, item_name, version_name, train_name=train_name)
+    app_basic_details = get_app_basic_details(version_path)
+    if app_basic_details.get('lib_version') is not None:
+        # Now we just want to make sure that actual directory for this lib version exists
+        if not pathlib.Path(
+            os.path.join(version_path, 'library', f'v{app_basic_details["lib_version"].replace(".", "_")}')
+        ).exists():
+            verrors.add(
+                f'{schema}.lib_version',
+                f'Specified {app_basic_details["lib_version"]!r} library version does not exist'
+            )
 
     questions_path = os.path.join(version_path, 'questions.yaml')
     if os.path.exists(questions_path):
