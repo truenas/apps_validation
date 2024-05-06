@@ -65,7 +65,10 @@ def validate_app_version_file(
                             'Configured version in "app.yaml" does not match version directory name.'
                         )
 
-                    # TODO: Validate train and lib version please
+                    # TODO: Validate lib version please
+                    if train_name is not None:
+                        if app_config.get('train') != train_name:
+                            verrors.add(f'{schema}.train', 'Train name not correctly set in "app.yaml".')
 
     else:
         verrors.add(schema, 'Missing app version file')
