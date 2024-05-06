@@ -41,7 +41,7 @@ def validate_train(catalog_path: str, train_path: str, schema: str, to_check_app
 
         app_path = os.path.join(train_path, app_name)
         try:
-            validate_app(app_path, f'{schema}.{app_name}')
+            validate_app(app_path, f'{schema}.{app_name}', train_name)
         except ValidationErrors as ve:
             verrors.extend(ve)
         else:
@@ -65,14 +65,16 @@ def validate_upgrade_strategy(app_path: str, schema: str, verrors: ValidationErr
         verrors.add(schema, f'{upgrade_strategy_path!r} is not executable')
 
 
-def validate_app(app_dir_path: str, schema: str) -> None:
+def validate_app(app_dir_path: str, schema: str, train_name: str) -> None:
     app_name = os.path.basename(app_dir_path)
     chart_version_path = os.path.join(app_dir_path, 'app.yaml')
     verrors = validate_app_version_file(ValidationErrors(), chart_version_path, schema, app_name)
     validate_keep_versions(app_dir_path, app_name, verrors)
     verrors.check()
 
-    validate_catalog_item_version(app_dir_path, schema, get_app_version(app_dir_path), app_name, True)
+    validate_catalog_item_version(
+        app_dir_path, schema, get_app_version(app_dir_path), app_name, True, train_name=train_name,
+    )
 
     required_files = set(REQUIRED_METADATA_FILES)
     available_files = set(
