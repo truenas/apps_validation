@@ -64,6 +64,8 @@ def validate_app_version_file(
                             'Configured version in "app.yaml" does not match version directory name.'
                         )
 
+                    # TODO: Validate train and lib version please
+
     else:
         verrors.add(schema, 'Missing app version file')
 

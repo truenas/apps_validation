@@ -47,7 +47,6 @@ def validate_library(app_path: str, schema: str, verrors: ValidationErrors) -> N
     library_contents = list(library_dir.iterdir())
     if not library_contents:
         return
-    # TODO: Validate lib version in app.yaml is correct and reflects reality on filesystem
     elif len(library_contents) > 2:
         verrors.add(schema, 'Library directory should only contain library version from the catalog or the app')
 
