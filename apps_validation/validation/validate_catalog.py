@@ -50,8 +50,6 @@ def validate_catalog(catalog_path: str):
         except ValidationErrors as e:
             verrors.extend(e)
 
-    # FIXME: Validate library structure and files
-    # FIXME: Validate ix-dev
     trains_dir = get_train_path(catalog_path)
     if not os.path.exists(trains_dir):
         verrors.add('trains', 'Trains directory is missing')
@@ -71,7 +69,7 @@ def validate_catalog(catalog_path: str):
 
     with concurrent.futures.ProcessPoolExecutor(max_workers=5 if len(items) > 10 else 2) as exc:
         for item in items:
-            item_futures.append(exc.submit(validate_catalog_item, item[0], item[1]))
+            item_futures.append(exc.submit(validate_catalog_item, item[0], item[1], item[2], True))
 
         for future in item_futures:
             try:

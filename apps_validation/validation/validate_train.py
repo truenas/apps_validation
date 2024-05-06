@@ -22,5 +22,5 @@ def get_train_items(train_path: str) -> typing.List[typing.Tuple[str, str]]:
         item_path = os.path.join(train_path, catalog_item)
         if not os.path.isdir(item_path):
             continue
-        items.append((item_path, f'trains.{train}.{catalog_item}'))
+        items.append((item_path, f'trains.{train}.{catalog_item}', train))
     return items

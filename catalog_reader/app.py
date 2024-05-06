@@ -37,7 +37,7 @@ def get_app_details(
 
     schema = f'{train}.{item}'
     try:
-        validate_catalog_item(item_location, schema, False)
+        validate_catalog_item(item_location, schema, train, False)
     except ValidationErrors as verrors:
         item_data['healthy_error'] = f'Following error(s) were found with {item!r}:\n'
         for verror in verrors:

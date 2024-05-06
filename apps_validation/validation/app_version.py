@@ -11,6 +11,7 @@ from .scale_version import validate_min_max_version_values
 
 def validate_app_version_file(
     verrors: ValidationErrors, app_version_path: str, schema: str, item_name: str, version_name: Optional[str] = None,
+    train_name: Optional[str] = None,
 ) -> ValidationErrors:
     if os.path.exists(app_version_path):
         with open(app_version_path, 'r') as f:

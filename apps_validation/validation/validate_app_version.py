@@ -34,7 +34,7 @@ def validate_catalog_item_version_data(version_data: dict, schema: str, verrors:
 
 def validate_catalog_item_version(
     version_path: str, schema: str, version_name: typing.Optional[str] = None,
-    item_name: typing.Optional[str] = None, validate_values: bool = False,
+    item_name: typing.Optional[str] = None, validate_values: bool = False, train_name: typing.Optional[str] = None,
 ):
     verrors = ValidationErrors()
     version_name = version_name or os.path.basename(version_path)
@@ -51,7 +51,7 @@ def validate_catalog_item_version(
         verrors.add(f'{schema}.required_files', f'Missing {", ".join(files_diff)} required configuration files.')
 
     app_version_path = os.path.join(version_path, 'app.yaml')
-    validate_app_version_file(verrors, app_version_path, schema, item_name, version_name)
+    validate_app_version_file(verrors, app_version_path, schema, item_name, version_name, train_name=train_name)
 
     questions_path = os.path.join(version_path, 'questions.yaml')
     if os.path.exists(questions_path):
