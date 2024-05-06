@@ -11,6 +11,7 @@ from .scale_version import validate_min_max_version_values
 
 def validate_app_version_file(
     verrors: ValidationErrors, app_version_path: str, schema: str, item_name: str, version_name: Optional[str] = None,
+    train_name: Optional[str] = None,
 ) -> ValidationErrors:
     if os.path.exists(app_version_path):
         with open(app_version_path, 'r') as f:
@@ -63,6 +64,10 @@ def validate_app_version_file(
                             f'{schema}.version',
                             'Configured version in "app.yaml" does not match version directory name.'
                         )
+
+                    if train_name is not None:
+                        if app_config.get('train') != train_name:
+                            verrors.add(f'{schema}.train', 'Train name not correctly set in "app.yaml".')
 
     else:
         verrors.add(schema, 'Missing app version file')

@@ -9,7 +9,7 @@ from .validate_app_version import validate_catalog_item_version_data, validate_c
 from .utils import validate_key_value_types
 
 
-def validate_catalog_item(catalog_item_path: str, schema: str, validate_versions: bool = True):
+def validate_catalog_item(catalog_item_path: str, schema: str, train_name: str, validate_versions: bool = True):
     # We should ensure that each catalog item has at least 1 version available
     # Also that we have item.yaml present
     verrors = ValidationErrors()
@@ -57,7 +57,9 @@ def validate_catalog_item(catalog_item_path: str, schema: str, validate_versions
 
     for version_path in (versions if validate_versions else []):
         try:
-            validate_catalog_item_version(version_path, f'{schema}.versions.{os.path.basename(version_path)}')
+            validate_catalog_item_version(
+                version_path, f'{schema}.versions.{os.path.basename(version_path)}', train_name=train_name,
+            )
         except ValidationErrors as e:
             verrors.extend(e)
 

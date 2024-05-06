@@ -1,4 +1,5 @@
 import os
+import pathlib
 import typing
 import yaml
 
@@ -6,18 +7,22 @@ from jsonschema import validate as json_schema_validate, ValidationError as Json
 from semantic_version import Version
 
 from apps_validation.exceptions import ValidationErrors
+from catalog_reader.app_utils import get_app_basic_details
 from catalog_reader.questions_util import CUSTOM_PORTALS_KEY
 
 from .app_version import validate_app_version_file
 from .ix_values import validate_ix_values_schema
 from .json_schema_utils import METADATA_JSON_SCHEMA, VERSION_VALIDATION_SCHEMA
+from .names import TEST_VALUES_FILENAME
 from .validate_questions import validate_questions_yaml
+from .validate_templates import validate_templates
 
 
 WANTED_FILES_IN_ITEM_VERSION = {
     'app.yaml',
     'questions.yaml',
     'README.md',
+    TEST_VALUES_FILENAME,
 }
 
 
@@ -31,7 +36,7 @@ def validate_catalog_item_version_data(version_data: dict, schema: str, verrors:
 
 def validate_catalog_item_version(
     version_path: str, schema: str, version_name: typing.Optional[str] = None,
-    item_name: typing.Optional[str] = None, validate_values: bool = False,
+    item_name: typing.Optional[str] = None, validate_values: bool = False, train_name: typing.Optional[str] = None,
 ):
     verrors = ValidationErrors()
     version_name = version_name or os.path.basename(version_path)
@@ -48,7 +53,17 @@ def validate_catalog_item_version(
         verrors.add(f'{schema}.required_files', f'Missing {", ".join(files_diff)} required configuration files.')
 
     app_version_path = os.path.join(version_path, 'app.yaml')
-    validate_app_version_file(verrors, app_version_path, schema, item_name, version_name)
+    validate_app_version_file(verrors, app_version_path, schema, item_name, version_name, train_name=train_name)
+    app_basic_details = get_app_basic_details(version_path)
+    if app_basic_details.get('lib_version') is not None:
+        # Now we just want to make sure that actual directory for this lib version exists
+        if not pathlib.Path(
+            os.path.join(version_path, 'library', f'v{app_basic_details["lib_version"].replace(".", "_")}')
+        ).exists():
+            verrors.add(
+                f'{schema}.lib_version',
+                f'Specified {app_basic_details["lib_version"]!r} library version does not exist'
+            )
 
     questions_path = os.path.join(version_path, 'questions.yaml')
     if os.path.exists(questions_path):
@@ -57,8 +72,7 @@ def validate_catalog_item_version(
         except ValidationErrors as v:
             verrors.extend(v)
 
-    # FIXME: We should be validating templates as well
-    # FIXME: We should be validating specified functions as well
+    validate_templates(version_path, f'{schema}.templates')
 
     # FIXME: values.yaml is probably not needed here
     for values_file in ['ix_values.yaml'] + (['values.yaml'] if validate_values else []):
