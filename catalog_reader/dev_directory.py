@@ -1,6 +1,7 @@
 import os
-import yaml
+import pathlib
 
+import yaml
 from jsonschema import validate as json_schema_validate
 from semantic_version import Version
 
@@ -30,14 +31,15 @@ def get_ci_development_directory(catalog_path: str) -> str:
 
 
 def version_has_been_bumped(app_path: str, new_version: str) -> bool:
-    if not os.path.isdir(app_path):
+    versions = list()
+    try:
+        for version in filter(lambda x: x.is_dir(), pathlib.Path(app_path).iterdir()):
+            versions.append(Version(version.name))
+        versions.sort()
+        return not versions or Version(new_version) > versions[-1]
+    except (FileNotFoundError, NotADirectoryError):
+        # why return a different type and not just an empty list?
         return True
-
-    versions = [
-        Version(version) for version in filter(lambda v: os.path.isdir(os.path.join(app_path, v)), os.listdir(app_path))
-    ]
-    versions.sort()
-    return not versions or Version(new_version) > versions[-1]
 
 
 def get_to_keep_versions(app_dir_path: str) -> list:
