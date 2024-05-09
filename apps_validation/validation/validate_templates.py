@@ -39,8 +39,28 @@ def validate_templates(app_path: str, schema: str) -> None:
 
         if not found_compose_file:
             verrors.add(schema, 'No template files found in templates directory')
+        else:
+            validate_template_rendering(app_path, schema, verrors)
 
     verrors.check()
+
+
+def validate_template_rendering(app_path: str, schema: str, verrors: ValidationErrors) -> None:
+    try:
+        rendered = render_templates(app_path, get_values(os.path.join(app_path, TEST_VALUES_FILENAME)))
+    except Exception as e:
+        verrors.add(schema, f'Failed to render templates: {e}')
+    else:
+        if not rendered:
+            verrors.add(schema, 'No templates were rendered')
+        else:
+            for file_name, rendered_template in rendered.items():
+                try:
+                    yaml.safe_load(rendered_template)
+                except yaml.YAMLError as e:
+                    verrors.add(
+                        f'{schema}.{file_name}', f'Failed to verify rendered template is a valid yaml file: {e}'
+                    )
 
 
 def validate_library(app_path: str, schema: str, verrors: ValidationErrors) -> None:
@@ -65,23 +85,3 @@ def validate_library(app_path: str, schema: str, verrors: ValidationErrors) -> N
                 verrors.add(schema, f'App library {app_library.name!r} is not a directory')
         else:
             verrors.add(schema, f'Unexpected library found: {entry.name!r}')
-
-    if verrors:
-        # If we have issues, no point in continuing further
-        return
-
-    try:
-        rendered = render_templates(app_path, get_values(os.path.join(app_path, TEST_VALUES_FILENAME)))
-    except Exception as e:
-        verrors.add(schema, f'Failed to render templates: {e}')
-    else:
-        if not rendered:
-            verrors.add(schema, 'No templates were rendered')
-        else:
-            for file_name, rendered_template in rendered.items():
-                try:
-                    yaml.safe_load(rendered_template)
-                except yaml.YAMLError as e:
-                    verrors.add(
-                        f'{schema}.{file_name}', f'Failed to verify rendered template is a valid yaml file: {e}'
-                    )
