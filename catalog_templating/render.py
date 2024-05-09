@@ -52,31 +52,31 @@ def import_library(library_path: str, app_config) -> dict:
     return modules_context
 
 
-def import_app_modules(modules_path: str, parent_module_name) -> dict:
-    def import_module_context(module_name, file_path):
-        try:
-            spec = importlib.util.spec_from_file_location(module_name, file_path)
-            module = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(module)
-        except Exception as e:
-            raise Exception(
-                f'Unable to import module {module_name!r} from {file_path!r}: {e!r}.\n\n'
-                'This could be due to various reasons with primary being:\n1) The module is not a valid python module '
-                'which can be imported i.e might have syntax errors\n2) The module has already been imported and '
-                'then has been changed but the version for the module has not been bumped.'
-            )
-        return module
+def import_module_context(module_name, file_path):
+    try:
+        spec = importlib.util.spec_from_file_location(module_name, file_path)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+    except Exception as e:
+        raise Exception(
+            f'Unable to import module {module_name!r} from {file_path!r}: {e!r}.\n\n'
+            'This could be due to various reasons with primary being:\n1) The module is not a valid python module '
+            'which can be imported i.e might have syntax errors\n2) The module has already been imported and '
+            'then has been changed but the version for the module has not been bumped.'
+        )
+    return module
 
+
+def import_app_modules(modules_path: str, parent_module_name) -> dict:
     sub_modules_context = {}
     try:
         importlib.sys.path.append(os.path.dirname(modules_path))
-        for sub_modules_file in filter(
-            lambda p: os.path.isfile(os.path.join(modules_path, p)) and p.endswith('.py'), os.listdir(modules_path)
-        ):
-            sub_modules = sub_modules_file.removesuffix('.py')
-            sub_modules_context[sub_modules] = import_module_context(
-                f'{parent_module_name}.{sub_modules}', os.path.join(modules_path, sub_modules_file)
-            )
+        for sub_modules_file in pathlib.Path(modules_path).iterdir():
+            if sub_modules_file.is_file() and sub_modules_file.suffix == '.py':
+                sub_modules = sub_modules_file.stem
+                sub_modules_context[sub_modules] = import_module_context(
+                    f'{parent_module_name}.{sub_modules}', sub_modules_file.as_posix()
+                )
     finally:
         importlib.sys.path.remove(os.path.dirname(modules_path))
         remove_pycache(modules_path)
