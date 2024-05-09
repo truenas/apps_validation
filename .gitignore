@@ -1,3 +1,9 @@
 *.egg-info/*
 build/*
 .idea/*
+apps_schema/__pycache__/*
+apps_schema/*/__pycache__/*
+apps_validation/__pycache__/*
+apps_validation/*/__pycache__/*
+catalog_reader/__pycache__/*
+catalog_templating/__pycache__/*
