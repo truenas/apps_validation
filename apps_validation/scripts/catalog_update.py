@@ -1,7 +1,7 @@
 import argparse
+import pathlib
 import contextlib
 import json
-import pathlib
 import os
 import shutil
 import typing
@@ -110,13 +110,15 @@ def publish_updated_apps(catalog_path: str) -> None:
             if not os.path.exists(ix_values_path) and os.path.exists(values_path):
                 shutil.move(values_path, ix_values_path)
 
-            for version in os.listdir(publish_app_path):
-                version_path = os.path.join(publish_app_path, version)
-                if not os.path.isdir(version_path) or version in required_versions:
+            for version in pathlib.Path(publish_app_path).iterdir():
+                if all((
+                    version.is_dir(),
+                    version.name in required_versions
+                )):
                     continue
 
-                if version != app_version:
-                    shutil.rmtree(version_path)
+                if version.name != app_version:
+                    shutil.rmtree(version.as_posix())
 
             print(
                 f'[\033[92mOK\x1B[0m]\tPublished {app_name!r} having {app_version!r} version '
