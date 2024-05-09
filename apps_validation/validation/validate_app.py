@@ -1,6 +1,6 @@
-import os
 import json
-import yaml
+import pathlib
+import os
 
 from apps_validation.ci.names import CACHED_VERSION_FILE_NAME
 from apps_validation.exceptions import ValidationErrors
@@ -14,53 +14,51 @@ def validate_catalog_item(catalog_item_path: str, schema: str, train_name: str, 
     # Also that we have item.yaml present
     verrors = ValidationErrors()
     item_name = os.path.join(catalog_item_path)
-    files = []
-    versions = []
+    versions_dir_exist = False
+    try:
+        for version_path in pathlib.Path(catalog_item_path).iterdir():
+            if validate_versions and version_path.is_dir():
+                versions_dir_exist = True
+                try:
+                    validate_catalog_item_version(
+                        version_path.as_posix(),
+                        f'{schema}.versions.{version_path.name}',
+                        train_name=train_name,
+                    )
+                except ValidationErrors as e:
+                    verrors.extend(e)
+    except NotADirectoryError:
+        verrors.add(schema, f'{catalog_item_path!r} must be a directory')
+    except FileNotFoundError:
+        verrors.add(schema, f'{catalog_item_path!r} not found')
+    else:
+        if not versions_dir_exist:
+            verrors.add(f'{schema}.versions', f'No versions found for {item_name} item.')
 
-    if not os.path.isdir(catalog_item_path):
-        verrors.add(schema, 'Catalog item must be a directory')
+    try:
+        required_yaml_file = 'item.yaml'
+        with open(os.path.join(catalog_item_path, required_yaml_file), 'r') as f:
+            validate_key_value_types(
+                f.read(),
+                (('categories', list), ('tags', list, False), ('screenshots', list, False)),
+                verrors,
+                f'{schema}.item_config'
+            )
+    except FileNotFoundError:
+        verrors.add(f'{schema}.item_config', f'Missing yaml file ({required_yaml_file})')
+
     verrors.check()
 
-    for file_dir in os.listdir(catalog_item_path):
-        complete_path = os.path.join(catalog_item_path, file_dir)
-        if os.path.isdir(complete_path):
-            versions.append(complete_path)
-        else:
-            files.append(file_dir)
-
-    if not versions:
-        verrors.add(f'{schema}.versions', f'No versions found for {item_name} item.')
-
-    if 'item.yaml' not in files:
-        verrors.add(f'{schema}.item', 'Item configuration (item.yaml) not found')
-    else:
-        with open(os.path.join(catalog_item_path, 'item.yaml'), 'r') as f:
-            item_config = yaml.safe_load(f.read())
-
-        validate_key_value_types(
-            item_config, (
-                ('categories', list), ('tags', list, False), ('screenshots', list, False),
-            ), verrors, f'{schema}.item_config'
-        )
-
     cached_version_file_path = os.path.join(catalog_item_path, CACHED_VERSION_FILE_NAME)
-    if os.path.exists(cached_version_file_path):
-        try:
-            with open(cached_version_file_path, 'r') as f:
-                validate_catalog_item_version_data(
-                    json.loads(f.read()), f'{schema}.{CACHED_VERSION_FILE_NAME}', verrors
-                )
-        except json.JSONDecodeError:
-            verrors.add(
-                f'{schema}.{CACHED_VERSION_FILE_NAME}', f'{CACHED_VERSION_FILE_NAME!r} is not a valid json file'
+    schema_str = f'{schema}.{CACHED_VERSION_FILE_NAME}'
+    try:
+        with open(cached_version_file_path, 'r') as f:
+            validate_catalog_item_version_data(
+                json.loads(f.read()), f'{schema}.{CACHED_VERSION_FILE_NAME}', verrors
             )
-
-    for version_path in (versions if validate_versions else []):
-        try:
-            validate_catalog_item_version(
-                version_path, f'{schema}.versions.{os.path.basename(version_path)}', train_name=train_name,
-            )
-        except ValidationErrors as e:
-            verrors.extend(e)
+    except FileNotFoundError:
+        verrors.add(schema_str, f'{CACHED_VERSION_FILE_NAME!r} not found')
+    except json.JSONDecodeError:
+        verrors.add(schema_str, f'{CACHED_VERSION_FILE_NAME!r} is not a valid json file')
 
     verrors.check()
