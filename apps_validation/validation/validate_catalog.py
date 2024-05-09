@@ -1,5 +1,6 @@
 import concurrent.futures
 import json
+import pathlib
 import os
 
 from jsonschema import validate as json_schema_validate, ValidationError as JsonValidationError
@@ -56,16 +57,13 @@ def validate_catalog(catalog_path: str):
     elif not os.path.isdir(trains_dir):
         verrors.add('trains', f'{trains_dir!r} must be a directory')
 
-    for train_name in os.listdir(trains_dir):
-        train_path = os.path.join(trains_dir, train_name)
-        if not os.path.isdir(train_path):
-            continue
+    for train_path in filter(lambda x: x.is_dir(), pathlib.Path(trains_dir).iterdir()):
         try:
-            validate_train_structure(train_path, 'trains')
+            validate_train_structure(train_path.as_posix(), 'trains')
         except ValidationErrors as e:
             verrors.extend(e)
         else:
-            items.extend(get_train_items(train_path))
+            items.extend(get_train_items(train_path.as_posix()))
 
     with concurrent.futures.ProcessPoolExecutor(max_workers=5 if len(items) > 10 else 2) as exc:
         for item in items:
