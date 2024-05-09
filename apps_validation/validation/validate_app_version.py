@@ -8,6 +8,7 @@ from semantic_version import Version
 
 from apps_validation.exceptions import ValidationErrors
 from catalog_reader.app_utils import get_app_basic_details
+from catalog_reader.names import get_base_library_dir_name_from_version
 from catalog_reader.questions_util import CUSTOM_PORTALS_KEY
 
 from .app_version import validate_app_version_file
@@ -57,7 +58,8 @@ def validate_catalog_item_version(
         # Now we just want to make sure that actual directory for this lib version exists
         if not pathlib.Path(
             os.path.join(
-                version_path, 'templates/library', f'base_v{app_basic_details["lib_version"].replace(".", "_")}'
+                version_path, 'templates/library',
+                get_base_library_dir_name_from_version(app_basic_details['lib_version'])
             )
         ).exists():
             verrors.add(

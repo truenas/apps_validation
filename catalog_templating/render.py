@@ -8,6 +8,7 @@ from jinja2 import Environment, FileSystemLoader
 
 from apps_validation.exceptions import ValidationError
 from catalog_reader.app_utils import get_app_basic_details
+from catalog_reader.names import get_app_library_dir_name_from_version, get_base_library_dir_name_from_version
 
 
 def render_templates(app_version_path: str, test_values: dict) -> dict:
@@ -38,9 +39,10 @@ def render_templates(app_version_path: str, test_values: dict) -> dict:
 def import_library(library_path: str, app_config) -> dict:
     modules_context = collections.defaultdict(dict)
     # 2 dirs which we want to import from
-    global_base_lib = os.path.join(library_path, f'base_v{(app_config["lib_version"] or "").replace(".", "_")}')
+    global_base_lib = os.path.join(library_path, get_base_library_dir_name_from_version(app_config['lib_version']))
     app_lib = os.path.join(
-        library_path, app_config['train'], app_config['name'], f'v{app_config["version"].replace(".", "_")}'
+        library_path, app_config['train'], app_config['name'],
+        get_app_library_dir_name_from_version(app_config['version'])
     )
     if app_config['lib_version'] and pathlib.Path(global_base_lib).is_dir():
         modules_context['base'] = import_app_modules(global_base_lib, os.path.basename(global_base_lib))  # base_v1_0_0
