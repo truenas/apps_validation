@@ -163,6 +163,7 @@ def main():
     if args.action == 'publish':
         publish_updated_apps(args.path)
     elif args.action == 'update':
+        # FIXME: I am broken atm due to last update field apparently
         update_catalog_file(args.path)
     else:
         parser.print_help()
