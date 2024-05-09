@@ -5,7 +5,7 @@ import re
 import yaml
 
 from .hash_utils import get_hash_of_directory
-from .names import get_library_path
+from .names import get_library_path, get_library_hashes_path
 
 
 RE_VERSION = re.compile(r'^\d+.\d+\.\d+$')
@@ -16,7 +16,7 @@ def get_library_hashes(library_path: str) -> dict:
     This reads from library hashes file and returns the hashes
     """
     with contextlib.suppress(FileNotFoundError, yaml.YAMLError):
-        with open(library_path, 'r') as f:
+        with open(get_library_hashes_path(library_path), 'r') as f:
             return yaml.safe_load(f.read())
 
 

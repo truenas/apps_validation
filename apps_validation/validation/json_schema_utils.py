@@ -73,6 +73,14 @@ APP_MIGRATION_SCHEMA = {
         ],
     },
 }
+BASE_LIBRARIES_JSON_SCHEMA = {
+    'type': 'object',
+    'patternProperties': {
+        '[0-9]+.[0-9]+.[0-9]+': {
+            'type': 'string',
+        },
+    },
+}
 CATALOG_JSON_SCHEMA = {
     'type': 'object',
     'patternProperties': {
