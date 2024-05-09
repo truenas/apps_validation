@@ -14,8 +14,7 @@ RE_APP_VERSION = re.compile(r'^v\d+_\d+_\d+$')
 RE_BASE_LIB_VERSION = re.compile(r'^base_v\d+_\d+_\d+$')
 
 
-def validate_templates(app_path: str, schema: str) -> None:
-    verrors = ValidationErrors()
+def validate_templates(app_path: str, schema: str, verrors: ValidationErrors) -> None:
     templates_dir = pathlib.Path(os.path.join(app_path, 'templates'))
     if not templates_dir.exists():
         verrors.add(schema, 'Templates directory does not exist')

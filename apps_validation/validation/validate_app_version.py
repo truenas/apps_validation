@@ -56,16 +56,17 @@ def validate_catalog_item_version(
     app_basic_details = get_app_basic_details(version_path)
     if app_basic_details.get('lib_version') is not None:
         # Now we just want to make sure that actual directory for this lib version exists
-        if not pathlib.Path(
-            os.path.join(
-                version_path, 'templates/library',
-                get_base_library_dir_name_from_version(app_basic_details['lib_version'])
-            )
-        ).exists():
+        base_lib_dir = pathlib.Path(os.path.join(
+            version_path, 'templates/library',
+            get_base_library_dir_name_from_version(app_basic_details['lib_version'])
+        ))
+        if not base_lib_dir.exists():
             verrors.add(
                 f'{schema}.lib_version',
                 f'Specified {app_basic_details["lib_version"]!r} library version does not exist'
             )
+        elif not base_lib_dir.is_dir():
+            verrors.add(f'{schema}.lib_version', f'{base_lib_dir!r} is not a directory')
 
     questions_path = os.path.join(version_path, 'questions.yaml')
     if os.path.exists(questions_path):
@@ -74,7 +75,7 @@ def validate_catalog_item_version(
         except ValidationErrors as v:
             verrors.extend(v)
 
-    validate_templates(version_path, f'{schema}.templates')
+    validate_templates(version_path, f'{schema}.templates', verrors)
 
     # FIXME: values.yaml is probably not needed here
     for values_file in ['ix_values.yaml'] + (['values.yaml'] if validate_values else []):
