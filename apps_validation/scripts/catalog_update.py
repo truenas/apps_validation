@@ -111,8 +111,8 @@ def publish_updated_apps(catalog_path: str) -> None:
                 shutil.move(values_path, ix_values_path)
 
             for version in pathlib.Path(publish_app_path).iterdir():
-                if all((
-                    version.is_dir(),
+                if any((
+                    not version.is_dir(),
                     version.name in required_versions
                 )):
                     continue
