@@ -9,6 +9,7 @@ from catalog_reader.dev_directory import (
     version_has_been_bumped,
 )
 from catalog_reader.names import UPGRADE_STRATEGY_FILENAME, TO_KEEP_VERSIONS
+from catalog_reader.train_utils import get_train_path
 
 from .app_version import validate_app_version_file
 from .validate_app_version import validate_catalog_item_version
@@ -45,7 +46,7 @@ def validate_train(catalog_path: str, train_path: str, schema: str, to_check_app
         except ValidationErrors as ve:
             verrors.extend(ve)
         else:
-            published_train_app_path = os.path.join(catalog_path, train_name, app_name)
+            published_train_app_path = os.path.join(get_train_path(catalog_path), train_name, app_name)
             if not os.path.exists(published_train_app_path):
                 # The application is new and we are good
                 continue

@@ -8,12 +8,12 @@ from semantic_version import Version
 
 from apps_validation.exceptions import ValidationErrors
 from catalog_reader.app_utils import get_app_basic_details
+from catalog_reader.names import get_base_library_dir_name_from_version
 from catalog_reader.questions_util import CUSTOM_PORTALS_KEY
 
 from .app_version import validate_app_version_file
 from .ix_values import validate_ix_values_schema
 from .json_schema_utils import METADATA_JSON_SCHEMA, VERSION_VALIDATION_SCHEMA
-from .names import TEST_VALUES_FILENAME
 from .validate_questions import validate_questions_yaml
 from .validate_templates import validate_templates
 
@@ -22,7 +22,6 @@ WANTED_FILES_IN_ITEM_VERSION = {
     'app.yaml',
     'questions.yaml',
     'README.md',
-    TEST_VALUES_FILENAME,
 }
 
 
@@ -57,15 +56,17 @@ def validate_catalog_item_version(
     app_basic_details = get_app_basic_details(version_path)
     if app_basic_details.get('lib_version') is not None:
         # Now we just want to make sure that actual directory for this lib version exists
-        if not pathlib.Path(
-            os.path.join(
-                version_path, 'templates/library', f'base_v{app_basic_details["lib_version"].replace(".", "_")}'
-            )
-        ).exists():
+        base_lib_dir = pathlib.Path(os.path.join(
+            version_path, 'templates/library',
+            get_base_library_dir_name_from_version(app_basic_details['lib_version'])
+        ))
+        if not base_lib_dir.exists():
             verrors.add(
                 f'{schema}.lib_version',
                 f'Specified {app_basic_details["lib_version"]!r} library version does not exist'
             )
+        elif not base_lib_dir.is_dir():
+            verrors.add(f'{schema}.lib_version', f'{base_lib_dir!r} is not a directory')
 
     questions_path = os.path.join(version_path, 'questions.yaml')
     if os.path.exists(questions_path):
@@ -74,7 +75,7 @@ def validate_catalog_item_version(
         except ValidationErrors as v:
             verrors.extend(v)
 
-    validate_templates(version_path, f'{schema}.templates')
+    validate_templates(version_path, f'{schema}.templates', verrors)
 
     # FIXME: values.yaml is probably not needed here
     for values_file in ['ix_values.yaml'] + (['values.yaml'] if validate_values else []):
