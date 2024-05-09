@@ -85,7 +85,4 @@ def import_app_modules(modules_path: str, parent_module_name) -> dict:
 
 
 def remove_pycache(library_path: str):
-    for modules in filter(
-        lambda p: os.path.exists(os.path.join(library_path, p, '__pycache__')), os.listdir(library_path)
-    ):
-        shutil.rmtree(os.path.join(library_path, modules, '__pycache__'))
+    shutil.rmtree(os.path.join(library_path, '__pycache__'), ignore_errors=True)

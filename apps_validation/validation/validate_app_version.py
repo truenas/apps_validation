@@ -58,7 +58,9 @@ def validate_catalog_item_version(
     if app_basic_details.get('lib_version') is not None:
         # Now we just want to make sure that actual directory for this lib version exists
         if not pathlib.Path(
-            os.path.join(version_path, 'library', f'v{app_basic_details["lib_version"].replace(".", "_")}')
+            os.path.join(
+                version_path, 'templates/library', f'base_v{app_basic_details["lib_version"].replace(".", "_")}'
+            )
         ).exists():
             verrors.add(
                 f'{schema}.lib_version',

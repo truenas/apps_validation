@@ -1,6 +1,7 @@
 import os
 import pathlib
 import re
+import yaml
 
 from apps_validation.exceptions import ValidationErrors
 from catalog_reader.app_utils import get_app_basic_details, get_values
@@ -76,3 +77,11 @@ def validate_library(app_path: str, schema: str, verrors: ValidationErrors) -> N
     else:
         if not rendered:
             verrors.add(schema, 'No templates were rendered')
+        else:
+            for file_name, rendered_template in rendered.items():
+                try:
+                    yaml.safe_load(rendered_template)
+                except yaml.YAMLError as e:
+                    verrors.add(
+                        f'{schema}.{file_name}', f'Failed to verify rendered template is a valid yaml file: {e}'
+                    )
