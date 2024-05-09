@@ -9,11 +9,11 @@ TEST_VALUES_DIR = 'test_values'
 
 
 def get_test_values_dir_path(app_path: str) -> str:
-    return os.path.join(app_path, TEST_VALUES_DIR)
+    return os.path.join(app_path, 'templates', TEST_VALUES_DIR)
 
 
 def get_test_values_from_test_dir(app_path: str) -> list:
-    values_dir = pathlib.Path(app_path) / TEST_VALUES_DIR
+    values_dir = pathlib.Path(get_test_values_dir_path(app_path))
     if not values_dir.is_dir():
         return []
 
