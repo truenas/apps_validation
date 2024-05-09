@@ -1,4 +1,5 @@
 import os
+import pathlib
 import typing
 
 from apps_validation.exceptions import ValidationErrors
@@ -17,10 +18,13 @@ def validate_train_structure(train_path: str, schema: str):
 
 def get_train_items(train_path: str) -> typing.List[typing.Tuple[str, str]]:
     train = os.path.basename(train_path)
-    items = []
-    for catalog_item in os.listdir(train_path):
-        item_path = os.path.join(train_path, catalog_item)
-        if not os.path.isdir(item_path):
-            continue
-        items.append((item_path, f'trains.{train}.{catalog_item}', train))
-    return items
+    # TODO: do we really need to iterate over every file in `train_paths`??
+    # what happens if this directory stores a ton of files? Seems like
+    # we could do this differently
+    return [
+        (
+            i.as_posix(),  # full path
+            f'trains.{train}.{i.name}',
+            train,
+        ) for i in filter(lambda x: x.is_dir(), pathlib.Path(train_path).iterdir())
+    ]
