@@ -18,20 +18,23 @@ def app_details(apps: dict, location: str, questions_context: typing.Optional[di
 def retrieve_train_names(location: str, all_trains=True, trains_filter=None) -> list:
     train_names = []
     trains_filter = trains_filter or []
-    for train in os.listdir(location):
-        if not (all_trains or train in trains_filter) or not is_train_valid(train, os.path.join(location, train)):
+    for train in pathlib.Path(location).iterdir():
+        if any((
+            not (all_trains or train.name in trains_filter),
+            not is_train_valid(train.name, train.as_posix()):
+        )):
             continue
-        train_names.append(train)
+        else:
+            train_names.append(train.name)
     return train_names
 
 
 def get_apps_in_trains(trains_to_traverse: list, catalog_location: str) -> dict:
     items = {}
     for train in trains_to_traverse:
-        items.update({
-            f'{i}_{train}': train for i in os.listdir(os.path.join(get_train_path(catalog_location), train))
-            if os.path.isdir(os.path.join(get_train_path(catalog_location), train, i))
-        })
+        train_path = os.path.join(get_train_path(catalog_location), train)
+        for i in filter(lambda x: x.is_dir(), pathlib.Path(train_path).iterdir()):
+            items.update({f'{i.name}_{train}': i.as_posix()})
 
     return items
 
