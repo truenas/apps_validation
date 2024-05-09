@@ -2,15 +2,11 @@
 import argparse
 import os
 import pathlib
-import re
 import yaml
 
 from apps_validation.exceptions import CatalogDoesNotExist, ValidationErrors
-from catalog_reader.hash_utils import get_hash_of_directory
+from catalog_reader.library import get_hashes_of_base_lib_versions
 from catalog_reader.names import get_library_path, get_library_hashes_path
-
-
-RE_VERSION = re.compile(r'^\d+.\d+\.\d+$')
 
 
 def update_catalog_hashes(catalog_path: str) -> None:
@@ -24,13 +20,7 @@ def update_catalog_hashes(catalog_path: str) -> None:
 
     verrors.check()
 
-    hashes = {}
-    for lib_entry in library_dir.iterdir():
-        if not lib_entry.is_dir() or not RE_VERSION.match(lib_entry.name):
-            continue
-
-        hashes[lib_entry.name] = get_hash_of_directory(os.path.join(library_dir.name, lib_entry.name))
-
+    hashes = get_hashes_of_base_lib_versions(catalog_path)
     hashes_file_path = get_library_hashes_path(get_library_path(catalog_path))
     with open(hashes_file_path, 'w') as f:
         yaml.safe_dump(hashes, f)
