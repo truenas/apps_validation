@@ -108,6 +108,11 @@ def get_app_details_impl(
 
     item_data.update({k: item_data.get(k) for k in ITEM_KEYS})
 
+    # FIXME: listing the entire contents of item_path just for the
+    # situation where `retrieve_latest_version` is True. We're not
+    # actually gaining anything by doing this because we're still
+    # enumerating the entire contents of item_path into a list
+    # We should consider redesigning this.
     for version in sorted(
         filter(lambda p: os.path.isdir(os.path.join(item_path, p)), os.listdir(item_path)),
         reverse=True, key=parse_version,
