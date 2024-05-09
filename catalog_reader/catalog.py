@@ -1,6 +1,7 @@
 import concurrent.futures
 import functools
 import os
+import pathlib
 import typing
 
 from .app import get_app_details
@@ -21,7 +22,7 @@ def retrieve_train_names(location: str, all_trains=True, trains_filter=None) -> 
     for train in pathlib.Path(location).iterdir():
         if any((
             not (all_trains or train.name in trains_filter),
-            not is_train_valid(train.name, train.as_posix()):
+            not is_train_valid(train.name, train.as_posix()),
         )):
             continue
         else:
