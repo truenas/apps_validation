@@ -7,7 +7,7 @@ from apps_validation.exceptions import ValidationErrors
 from catalog_reader.app_utils import get_app_basic_details, get_values
 from catalog_templating.render import render_templates
 
-from .names import TEST_VALUES_FILENAME
+from .names import get_test_values_dir_path, get_test_values_from_test_dir
 
 
 RE_APP_VERSION = re.compile(r'^v\d+_\d+_\d+$')
@@ -46,21 +46,36 @@ def validate_templates(app_path: str, schema: str) -> None:
 
 
 def validate_template_rendering(app_path: str, schema: str, verrors: ValidationErrors) -> None:
-    try:
-        rendered = render_templates(app_path, get_values(os.path.join(app_path, TEST_VALUES_FILENAME)))
-    except Exception as e:
-        verrors.add(schema, f'Failed to render templates: {e}')
-    else:
-        if not rendered:
-            verrors.add(schema, 'No templates were rendered')
+    test_values_files = []
+    if not pathlib.Path(get_test_values_dir_path(app_path)).exists():
+        verrors.add(
+            f'{schema}.test_values', f'Test values directory does not exist at {get_test_values_dir_path(app_path)!r}'
+        )
+
+    elif not (test_values_files := get_test_values_from_test_dir(app_path)):
+        verrors.add(f'{schema}.test_values', 'No test values files found')
+
+    verrors.check()
+
+    for test_values_file in test_values_files:
+        try:
+            rendered = render_templates(
+                app_path, get_values(os.path.join(get_test_values_dir_path(app_path), test_values_file))
+            )
+        except Exception as e:
+            verrors.add(schema, f'Failed to render templates using {test_values_file!r}: {e}')
         else:
-            for file_name, rendered_template in rendered.items():
-                try:
-                    yaml.safe_load(rendered_template)
-                except yaml.YAMLError as e:
-                    verrors.add(
-                        f'{schema}.{file_name}', f'Failed to verify rendered template is a valid yaml file: {e}'
-                    )
+            if not rendered:
+                verrors.add(schema, f'No templates were rendered with {test_values_file!r}')
+            else:
+                for file_name, rendered_template in rendered.items():
+                    try:
+                        yaml.safe_load(rendered_template)
+                    except yaml.YAMLError as e:
+                        verrors.add(
+                            f'{schema}.{file_name}',
+                            f'Failed to verify rendered template is a valid yaml file using {test_values_file!r}: {e}'
+                        )
 
 
 def validate_library(app_path: str, schema: str, verrors: ValidationErrors) -> None:
