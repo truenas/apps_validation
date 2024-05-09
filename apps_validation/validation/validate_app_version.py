@@ -13,7 +13,6 @@ from catalog_reader.questions_util import CUSTOM_PORTALS_KEY
 from .app_version import validate_app_version_file
 from .ix_values import validate_ix_values_schema
 from .json_schema_utils import METADATA_JSON_SCHEMA, VERSION_VALIDATION_SCHEMA
-from .names import TEST_VALUES_FILENAME
 from .validate_questions import validate_questions_yaml
 from .validate_templates import validate_templates
 
@@ -22,7 +21,6 @@ WANTED_FILES_IN_ITEM_VERSION = {
     'app.yaml',
     'questions.yaml',
     'README.md',
-    TEST_VALUES_FILENAME,
 }
 
 
