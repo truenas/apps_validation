@@ -45,7 +45,7 @@ def validate_train(catalog_path: str, train_path: str, schema: str, to_check_app
         else:
             published_train_app_path = os.path.join(catalog_path, train_name, app_name)
             try:
-                if not version_has_been_bumped(published_train_app_path, get_app_version(app_path)):
+                if not version_has_been_bumped(published_train_app_path, get_app_version(app_path.name)):
                     verrors.add(
                         f'{schema}.{app_name}.version',
                         'Version must be bumped as app has been changed but version has not been updated'
