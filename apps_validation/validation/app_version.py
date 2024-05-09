@@ -12,22 +12,24 @@ from .scale_version import validate_min_max_version_values
 
 
 def validate_app_version_file(
-    verrors: ValidationErrors, app_version_path: str, schema: str, item_name: str, version_name: Optional[str] = None,
+    verrors: ValidationErrors,
+    app_version_path: str,
+    schema: str,
+    item_name: str,
+    version_name: Optional[str] = None,
     train_name: Optional[str] = None,
 ) -> ValidationErrors:
-    if not os.path.exists(app_version_path):
+    try:
+        with open(app_version_path, 'r') as f:
+            try:
+                app_config = yaml.safe_load(f.read())
+                json_schema_validate(app_config, APP_METADATA_JSON_SCHEMA)
+            except yaml.YAMLError:
+                verrors.add(schema, 'Must be a valid yaml file')
+                return verrors
+    except FileNotFoundError:
         verrors.add(schema, 'Missing app version file')
         return verrors
-
-    with open(app_version_path, 'r') as f:
-        try:
-            app_config = yaml.safe_load(f.read())
-        except yaml.YAMLError:
-            verrors.add(schema, 'Must be a valid yaml file')
-            return verrors
-
-    try:
-        json_schema_validate(app_config, APP_METADATA_JSON_SCHEMA)
     except JsonValidationError as e:
         verrors.add(schema, f'Failed to validate app version file: {e.message}')
         return verrors
