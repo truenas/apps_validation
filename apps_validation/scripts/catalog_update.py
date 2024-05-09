@@ -1,6 +1,7 @@
 import argparse
 import contextlib
 import json
+import pathlib
 import os
 import shutil
 import typing
@@ -65,17 +66,11 @@ def validate_versions_data(versions_data):
 def get_apps_to_publish(catalog_path: str) -> dict:
     ci_dev_dir = get_ci_development_directory(catalog_path)
     to_publish_apps = defaultdict(list)
-    for train_name in os.listdir(ci_dev_dir):
-        train_path = os.path.join(ci_dev_dir, train_name)
-        if not os.path.isdir(train_path):
-            continue
-
-        for app_name in os.listdir(train_path):
-            app_path = os.path.join(train_path, app_name)
-            if not os.path.isdir(app_path):
-                continue
-
-            app_current_version = get_app_version(app_path)
+    for train_path in filter(lambda x: x.is_dir(), pathlib.Path(ci_dev_dir).iterdir()):
+        train_name = train_path.name
+        for app_path in filter(lambda x: x.is_dir(), train_path.iterdir()):
+            app_name = app_path.name
+            app_current_version = get_app_version(app_path.as_posix())
             if version_has_been_bumped(os.path.join(catalog_path, train_name, app_name), app_current_version):
                 to_publish_apps[train_name].append({'name': app_name, 'version': app_current_version})
 
