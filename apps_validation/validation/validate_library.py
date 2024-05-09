@@ -1,4 +1,3 @@
-import os.path
 import pathlib
 
 from jsonschema import validate as json_schema_validate, ValidationError as JsonValidationError
@@ -44,3 +43,4 @@ def validate_base_libraries(catalog_path: str, verrors: ValidationErrors) -> Non
             )
 
     verrors.check()
+    # TODO: Should we enforce that no folder is here which does not match the regex version ?
