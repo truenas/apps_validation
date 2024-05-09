@@ -1,8 +1,10 @@
 import collections
+import contextlib
 import importlib
 import os
 import pathlib
 import shutil
+import typing
 
 from jinja2 import Environment, FileSystemLoader
 
@@ -44,17 +46,24 @@ def import_library(library_path: str, app_config) -> dict:
         library_path, app_config['train'], app_config['name'],
         get_app_library_dir_name_from_version(app_config['version'])
     )
+    additional_package_syspath = []
     if app_config['lib_version'] and pathlib.Path(global_base_lib).is_dir():
         modules_context['base'] = import_app_modules(global_base_lib, os.path.basename(global_base_lib))  # base_v1_0_0
+        additional_package_syspath.append(global_base_lib)
     if pathlib.Path(app_lib).is_dir():
         modules_context[app_config['train']] = {
-            app_config['name']: import_app_modules(app_lib, os.path.basename(app_lib))  # v1_0_1
+            app_config['name']: import_app_modules(
+                app_lib, os.path.basename(app_lib), additional_package_syspath
+            )  # v1_0_1
         }
 
     return modules_context
 
 
-def import_app_modules(modules_path: str, parent_module_name) -> dict:
+def import_app_modules(
+    modules_path: str, parent_module_name: str, additional_package_syspath: typing.Optional[list] = None
+) -> dict:
+
     def import_module_context(module_name, file_path):
         try:
             spec = importlib.util.spec_from_file_location(module_name, file_path)
@@ -69,9 +78,10 @@ def import_app_modules(modules_path: str, parent_module_name) -> dict:
             )
         return module
 
+    additional_package_syspath = (additional_package_syspath or []) + [modules_path]
     sub_modules_context = {}
     try:
-        importlib.sys.path.append(os.path.dirname(modules_path))
+        importlib.sys.path.extend([os.path.dirname(entry) for entry in additional_package_syspath])
         for sub_modules_file in filter(
             lambda p: os.path.isfile(os.path.join(modules_path, p)) and p.endswith('.py'), os.listdir(modules_path)
         ):
@@ -80,8 +90,11 @@ def import_app_modules(modules_path: str, parent_module_name) -> dict:
                 f'{parent_module_name}.{sub_modules}', os.path.join(modules_path, sub_modules_file)
             )
     finally:
-        importlib.sys.path.remove(os.path.dirname(modules_path))
-        remove_pycache(modules_path)
+        for entry in additional_package_syspath:
+            with contextlib.suppress(ValueError):
+                importlib.sys.path.remove(entry)
+
+            remove_pycache(entry)
 
     return sub_modules_context
 
