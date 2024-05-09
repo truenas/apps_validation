@@ -15,9 +15,16 @@ def validate_base_libraries(catalog_path: str, verrors: ValidationErrors) -> Non
     if not library_path_obj.exists():
         return
 
-    if any(
-        entry for entry in library_path_obj.iterdir() if entry.is_dir() and RE_VERSION.match(entry.name)
-    ) and not pathlib.Path(get_library_hashes_path(library_path)).exists():
+    found_libs = False
+    for entry in filter(lambda e: e.is_dir(), library_path_obj.iterdir()):
+        if RE_VERSION.match(entry.name):
+            found_libs = True
+        else:
+            verrors.add(
+                f'library.{entry.name}', 'Library version folder should conform to semantic versioning i.e 1.0.0'
+            )
+
+    if found_libs and not pathlib.Path(get_library_hashes_path(library_path)).exists():
         verrors.add('library', 'Library hashes file is missing')
 
     verrors.check()
@@ -43,4 +50,3 @@ def validate_base_libraries(catalog_path: str, verrors: ValidationErrors) -> Non
             )
 
     verrors.check()
-    # TODO: Should we enforce that no folder is here which does not match the regex version ?
