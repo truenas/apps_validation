@@ -18,3 +18,7 @@ def get_base_library_dir_name_from_version(version: typing.Optional[str]) -> str
 
 def get_library_hashes_path(library_path: str) -> str:
     return os.path.join(library_path, LIBRARY_HASHES_FILENAME)
+
+
+def get_library_path(catalog_path: str) -> str:
+    return os.path.join(catalog_path, 'library')
