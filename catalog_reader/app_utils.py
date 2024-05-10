@@ -47,7 +47,7 @@ def get_app_basic_details(app_path: str) -> dict:
     with contextlib.suppress(FileNotFoundError, yaml.YAMLError, KeyError):
         with open(os.path.join(app_path, 'app.yaml'), 'r') as f:
             app_config = yaml.safe_load(f.read())
-        return {'lib_version': app_config.get('lib_version')} | {
+        return {k: app_config.get(k) for k in ('lib_version', 'lib_version_hash')} | {
             k: app_config[k] for k in ('name', 'train', 'version')
         }
 
