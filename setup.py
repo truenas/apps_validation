@@ -9,6 +9,8 @@ setup(
     version=VERSION,
     include_package_data=True,
     packages=find_packages(include=[
+        'apps_ci',
+        'apps_ci.*',
         'apps_schema',
         'apps_schema.*',
         'apps_validation',
