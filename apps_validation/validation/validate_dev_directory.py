@@ -13,6 +13,7 @@ from catalog_reader.train_utils import get_train_path
 
 from .app_version import validate_app_version_file
 from .validate_app_version import validate_catalog_item_version
+from .validate_library import validate_base_libraries
 
 
 def validate_dev_directory_structure(catalog_path: str, to_check_apps: dict) -> None:
@@ -28,6 +29,8 @@ def validate_dev_directory_structure(catalog_path: str, to_check_apps: dict) -> 
         validate_train(
             catalog_path, os.path.join(dev_directory, train_name), f'dev.{train_name}', to_check_apps[train_name]
         )
+
+    validate_base_libraries(catalog_path, verrors)
     verrors.check()
 
 

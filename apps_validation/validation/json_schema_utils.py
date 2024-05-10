@@ -33,10 +33,20 @@ APP_METADATA_JSON_SCHEMA = {
             'type': 'string',
             'pattern': '[0-9]+.[0-9]+.[0-9]+',
         },
+        'lib_version_hash': {'type': 'string'},
     },
     'required': [
         'name', 'train', 'version',
     ],
+    'if': {
+        'properties': {
+            'lib_version': {'type': 'string'},
+        },
+        'required': ['lib_version'],
+    },
+    'then': {
+        'required': ['lib_version_hash'],
+    },
 }
 APP_MIGRATION_SCHEMA = {
     'type': 'array',
@@ -71,6 +81,14 @@ APP_MIGRATION_SCHEMA = {
                 },
             },
         ],
+    },
+}
+BASE_LIBRARIES_JSON_SCHEMA = {
+    'type': 'object',
+    'patternProperties': {
+        '[0-9]+.[0-9]+.[0-9]+': {
+            'type': 'string',
+        },
     },
 }
 CATALOG_JSON_SCHEMA = {

@@ -11,6 +11,7 @@ from catalog_reader.train_utils import get_train_path
 from .json_schema_utils import CATALOG_JSON_SCHEMA
 from .validate_app_rename_migrations import validate_migrations
 from .validate_app import validate_catalog_item
+from .validate_library import validate_base_libraries
 from .validate_recommended_apps import validate_recommended_apps_file
 from .validate_train import get_train_items, validate_train_structure
 
@@ -40,6 +41,8 @@ def validate_catalog(catalog_path: str):
             )
 
     verrors.check()
+
+    validate_base_libraries(catalog_path, verrors)
 
     for method, params in (
         (validate_recommended_apps_file, (catalog_path,)),
