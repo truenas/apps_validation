@@ -4,7 +4,7 @@ import typing
 
 from jsonschema import validate as json_schema_validate, ValidationError as JsonValidationError
 
-from apps_validation.validation.json_schema_utils import RECOMMENDED_APPS_JSON_SCHEMA
+from apps_validation.json_schema_utils import RECOMMENDED_APPS_JSON_SCHEMA
 
 from .names import RECOMMENDED_APPS_FILENAME
 

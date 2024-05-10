@@ -10,8 +10,8 @@ from jsonschema import validate as json_schema_validate, ValidationError as Json
 
 from apps_ci.names import CACHED_CATALOG_FILE_NAME, CACHED_VERSION_FILE_NAME
 from apps_exceptions import ValidationErrors
-from apps_validation.validation.json_schema_utils import CATALOG_JSON_SCHEMA
-from apps_validation.validation.validate_app_version import validate_catalog_item_version_data
+from apps_validation.json_schema_utils import CATALOG_JSON_SCHEMA
+from apps_validation.validate_app_version import validate_catalog_item_version_data
 from catalog_reader.catalog import retrieve_train_names, retrieve_trains_data, get_apps_in_trains
 from catalog_reader.dev_directory import (
     get_app_version, get_ci_development_directory, get_to_keep_versions, OPTIONAL_METADATA_FILES,

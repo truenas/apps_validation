@@ -2,7 +2,7 @@
 import argparse
 
 from apps_exceptions import CatalogDoesNotExist, ValidationErrors
-from apps_validation.validation.validate_catalog import validate_catalog
+from apps_validation.validate_catalog import validate_catalog
 
 
 def validate(catalog_path):
