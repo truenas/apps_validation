@@ -27,7 +27,7 @@ setup(
     entry_points={
         'console_scripts': [
             'apps_catalog_hash_generate = catalog_reader.scripts.apps_hashes:main',
-            'apps_catalog_update = apps_validation.scripts.catalog_update:main',
+            'apps_catalog_update = apps_ci.scripts.catalog_update:main',
             'apps_catalog_validate = apps_validation.scripts.catalog_validate:main',
             'apps_dev_charts_validate = apps_validation.scripts.dev_apps_validate:main',  # TODO: Remove apps_prefix
             'apps_render_app = catalog_templating.scripts.render_compose:main',
