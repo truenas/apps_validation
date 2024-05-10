@@ -8,7 +8,7 @@ from collections import defaultdict
 
 from jsonschema import validate as json_schema_validate, ValidationError as JsonValidationError
 
-from apps_validation.ci.names import CACHED_CATALOG_FILE_NAME, CACHED_VERSION_FILE_NAME
+from apps_ci.names import CACHED_CATALOG_FILE_NAME, CACHED_VERSION_FILE_NAME
 from apps_validation.exceptions import ValidationErrors
 from apps_validation.validation.json_schema_utils import CATALOG_JSON_SCHEMA
 from apps_validation.validation.validate_app_version import validate_catalog_item_version_data
