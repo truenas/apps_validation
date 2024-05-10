@@ -11,6 +11,8 @@ setup(
     packages=find_packages(include=[
         'apps_ci',
         'apps_ci.*',
+        'apps_exceptions',
+        'apps_exceptions.*',
         'apps_schema',
         'apps_schema.*',
         'apps_validation',
