@@ -33,10 +33,14 @@ APP_METADATA_JSON_SCHEMA = {
             'type': 'string',
             'pattern': '[0-9]+.[0-9]+.[0-9]+',
         },
+        'lib_version_hash': {'type': 'string'},
     },
     'required': [
         'name', 'train', 'version',
     ],
+    'dependencies': {
+        'lib_version': ['lib_version_hash'],  # Ensure lib_version_hash exists if lib_version is present
+    },
 }
 APP_MIGRATION_SCHEMA = {
     'type': 'array',
