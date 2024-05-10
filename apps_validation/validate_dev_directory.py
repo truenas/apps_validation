@@ -3,7 +3,7 @@ import yaml
 
 from jsonschema import ValidationError as JsonValidationError
 
-from apps_validation.exceptions import ValidationErrors
+from apps_exceptions import ValidationErrors
 from catalog_reader.dev_directory import (
     get_app_version, get_ci_development_directory, get_to_keep_versions, REQUIRED_METADATA_FILES,
     version_has_been_bumped,

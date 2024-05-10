@@ -1,6 +1,6 @@
 from jsonschema import validate as json_schema_validate, ValidationError as JsonValidationError
 
-from apps_validation.exceptions import ValidationErrors
+from apps_exceptions import ValidationErrors
 
 from .utils import ATTRIBUTES_SCHEMA
 

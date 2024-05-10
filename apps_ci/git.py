@@ -2,7 +2,7 @@ import os
 import subprocess
 from collections import defaultdict
 
-from apps_validation.exceptions import CatalogDoesNotExist
+from apps_exceptions import CatalogDoesNotExist
 from catalog_reader.dev_directory import (
     DEV_DIRECTORY_RELATIVE_PATH, get_ci_development_directory, OPTIONAL_METADATA_FILES
 )

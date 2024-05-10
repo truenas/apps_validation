@@ -3,7 +3,7 @@ import argparse
 import os
 import shutil
 
-from apps_validation.exceptions import ValidationErrors
+from apps_exceptions import ValidationErrors
 from catalog_reader.app_utils import get_values
 from catalog_templating.render import render_templates
 

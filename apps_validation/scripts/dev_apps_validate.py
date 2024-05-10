@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 import argparse
 
-from apps_validation.ci.git import get_changed_apps
-from apps_validation.validation.validate_dev_directory import validate_dev_directory_structure
+from apps_ci.git import get_changed_apps
+from apps_validation.validate_dev_directory import validate_dev_directory_structure
 
 
 def main():

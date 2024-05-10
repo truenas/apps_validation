@@ -5,7 +5,7 @@ from typing import Optional
 
 from jsonschema import validate as json_schema_validate, ValidationError as JsonValidationError
 
-from apps_validation.exceptions import ValidationErrors
+from apps_exceptions import ValidationErrors
 
 from .json_schema_utils import APP_METADATA_JSON_SCHEMA
 from .scale_version import validate_min_max_version_values

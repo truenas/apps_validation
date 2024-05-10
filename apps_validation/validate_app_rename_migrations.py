@@ -3,7 +3,7 @@ import jsonschema
 import os
 import re
 
-from apps_validation.exceptions import ValidationErrors
+from apps_exceptions import ValidationErrors
 
 from .json_schema_utils import APP_MIGRATION_SCHEMA
 

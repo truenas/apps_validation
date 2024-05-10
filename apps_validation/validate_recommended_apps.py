@@ -3,7 +3,7 @@ import yaml
 
 from jsonschema import validate as json_schema_validate, ValidationError as JsonValidationError
 
-from apps_validation.exceptions import ValidationErrors
+from apps_exceptions import ValidationErrors
 from catalog_reader.names import RECOMMENDED_APPS_FILENAME
 
 from .json_schema_utils import RECOMMENDED_APPS_JSON_SCHEMA

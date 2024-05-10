@@ -2,8 +2,8 @@ import os
 import json
 import yaml
 
-from apps_validation.ci.names import CACHED_VERSION_FILE_NAME
-from apps_validation.exceptions import ValidationErrors
+from apps_ci.names import CACHED_VERSION_FILE_NAME
+from apps_exceptions import ValidationErrors
 
 from .validate_app_version import validate_catalog_item_version_data, validate_catalog_item_version
 from .utils import validate_key_value_types

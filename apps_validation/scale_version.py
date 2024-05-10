@@ -1,6 +1,6 @@
 from middlewared.plugins.update_.utils import can_update
 
-from apps_validation.exceptions import ValidationErrors
+from apps_exceptions import ValidationErrors
 
 from .names import RE_SCALE_VERSION
 from .utils import validate_key_value_types
