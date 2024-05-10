@@ -3,4 +3,5 @@ jinja2
 jsonschema==4.10.3
 markdown
 pyyaml
+ruamel.yaml
 semantic_version
