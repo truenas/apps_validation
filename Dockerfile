@@ -20,3 +20,12 @@ WORKDIR ${WORK_DIR}
 ADD . ${WORK_DIR}/
 RUN pip install --break-system-packages -r requirements.txt
 RUN pip install --break-system-packages -U .
+
+RUN echo "python3 /app/catalog_templating/scripts/render_compose.py "$@"" > /usr/bin/catalog_templating && \
+      chmod +x /usr/bin/catalog_templating
+RUN echo "python3 /app/apps_validation/scripts/catalog_validate.py "$@"" > /usr/bin/catalog_validate && \
+      chmod +x /usr/bin/catalog_validate
+RUN echo "python3 /app/apps_validation/scripts/catalog_update.py "$@"" > /usr/bin/catalog_update && \
+      chmod +x /usr/bin/catalog_update
+RUN echo "python3 /app/apps_validation/scripts/dev_apps_validate.py "$@"" > /usr/bin/dev_apps_validate && \
+      chmod +x /usr/bin/dev_apps_validate
