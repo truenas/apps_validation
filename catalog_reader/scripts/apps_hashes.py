@@ -38,7 +38,7 @@ def update_catalog_hashes(catalog_path: str) -> None:
     if not dev_directory.is_dir():
         return
     elif not hashes:
-        print(f'[\033[92mOK\x1B[0m]\tNo hashes found for library versions, skipping updating apps hashes')
+        print('[\033[92mOK\x1B[0m]\tNo hashes found for library versions, skipping updating apps hashes')
         return
 
     for train_dir in dev_directory.iterdir():
