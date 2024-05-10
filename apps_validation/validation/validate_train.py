@@ -1,7 +1,7 @@
 import os
 import typing
 
-from apps_validation.exceptions import ValidationErrors
+from apps_exceptions import ValidationErrors
 
 from .names import RE_TRAIN_NAME
 

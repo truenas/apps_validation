@@ -1,7 +1,7 @@
 import pytest
 
 from apps_schema.attrs import get_schema
-from apps_validation.exceptions import ValidationErrors
+from apps_exceptions import ValidationErrors
 
 
 @pytest.mark.parametrize('schema,should_work', [

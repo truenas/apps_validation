@@ -6,7 +6,7 @@ import yaml
 from jsonschema import validate as json_schema_validate, ValidationError as JsonValidationError
 from semantic_version import Version
 
-from apps_validation.exceptions import ValidationErrors
+from apps_exceptions import ValidationErrors
 from catalog_reader.app_utils import get_app_basic_details
 from catalog_reader.hash_utils import get_hash_of_directory
 from catalog_reader.names import get_base_library_dir_name_from_version

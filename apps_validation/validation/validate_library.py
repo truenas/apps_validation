@@ -2,7 +2,7 @@ import pathlib
 
 from jsonschema import validate as json_schema_validate, ValidationError as JsonValidationError
 
-from apps_validation.exceptions import ValidationErrors
+from apps_exceptions import ValidationErrors
 from catalog_reader.library import get_library_hashes, get_hashes_of_base_lib_versions, RE_VERSION
 from catalog_reader.names import get_library_path, get_library_hashes_path
 

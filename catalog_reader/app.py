@@ -5,7 +5,7 @@ import yaml
 
 from pkg_resources import parse_version
 
-from apps_validation.exceptions import ValidationErrors
+from apps_exceptions import ValidationErrors
 from apps_validation.validation.validate_app import validate_catalog_item
 from apps_validation.validation.validate_app_version import validate_catalog_item_version  # FIXME: rename this
 

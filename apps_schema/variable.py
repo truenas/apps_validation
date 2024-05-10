@@ -1,4 +1,4 @@
-from apps_validation.exceptions import ValidationErrors
+from apps_exceptions import ValidationErrors
 
 from .attrs import get_schema
 

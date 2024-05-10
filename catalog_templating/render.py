@@ -8,7 +8,7 @@ import typing
 
 from jinja2 import Environment, FileSystemLoader
 
-from apps_validation.exceptions import ValidationError
+from apps_exceptions import ValidationError
 from catalog_reader.app_utils import get_app_basic_details
 from catalog_reader.names import get_app_library_dir_name_from_version, get_base_library_dir_name_from_version
 
