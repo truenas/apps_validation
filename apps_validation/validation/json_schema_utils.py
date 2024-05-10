@@ -38,8 +38,14 @@ APP_METADATA_JSON_SCHEMA = {
     'required': [
         'name', 'train', 'version',
     ],
-    'dependencies': {
-        'lib_version': ['lib_version_hash'],  # Ensure lib_version_hash exists if lib_version is present
+    'if': {
+        'properties': {
+            'lib_version': {'type': 'string'},
+        },
+        'required': ['lib_version'],
+    },
+    'then': {
+        'required': ['lib_version_hash'],
     },
 }
 APP_MIGRATION_SCHEMA = {
