@@ -3,6 +3,11 @@ APP_METADATA_JSON_SCHEMA = {
     'properties': {
         'name': {'type': 'string'},
         'train': {'type': 'string'},
+        'title': {'type': 'string'},
+        'description': {'type': 'string'},
+        'app_version': {'type': 'string'},
+        'home': {'type': 'string'},
+        'icon_url': {'type': 'string'},
         'annotations': {
             'type': 'object',
             'properties': {
@@ -14,12 +19,25 @@ APP_METADATA_JSON_SCHEMA = {
             'type': 'array',
             'items': {'type': 'string'},
         },
+        'keywords': {
+            'type': 'array',
+            'items': {'type': 'string'},
+        },
+        'categories': {
+            'type': 'array',
+            'items': {'type': 'string'},
+        },
+        'screenshots': {
+            'type': 'array',
+            'items': {'type': 'string'},
+        },
         'maintainers': {
             'type': 'array',
             'items': {
                 'type': 'object',
                 'properties': {
                     'name': {'type': 'string'},
+                    'url': {'type': 'string'},
                     'email': {'type': 'string'},
                 },
                 'required': ['name', 'email'],
@@ -36,7 +54,7 @@ APP_METADATA_JSON_SCHEMA = {
         'lib_version_hash': {'type': 'string'},
     },
     'required': [
-        'name', 'train', 'version',
+        'name', 'train', 'version', 'app_version', 'title', 'description',
     ],
     'if': {
         'properties': {
@@ -279,10 +297,18 @@ VERSION_VALIDATION_SCHEMA = {
                     'type': 'string',
                     'pattern': '[0-9]+.[0-9]+.[0-9]+'
                 },
+                # This should be app_metadata, but a key already exists below
+                # Probably merge them?
                 'chart_metadata': {
                     'type': 'object',
                     'properties': {
                         'name': {
+                            'type': 'string'
+                        },
+                        'train': {
+                            'type': 'string'
+                        },
+                        'title': {
                             'type': 'string'
                         },
                         'description': {
@@ -298,14 +324,8 @@ VERSION_VALIDATION_SCHEMA = {
                             'type': 'string',
                             'pattern': '[0-9]+.[0-9]+.[0-9]+'
                         },
-                        'apiVersion': {
+                        'app_version': {
                             'type': 'string',
-                        },
-                        'appVersion': {
-                            'type': 'string'
-                        },
-                        'kubeVersion': {
-                            'type': 'string'
                         },
                         'app_readme': {'type': 'string'},
                         'detailed_readme': {'type': 'string'},
@@ -322,19 +342,13 @@ VERSION_VALIDATION_SCHEMA = {
                                 'required': ['name', 'email'],
                             }
                         },
-                        'dependencies': {
-                            'type': 'array',
-                            'items': {
-                                'type': 'object',
-                                'properties': {
-                                    'name': {'type': 'string'},
-                                    'repository': {'type': 'string'},
-                                    'version': {'type': 'string'}
-                                }
-                            }
+                        'lib_version': {
+                            'type': 'string',
+                            'pattern': '[0-9]+.[0-9]+.[0-9]+',
                         },
+                        'lib_version_hash': {'type': 'string'},
                         'home': {'type': 'string'},
-                        'icon': {'type': 'string'},
+                        'icon_url': {'type': 'string'},
                         'sources': {
                             'type': 'array',
                             'items': {
