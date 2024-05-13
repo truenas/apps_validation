@@ -298,8 +298,9 @@ VERSION_VALIDATION_SCHEMA = {
                     'type': 'string',
                     'pattern': '[0-9]+.[0-9]+.[0-9]+'
                 },
-                # This should be app_metadata, but a key already exists below
-                # Probably merge them?
+                # FIXME: This is the same as app_metadata.
+                # This should probably have to go but keep app_readme, detailed_readme, changelog.
+                # and get merged with APP_METADATA_JSON_SCHEMA
                 'chart_metadata': {
                     'type': 'object',
                     'properties': {
