@@ -150,7 +150,6 @@ def get_app_version_details(
     version_data = {'location': version_path, 'required_features': set()}
     for key, filename, parser in (
         ('chart_metadata', 'app.yaml', yaml.safe_load),
-        ('app_metadata', 'metadata.yaml', yaml.safe_load),
         ('schema', 'questions.yaml', yaml.safe_load),
         ('readme', 'README.md', markdown.markdown),  # TODO: Has been changed, make sure json schema accounts for it
         ('changelog', 'CHANGELOG.md', markdown.markdown),

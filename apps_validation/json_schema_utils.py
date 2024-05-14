@@ -43,10 +43,46 @@ APP_METADATA_JSON_SCHEMA = {
             'pattern': '[0-9]+.[0-9]+.[0-9]+',
         },
         'lib_version_hash': {'type': 'string'},
+        'run_as_context': {
+            'type': 'array',
+            'items': {
+                'type': 'object',
+                'properties': {
+                    'description': {'type': 'string'},
+                    'gid': {'type': 'integer'},
+                    'groupName': {'type': 'string'},
+                    'userName': {'type': 'string'},
+                    'uid': {'type': 'integer'},
+                },
+                'required': ['description'],
+            },
+        },
+        'capabilities': {
+            'type': 'array',
+            'items': {
+                'type': 'object',
+                'properties': {
+                    'description': {'type': 'string'},
+                    'name': {'type': 'string'},
+                },
+                'required': ['description', 'name'],
+            },
+        },
+        'host_mounts': {
+            'type': 'array',
+            'items': {
+                'type': 'object',
+                'properties': {
+                    'description': {'type': 'string'},
+                    'hostPath': {'type': 'string'},
+                },
+                'required': ['description', 'hostPath'],
+            },
+        },
     },
     'required': [
         'name', 'train', 'version', 'app_version', 'title', 'description', 'home',
-        'sources', 'maintainers',
+        'sources', 'maintainers', 'run_as_context', 'capabilities', 'host_mounts',
     ],
     'if': {
         'properties': {
@@ -202,47 +238,6 @@ CATALOG_JSON_SCHEMA = {
         }
     }
 }
-METADATA_JSON_SCHEMA = {
-    'type': 'object',
-    'properties': {
-        'runAsContext': {
-            'type': 'array',
-            'items': {
-                'type': 'object',
-                'properties': {
-                    'description': {'type': 'string'},
-                    'gid': {'type': 'integer'},
-                    'groupName': {'type': 'string'},
-                    'userName': {'type': 'string'},
-                    'uid': {'type': 'integer'},
-                },
-                'required': ['description'],
-            },
-        },
-        'capabilities': {
-            'type': 'array',
-            'items': {
-                'type': 'object',
-                'properties': {
-                    'description': {'type': 'string'},
-                    'name': {'type': 'string'},
-                },
-                'required': ['description', 'name'],
-            },
-        },
-        'hostMounts': {
-            'type': 'array',
-            'items': {
-                'type': 'object',
-                'properties': {
-                    'description': {'type': 'string'},
-                    'hostPath': {'type': 'string'},
-                },
-                'required': ['description', 'hostPath'],
-            },
-        },
-    },
-}
 RECOMMENDED_APPS_JSON_SCHEMA = {
     'type': 'object',
     'patternProperties': {
@@ -359,10 +354,6 @@ VERSION_VALIDATION_SCHEMA = {
                         },
                     }
                 },
-                'app_metadata': {
-                    **METADATA_JSON_SCHEMA,
-                    'type': ['object', 'null'],
-                },
                 'schema': {
                     'type': 'object',
                     'properties': {
@@ -408,7 +399,7 @@ VERSION_VALIDATION_SCHEMA = {
             },
             'required': [
                 'healthy', 'supported', 'healthy_error', 'location', 'last_update', 'required_features',
-                'human_version', 'version', 'chart_metadata', 'app_metadata', 'schema',
+                'human_version', 'version', 'chart_metadata', 'schema',
             ],
         },
     },
