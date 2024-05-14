@@ -3,6 +3,9 @@ APP_METADATA_JSON_SCHEMA = {
     'properties': {
         'name': {'type': 'string'},
         'train': {'type': 'string'},
+        'description': {'type': 'string'},
+        'home': {'type': 'string'},
+        'app_version': {'type': 'string'},
         'annotations': {
             'type': 'object',
             'properties': {
@@ -10,6 +13,7 @@ APP_METADATA_JSON_SCHEMA = {
                 'max_scale_version': {'type': 'string'},
             },
         },
+        'title': {'type': 'string'},
         'sources': {
             'type': 'array',
             'items': {'type': 'string'},
@@ -21,9 +25,14 @@ APP_METADATA_JSON_SCHEMA = {
                 'properties': {
                     'name': {'type': 'string'},
                     'email': {'type': 'string'},
+                    'url': {'type': 'string'},
                 },
                 'required': ['name', 'email'],
             },
+        },
+        'keywords': {
+            'type': 'array',
+            'items': {'type': 'string'},
         },
         'version': {
             'type': 'string',
@@ -36,7 +45,8 @@ APP_METADATA_JSON_SCHEMA = {
         'lib_version_hash': {'type': 'string'},
     },
     'required': [
-        'name', 'train', 'version',
+        'name', 'train', 'version', 'app_version', 'title', 'description', 'home',
+        'sources', 'maintainers',
     ],
     'if': {
         'properties': {
