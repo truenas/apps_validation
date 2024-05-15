@@ -54,7 +54,6 @@ def get_app_details(
     }))
     unhealthy_versions = []
     desired_keys_mapping = {
-        'app_readme': 'readme',
         'maintainers': 'maintainers',
         'description': 'description',
         'title': 'title',
@@ -75,6 +74,9 @@ def get_app_details(
                 item_data['latest_version'] = k
                 item_data['latest_app_version'] = app_metadata['app_version']
                 item_data['latest_human_version'] = get_human_version(app_metadata['app_version'], k)
+
+            if not item_data['app_readme']:
+                item_data['app_readme'] = v['readme']
 
     if unhealthy_versions:
         item_data['healthy_error'] = f'Errors were found with {", ".join(unhealthy_versions)} version(s)'
