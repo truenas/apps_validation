@@ -49,7 +49,7 @@ def validate_train_data(train_data):
     except (json.JSONDecodeError, JsonValidationError) as e:
         verrors.add(
             'catalog_json',
-            f'Failed to validate contents of train data: {e!r}'
+            f'Failed to validate contents of train data ({".".join(list(e.path))}): {e!r}'
         )
     verrors.check()
 
