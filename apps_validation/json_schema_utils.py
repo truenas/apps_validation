@@ -3,6 +3,9 @@ APP_METADATA_JSON_SCHEMA = {
     'properties': {
         'name': {'type': 'string'},
         'train': {'type': 'string'},
+        'description': {'type': 'string'},
+        'home': {'type': 'string'},
+        'app_version': {'type': 'string'},
         'annotations': {
             'type': 'object',
             'properties': {
@@ -10,6 +13,7 @@ APP_METADATA_JSON_SCHEMA = {
                 'max_scale_version': {'type': 'string'},
             },
         },
+        'title': {'type': 'string'},
         'sources': {
             'type': 'array',
             'items': {'type': 'string'},
@@ -21,9 +25,14 @@ APP_METADATA_JSON_SCHEMA = {
                 'properties': {
                     'name': {'type': 'string'},
                     'email': {'type': 'string'},
+                    'url': {'type': 'string'},
                 },
                 'required': ['name', 'email'],
             },
+        },
+        'keywords': {
+            'type': 'array',
+            'items': {'type': 'string'},
         },
         'version': {
             'type': 'string',
@@ -34,9 +43,46 @@ APP_METADATA_JSON_SCHEMA = {
             'pattern': '[0-9]+.[0-9]+.[0-9]+',
         },
         'lib_version_hash': {'type': 'string'},
+        'run_as_context': {
+            'type': 'array',
+            'items': {
+                'type': 'object',
+                'properties': {
+                    'description': {'type': 'string'},
+                    'gid': {'type': 'integer'},
+                    'groupName': {'type': 'string'},
+                    'userName': {'type': 'string'},
+                    'uid': {'type': 'integer'},
+                },
+                'required': ['description'],
+            },
+        },
+        'capabilities': {
+            'type': 'array',
+            'items': {
+                'type': 'object',
+                'properties': {
+                    'description': {'type': 'string'},
+                    'name': {'type': 'string'},
+                },
+                'required': ['description', 'name'],
+            },
+        },
+        'host_mounts': {
+            'type': 'array',
+            'items': {
+                'type': 'object',
+                'properties': {
+                    'description': {'type': 'string'},
+                    'hostPath': {'type': 'string'},
+                },
+                'required': ['description', 'hostPath'],
+            },
+        },
     },
     'required': [
-        'name', 'train', 'version',
+        'name', 'train', 'version', 'app_version', 'title', 'description', 'home',
+        'sources', 'maintainers', 'run_as_context', 'capabilities', 'host_mounts',
     ],
     'if': {
         'properties': {
@@ -192,47 +238,6 @@ CATALOG_JSON_SCHEMA = {
         }
     }
 }
-METADATA_JSON_SCHEMA = {
-    'type': 'object',
-    'properties': {
-        'runAsContext': {
-            'type': 'array',
-            'items': {
-                'type': 'object',
-                'properties': {
-                    'description': {'type': 'string'},
-                    'gid': {'type': 'integer'},
-                    'groupName': {'type': 'string'},
-                    'userName': {'type': 'string'},
-                    'uid': {'type': 'integer'},
-                },
-                'required': ['description'],
-            },
-        },
-        'capabilities': {
-            'type': 'array',
-            'items': {
-                'type': 'object',
-                'properties': {
-                    'description': {'type': 'string'},
-                    'name': {'type': 'string'},
-                },
-                'required': ['description', 'name'],
-            },
-        },
-        'hostMounts': {
-            'type': 'array',
-            'items': {
-                'type': 'object',
-                'properties': {
-                    'description': {'type': 'string'},
-                    'hostPath': {'type': 'string'},
-                },
-                'required': ['description', 'hostPath'],
-            },
-        },
-    },
-}
 RECOMMENDED_APPS_JSON_SCHEMA = {
     'type': 'object',
     'patternProperties': {
@@ -279,80 +284,9 @@ VERSION_VALIDATION_SCHEMA = {
                     'type': 'string',
                     'pattern': '[0-9]+.[0-9]+.[0-9]+'
                 },
-                'chart_metadata': {
-                    'type': 'object',
-                    'properties': {
-                        'name': {
-                            'type': 'string'
-                        },
-                        'description': {
-                            'type': 'string'
-                        },
-                        'annotations': {
-                            'type': 'object'
-                        },
-                        'type': {
-                            'type': 'string'
-                        },
-                        'version': {
-                            'type': 'string',
-                            'pattern': '[0-9]+.[0-9]+.[0-9]+'
-                        },
-                        'apiVersion': {
-                            'type': 'string',
-                        },
-                        'appVersion': {
-                            'type': 'string'
-                        },
-                        'kubeVersion': {
-                            'type': 'string'
-                        },
-                        'app_readme': {'type': 'string'},
-                        'detailed_readme': {'type': 'string'},
-                        'changelog': {'type': ['string', 'null']},
-                        'maintainers': {
-                            'type': 'array',
-                            'items': {
-                                'type': 'object',
-                                'properties': {
-                                    'name': {'type': 'string'},
-                                    'url': {'type': ['string', 'null']},
-                                    'email': {'type': 'string'},
-                                },
-                                'required': ['name', 'email'],
-                            }
-                        },
-                        'dependencies': {
-                            'type': 'array',
-                            'items': {
-                                'type': 'object',
-                                'properties': {
-                                    'name': {'type': 'string'},
-                                    'repository': {'type': 'string'},
-                                    'version': {'type': 'string'}
-                                }
-                            }
-                        },
-                        'home': {'type': 'string'},
-                        'icon': {'type': 'string'},
-                        'sources': {
-                            'type': 'array',
-                            'items': {
-                                'type': 'string'
-                            }
-                        },
-                        'keywords': {
-                            'type': 'array',
-                            'items': {
-                                'type': 'string'
-                            }
-                        },
-                    }
-                },
-                'app_metadata': {
-                    **METADATA_JSON_SCHEMA,
-                    'type': ['object', 'null'],
-                },
+                'app_metadata': APP_METADATA_JSON_SCHEMA,
+                'readme': {'type': ['string', 'null']},
+                'changelog': {'type': ['string', 'null']},
                 'schema': {
                     'type': 'object',
                     'properties': {
@@ -398,7 +332,7 @@ VERSION_VALIDATION_SCHEMA = {
             },
             'required': [
                 'healthy', 'supported', 'healthy_error', 'location', 'last_update', 'required_features',
-                'human_version', 'version', 'chart_metadata', 'app_metadata', 'schema',
+                'human_version', 'version', 'app_metadata', 'schema', 'readme', 'changelog',
             ],
         },
     },

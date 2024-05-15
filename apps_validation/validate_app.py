@@ -37,6 +37,7 @@ def validate_catalog_item(catalog_item_path: str, schema: str, train_name: str, 
         with open(os.path.join(catalog_item_path, 'item.yaml'), 'r') as f:
             item_config = yaml.safe_load(f.read())
 
+        # TODO: Remove validate key value type function and have json schemas for all of this
         validate_key_value_types(
             item_config, (
                 ('categories', list), ('tags', list, False), ('screenshots', list, False),

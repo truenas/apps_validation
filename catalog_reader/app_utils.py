@@ -60,3 +60,7 @@ def get_values(values_path: str) -> dict:
             return yaml.safe_load(f.read())
 
     return {}
+
+
+def get_human_version(app_version: str, version: str) -> str:
+    return f'{app_version}_{version}' if app_version != version else version

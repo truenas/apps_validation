@@ -14,7 +14,7 @@ from catalog_reader.questions_util import CUSTOM_PORTALS_KEY
 
 from .app_version import validate_app_version_file
 from .ix_values import validate_ix_values_schema
-from .json_schema_utils import METADATA_JSON_SCHEMA, VERSION_VALIDATION_SCHEMA
+from .json_schema_utils import VERSION_VALIDATION_SCHEMA
 from .validate_questions import validate_questions_yaml
 from .validate_templates import validate_templates
 
@@ -89,13 +89,6 @@ def validate_catalog_item_version(
             except ValidationErrors as v:
                 verrors.extend(v)
 
-    metadata_path = os.path.join(version_path, 'metadata.yaml')
-    if os.path.exists(metadata_path):
-        try:
-            validate_metadata_yaml(metadata_path, f'{schema}.metadata_configuration')
-        except ValidationErrors as v:
-            verrors.extend(v)
-
     # validate_app_migrations(verrors, version_path, f'{schema}.app_migrations')
     # FIXME: Add validation for app migrations
 
@@ -122,21 +115,5 @@ def validate_ix_values_yaml(ix_values_yaml_path: str, schema: str):
                 verrors.extend(ve)
     else:
         verrors.add(schema, 'Must be a dictionary')
-
-    verrors.check()
-
-
-def validate_metadata_yaml(metadata_yaml_path: str, schema: str):
-    verrors = ValidationErrors()
-    with open(metadata_yaml_path, 'r') as f:
-        try:
-            metadata = yaml.safe_load(f.read())
-        except yaml.YAMLError:
-            verrors.add(schema, 'Must be a valid yaml file')
-        else:
-            try:
-                json_schema_validate(metadata, METADATA_JSON_SCHEMA)
-            except JsonValidationError as e:
-                verrors.add(schema, f'Invalid format specified for application metadata: {e}')
 
     verrors.check()
