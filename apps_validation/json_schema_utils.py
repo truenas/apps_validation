@@ -285,6 +285,8 @@ VERSION_VALIDATION_SCHEMA = {
                     'pattern': '[0-9]+.[0-9]+.[0-9]+'
                 },
                 'app_metadata': APP_METADATA_JSON_SCHEMA,
+                'readme': {'type': ['string', 'null']},
+                'changelog': {'type': ['string', 'null']},
                 'schema': {
                     'type': 'object',
                     'properties': {
@@ -330,7 +332,7 @@ VERSION_VALIDATION_SCHEMA = {
             },
             'required': [
                 'healthy', 'supported', 'healthy_error', 'location', 'last_update', 'required_features',
-                'human_version', 'version', 'app_metadata', 'schema',
+                'human_version', 'version', 'app_metadata', 'schema', 'readme', 'changelog',
             ],
         },
     },

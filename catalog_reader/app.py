@@ -149,7 +149,7 @@ def get_app_version_details(
     for key, filename, parser in (
         ('app_metadata', 'app.yaml', yaml.safe_load),
         ('schema', 'questions.yaml', yaml.safe_load),
-        ('readme', 'README.md', markdown.markdown),  # TODO: Has been changed, make sure json schema accounts for it
+        ('readme', 'README.md', markdown.markdown),
         ('changelog', 'CHANGELOG.md', markdown.markdown),
     ):
         if os.path.exists(os.path.join(version_path, filename)):
