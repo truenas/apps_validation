@@ -284,7 +284,7 @@ VERSION_VALIDATION_SCHEMA = {
                     'type': 'string',
                     'pattern': '[0-9]+.[0-9]+.[0-9]+'
                 },
-                'chart_metadata': {
+                'app_metadata': {
                     'type': 'object',
                     'properties': {
                         'name': {
@@ -399,7 +399,7 @@ VERSION_VALIDATION_SCHEMA = {
             },
             'required': [
                 'healthy', 'supported', 'healthy_error', 'location', 'last_update', 'required_features',
-                'human_version', 'version', 'chart_metadata', 'schema',
+                'human_version', 'version', 'app_metadata', 'schema',
             ],
         },
     },

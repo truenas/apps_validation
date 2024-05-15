@@ -9,7 +9,7 @@ from apps_exceptions import ValidationErrors
 from apps_validation.validate_app import validate_catalog_item
 from apps_validation.validate_app_version import validate_catalog_item_version  # FIXME: rename this
 
-from .app_utils import get_default_questions_context, get_app_details_base
+from .app_utils import get_default_questions_context, get_app_details_base, get_human_version
 from .git import get_last_updated_date
 from .questions import normalize_questions
 from .supported_version import version_supported
@@ -53,32 +53,28 @@ def get_app_details(
         'default_values_callable': options.get('default_values_callable'),
     }))
     unhealthy_versions = []
+    desired_keys_mapping = {
+        'app_readme': 'readme',
+        'maintainers': 'maintainers',
+        'description': 'description',
+        'title': 'title',
+        'home': 'home',
+        'sources': 'sources',
+    }
     for k, v in sorted(item_data['versions'].items(), key=lambda v: parse_version(v[0]), reverse=True):
         if not v['healthy']:
             unhealthy_versions.append(k)
         else:
-            chart_metadata = v['chart_metadata']
-            if not item_data['app_readme']:
-                item_data['app_readme'] = v['readme']
-            if not item_data['maintainers'] and chart_metadata.get('maintainers'):
-                item_data['maintainers'] = chart_metadata['maintainers']
+            app_metadata = v['app_metadata']
+            for desired_key in list(desired_keys_mapping):
+                if not item_data[desired_key]:
+                    item_data[desired_key] = app_metadata[desired_keys_mapping[desired_key]]
+                desired_keys_mapping.pop(desired_key)
+
             if not item_data['latest_version']:
                 item_data['latest_version'] = k
-                item_data['latest_app_version'] = chart_metadata.get('appVersion')
-                item_data['latest_human_version'] = ''
-                if item_data['latest_app_version']:
-                    item_data['latest_human_version'] = f'{item_data["latest_app_version"]}_'
-                item_data['latest_human_version'] += k
-            if not item_data['description'] and chart_metadata.get('description'):
-                item_data['description'] = v['chart_metadata']['description']
-            if item_data['title'] == item_data['name'].capitalize() and chart_metadata.get(
-                'annotations', {}
-            ).get('title'):
-                item_data['title'] = chart_metadata['annotations']['title']
-            if item_data['home'] is None and chart_metadata.get('home'):
-                item_data['home'] = chart_metadata['home']
-            if not item_data['sources'] and chart_metadata.get('sources'):
-                item_data['sources'] = chart_metadata['sources']
+                item_data['latest_app_version'] = app_metadata['app_version']
+                item_data['latest_human_version'] = get_human_version(app_metadata['app_version'], k)
 
     if unhealthy_versions:
         item_data['healthy_error'] = f'Errors were found with {", ".join(unhealthy_versions)} version(s)'
@@ -149,7 +145,7 @@ def get_app_version_details(
 ) -> dict:
     version_data = {'location': version_path, 'required_features': set()}
     for key, filename, parser in (
-        ('chart_metadata', 'app.yaml', yaml.safe_load),
+        ('app_metadata', 'app.yaml', yaml.safe_load),
         ('schema', 'questions.yaml', yaml.safe_load),
         ('readme', 'README.md', markdown.markdown),  # TODO: Has been changed, make sure json schema accounts for it
         ('changelog', 'CHANGELOG.md', markdown.markdown),
@@ -170,8 +166,9 @@ def get_app_version_details(
     })
     if options and options.get('default_values_callable'):
         version_data['values'] = options['default_values_callable'](version_data)
-    chart_metadata = version_data['chart_metadata']
-    if chart_metadata['name'] != 'ix-chart' and chart_metadata.get('appVersion'):
-        version_data['human_version'] = f'{chart_metadata["appVersion"]}_{chart_metadata["version"]}'
+
+    app_metadata = version_data['app_metadata']
+    # TODO: See if this needs to change for our adaptation of ix-chart
+    version_data['human_version'] = get_human_version(app_metadata['app_version'], app_metadata['version'])
 
     return version_data
