@@ -284,76 +284,7 @@ VERSION_VALIDATION_SCHEMA = {
                     'type': 'string',
                     'pattern': '[0-9]+.[0-9]+.[0-9]+'
                 },
-                'app_metadata': {
-                    'type': 'object',
-                    'properties': {
-                        'name': {
-                            'type': 'string'
-                        },
-                        'description': {
-                            'type': 'string'
-                        },
-                        'annotations': {
-                            'type': 'object'
-                        },
-                        'type': {
-                            'type': 'string'
-                        },
-                        'version': {
-                            'type': 'string',
-                            'pattern': '[0-9]+.[0-9]+.[0-9]+'
-                        },
-                        'apiVersion': {
-                            'type': 'string',
-                        },
-                        'appVersion': {
-                            'type': 'string'
-                        },
-                        'kubeVersion': {
-                            'type': 'string'
-                        },
-                        'app_readme': {'type': 'string'},
-                        'detailed_readme': {'type': 'string'},
-                        'changelog': {'type': ['string', 'null']},
-                        'maintainers': {
-                            'type': 'array',
-                            'items': {
-                                'type': 'object',
-                                'properties': {
-                                    'name': {'type': 'string'},
-                                    'url': {'type': ['string', 'null']},
-                                    'email': {'type': 'string'},
-                                },
-                                'required': ['name', 'email'],
-                            }
-                        },
-                        'dependencies': {
-                            'type': 'array',
-                            'items': {
-                                'type': 'object',
-                                'properties': {
-                                    'name': {'type': 'string'},
-                                    'repository': {'type': 'string'},
-                                    'version': {'type': 'string'}
-                                }
-                            }
-                        },
-                        'home': {'type': 'string'},
-                        'icon': {'type': 'string'},
-                        'sources': {
-                            'type': 'array',
-                            'items': {
-                                'type': 'string'
-                            }
-                        },
-                        'keywords': {
-                            'type': 'array',
-                            'items': {
-                                'type': 'string'
-                            }
-                        },
-                    }
-                },
+                'app_metadata': APP_METADATA_JSON_SCHEMA,
                 'schema': {
                     'type': 'object',
                     'properties': {
