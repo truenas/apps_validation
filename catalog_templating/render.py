@@ -24,7 +24,7 @@ def render_templates(app_version_path: str, test_values: dict) -> dict:
 
     template_libs = import_library(os.path.join(template_path, 'library'), app_details)
     file_loader = FileSystemLoader(template_path)
-    env = Environment(loader=file_loader)
+    env = Environment(loader=file_loader, extensions=["jinja2.ext.do", "jinja2.ext.loopcontrols", "jinja2.ext.debug"])
     rendered_templates = {}
     for to_render_file in filter(
         lambda f: f.is_file() and f.name.endswith('.yaml'), pathlib.Path(template_path).iterdir()
