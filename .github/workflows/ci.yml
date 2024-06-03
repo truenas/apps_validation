@@ -6,7 +6,7 @@ jobs:
   build-deb:
     runs-on: ubuntu-latest
     container:
-      image: ixsystems/apps_validation:latest
+      image: ghcr.io/truenas/apps_validation:latest
 
     steps:
       - name: Checkout
@@ -29,6 +29,6 @@ jobs:
 
       - uses: actions/upload-artifact@v1
         with:
-          name: py-catalog-validation
+          name: py-apps-validation
           path: artifacts
         if: success()
