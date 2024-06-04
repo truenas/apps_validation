@@ -1,0 +1,36 @@
+name: CI
+
+on: [push]
+
+jobs:
+  build-deb:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/truenas/apps_validation:latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+
+      - name: Install Deps
+        run: sudo apt update && sudo apt install -y python3-git python3-jinja2
+      - name: Build deb package
+        run: >
+          dpkg-buildpackage
+          -B
+          --no-sign
+          -jauto
+
+      - name: Create artifacts dir
+        run: mkdir artifacts
+        if: success()
+
+      - name: Move artifacts
+        run: mv ../*.deb artifacts
+        if: success()
+
+      - uses: actions/upload-artifact@v1
+        with:
+          name: py-apps-validation
+          path: artifacts
+        if: success()
