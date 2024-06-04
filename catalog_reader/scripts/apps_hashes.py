@@ -2,7 +2,6 @@
 import argparse
 import os
 import pathlib
-import ruamel.yaml
 import shutil
 import yaml
 
@@ -10,10 +9,6 @@ from apps_exceptions import CatalogDoesNotExist, ValidationErrors
 from catalog_reader.dev_directory import get_ci_development_directory
 from catalog_reader.library import get_hashes_of_base_lib_versions
 from catalog_reader.names import get_library_path, get_library_hashes_path, get_base_library_dir_name_from_version
-
-
-YAML = ruamel.yaml.YAML()
-YAML.indent(mapping=2, sequence=4, offset=2)
 
 
 def update_catalog_hashes(catalog_path: str) -> None:
@@ -54,7 +49,7 @@ def update_catalog_hashes(catalog_path: str) -> None:
                 continue
 
             with open(str(app_metadata_file), 'r') as f:
-                app_config = YAML.load(f)
+                app_config = yaml.safe_load(f.read())
 
             if (lib_version := app_config.get('lib_version')) and lib_version not in hashes:
                 print(
@@ -74,7 +69,7 @@ def update_catalog_hashes(catalog_path: str) -> None:
 
             app_config['lib_version_hash'] = hashes[lib_version]
             with open(str(app_metadata_file), 'w') as f:
-                YAML.dump(app_config, f)
+                yaml.safe_dump(app_config)
 
             print(f'[\033[92mOK\x1B[0m]\tUpdated library hash for {app_dir.name!r} in {train_dir.name}')
 
