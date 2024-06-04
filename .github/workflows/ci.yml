@@ -12,6 +12,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v1
 
+      - name: Install Deps
+        run: sudo apt update && sudo apt install -y python3-git python3-jinja2
       - name: Build deb package
         run: >
           dpkg-buildpackage
