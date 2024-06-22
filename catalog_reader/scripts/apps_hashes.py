@@ -69,7 +69,7 @@ def update_catalog_hashes(catalog_path: str) -> None:
 
             app_config['lib_version_hash'] = hashes[lib_version]
             with open(str(app_metadata_file), 'w') as f:
-                yaml.safe_dump(app_config)
+                f.write(yaml.safe_dump(app_config))
 
             print(f'[\033[92mOK\x1B[0m]\tUpdated library hash for {app_dir.name!r} in {train_dir.name}')
 
