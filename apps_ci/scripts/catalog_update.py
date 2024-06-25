@@ -103,6 +103,9 @@ def publish_updated_apps(catalog_path: str) -> None:
 
             dev_item_yaml_path = os.path.join(dev_app_path, 'item.yaml')
             publish_item_yaml_path = os.path.join(publish_app_path, 'item.yaml')
+            if os.path.exists(publish_app_version_path):
+                continue
+
             shutil.copy(dev_item_yaml_path, publish_item_yaml_path)
             shutil.copytree(dev_app_path, publish_app_version_path)
 
