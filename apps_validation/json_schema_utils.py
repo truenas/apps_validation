@@ -50,8 +50,8 @@ APP_METADATA_JSON_SCHEMA = {
                 'properties': {
                     'description': {'type': 'string'},
                     'gid': {'type': 'integer'},
-                    'groupName': {'type': 'string'},
-                    'userName': {'type': 'string'},
+                    'group_name': {'type': 'string'},
+                    'user_name': {'type': 'string'},
                     'uid': {'type': 'integer'},
                 },
                 'required': ['description'],
@@ -74,7 +74,7 @@ APP_METADATA_JSON_SCHEMA = {
                 'type': 'object',
                 'properties': {
                     'description': {'type': 'string'},
-                    'hostPath': {'type': 'string'},
+                    'host_path': {'type': 'string'},
                 },
                 'required': ['description', 'hostPath'],
             },
