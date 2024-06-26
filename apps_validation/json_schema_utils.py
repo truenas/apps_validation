@@ -76,7 +76,7 @@ APP_METADATA_JSON_SCHEMA = {
                     'description': {'type': 'string'},
                     'host_path': {'type': 'string'},
                 },
-                'required': ['description', 'hostPath'],
+                'required': ['description', 'host_path'],
             },
         },
     },
