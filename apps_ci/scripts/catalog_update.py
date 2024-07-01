@@ -76,7 +76,7 @@ def get_apps_to_publish(catalog_path: str) -> dict:
                 continue
 
             app_current_version = get_app_version(app_path)
-            if version_has_been_bumped(os.path.join(catalog_path, train_name, app_name), app_current_version):
+            if version_has_been_bumped(os.path.join(catalog_path, 'trains', train_name, app_name), app_current_version):
                 to_publish_apps[train_name].append({'name': app_name, 'version': app_current_version})
 
     return to_publish_apps
@@ -103,8 +103,6 @@ def publish_updated_apps(catalog_path: str) -> None:
 
             dev_item_yaml_path = os.path.join(dev_app_path, 'item.yaml')
             publish_item_yaml_path = os.path.join(publish_app_path, 'item.yaml')
-            if os.path.exists(publish_app_version_path):
-                continue
 
             shutil.copy(dev_item_yaml_path, publish_item_yaml_path)
             shutil.copytree(dev_app_path, publish_app_version_path)
