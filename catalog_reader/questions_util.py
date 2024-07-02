@@ -16,7 +16,7 @@ ACL_QUESTION = [
         'schema': {
             'type': 'list',
             'items': [{
-                'variable': 'aclEntry',
+                'variable': 'acl_entry',
                 'label': 'ACL Entry',
                 'schema': {
                     'type': 'dict',
