@@ -82,11 +82,11 @@ def normalize_question(question: dict, version_data: dict, context: dict) -> Non
             ]
         elif ref == 'normalize/acl':
             data['attrs'] = ACL_QUESTION
-        elif ref == 'normalize/ixVolume':
-            if schema['type'] == 'dict' and any(i['variable'] == 'aclEntries' for i in schema['attrs']):
-                # get index of aclEntries from attrs
-                acl_index = next(i for i, v in enumerate(schema['attrs']) if v['variable'] == 'aclEntries')
-                # insert acl question before aclEntries
+        elif ref == 'normalize/ix_volume':
+            if schema['type'] == 'dict' and any(i['variable'] == 'acl_entries' for i in schema['attrs']):
+                # get index of acl_entries from attrs
+                acl_index = next(i for i, v in enumerate(schema['attrs']) if v['variable'] == 'acl_entries')
+                # insert acl question before acl_entries
                 schema['attrs'][acl_index]['schema']['attrs'] = IX_VOLUMES_ACL_QUESTION
 
     schema.update(data)

@@ -16,7 +16,7 @@ ACL_QUESTION = [
         'schema': {
             'type': 'list',
             'items': [{
-                'variable': 'aclEntry',
+                'variable': 'acl_entry',
                 'label': 'ACL Entry',
                 'schema': {
                     'type': 'dict',
@@ -80,7 +80,7 @@ ACL_QUESTION = [
         },
     },
 ]
-CUSTOM_PORTALS_KEY = 'iXPortals'
+CUSTOM_PORTALS_KEY = 'iX_portals'
 IX_VOLUMES_ACL_QUESTION = [
     {
         'variable': 'path',
