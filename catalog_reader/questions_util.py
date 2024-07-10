@@ -80,7 +80,7 @@ ACL_QUESTION = [
         },
     },
 ]
-CUSTOM_PORTALS_KEY = 'iX_portals'
+CUSTOM_PORTALS_KEY = 'ix_portals'
 IX_VOLUMES_ACL_QUESTION = [
     {
         'variable': 'path',
