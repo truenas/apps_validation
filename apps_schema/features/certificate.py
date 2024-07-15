@@ -11,5 +11,5 @@ class CertificateFeature(BaseFeature):
 
 class CertificateAuthorityFeature(BaseFeature):
 
-    NAME = 'definitions/certificateAuthority'
+    NAME = 'definitions/certificate_authority'
     VALID_SCHEMAS = [IntegerSchema]

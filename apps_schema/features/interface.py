@@ -4,7 +4,7 @@ from .base import BaseFeature
 
 
 class NormalizeInterfaceConfiguration(BaseFeature):
-    NAME = 'normalize/interfaceConfiguration'
+    NAME = 'normalize/interface_configuration'
     VALID_SCHEMAS = [DictSchema]
 
 
