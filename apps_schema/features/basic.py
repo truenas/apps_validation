@@ -5,7 +5,7 @@ from .base import BaseFeature
 
 class DefinitionGPUConfigurationFeature(BaseFeature):
 
-    NAME = 'definitions/gpuConfiguration'
+    NAME = 'definitions/gpu_configuration'
     VALID_SCHEMAS = [DictSchema]
 
 

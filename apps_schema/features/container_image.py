@@ -5,7 +5,7 @@ from .base import BaseFeature
 
 class ContainerImageFeature(BaseFeature):
 
-    NAME = 'validations/containerImage'
+    NAME = 'validations/container_image'
     VALID_SCHEMAS = [DictSchema]
 
     def _validate(self, verrors, schema_obj, schema_str):
