@@ -65,7 +65,7 @@ def normalize_question(question: dict, version_data: dict, context: dict) -> Non
                 {'value': i['id'], 'description': f'{i["name"]!r} Certificate'}
                 for i in context['certificates']
             ]
-        elif ref == 'definitions/certificateAuthority':
+        elif ref == 'definitions/certificate_authority':
             get_cert_ca_options(schema, data, {'value': None, 'description': 'No Certificate Authority'})
             data['enum'] += [{'value': None, 'description': 'No Certificate Authority'}] + [
                 {'value': i['id'], 'description': f'{i["name"]!r} Certificate Authority'}
