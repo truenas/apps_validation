@@ -65,7 +65,7 @@ def normalize_question(question: dict, version_data: dict, context: dict) -> Non
                 {'value': i['id'], 'description': f'{i["name"]!r} Certificate'}
                 for i in context['certificates']
             ]
-        elif ref == 'definitions/certificateAuthority':
+        elif ref == 'definitions/certificate_authority':
             get_cert_ca_options(schema, data, {'value': None, 'description': 'No Certificate Authority'})
             data['enum'] += [{'value': None, 'description': 'No Certificate Authority'}] + [
                 {'value': i['id'], 'description': f'{i["name"]!r} Certificate Authority'}
@@ -75,10 +75,7 @@ def normalize_question(question: dict, version_data: dict, context: dict) -> Non
             data['enum'] = [{'value': None, 'description': 'No Port Selected'}] if schema.get('null') else []
             data['enum'] += [
                 {'value': i, 'description': f'{i!r} Port'}
-                for i in filter(
-                    lambda p: schema.get('min', 9000) <= p <= schema.get('max', 65534),
-                    context['unused_ports']
-                )
+                for i in context['unused_ports']
             ]
         elif ref == 'normalize/acl':
             data['attrs'] = ACL_QUESTION
