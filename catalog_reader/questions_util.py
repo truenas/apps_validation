@@ -91,7 +91,26 @@ IX_VOLUMES_ACL_QUESTION = [
             'hidden': True
         }
     },
-    ACL_QUESTION[1]
+    ACL_QUESTION[1],
+    {
+        'variable': 'options',
+        'label': 'ACL Options',
+        'schema': {
+            'type': 'dict',
+            'hidden': True,
+            'attrs': [
+                {
+                    'variable': 'force',
+                    'label': 'Force Flag',
+                    'description': 'Enabling `Force` applies ACL even if the path has existing data',
+                    'schema': {
+                        'type': 'boolean',
+                        'default': True,
+                    }
+                },
+            ],
+        },
+    },
 ]
 
 
