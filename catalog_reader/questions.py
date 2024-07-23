@@ -57,8 +57,11 @@ def normalize_question(question: dict, version_data: dict, context: dict) -> Non
                 'enum': [{'value': t, 'description': f'{t!r} timezone'} for t in sorted(context['timezones'])],
                 'default': context['system.general.config']['timezone']
             })
-        elif ref == 'definitions/nodeIP':
-            data['default'] = context['node_ip']
+        elif ref == 'definitions/node_bind_ip':
+            data.update({
+                'default': '0.0.0.0',
+                'enum': [{'value': i, 'description': f'{i!r} IP Address'} for i in context['ip_choices']],
+            })
         elif ref == 'definitions/certificate':
             get_cert_ca_options(schema, data, {'value': None, 'description': 'No Certificate'})
             data['enum'] += [
