@@ -31,10 +31,9 @@ def get_app_details_base(retrieve_complete_item_keys: bool = True) -> dict:
 
 def get_default_questions_context() -> dict:
     return {
-        'nic_choices': [],
         'gpus': {},
         'timezones': {'Asia/Saigon': 'Asia/Saigon', 'Asia/Damascus': 'Asia/Damascus'},
-        'node_ip': '192.168.0.10',
+        'ip_choices': {'192.168.0.10': '192.168.0.10', '0.0.0.0': '0.0.0.0'},
         'certificates': [],
         'certificate_authorities': [],
         'system.general.config': {'timezone': 'America/Los_Angeles'},
