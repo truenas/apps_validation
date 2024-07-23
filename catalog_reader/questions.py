@@ -35,7 +35,42 @@ def normalize_question(question: dict, version_data: dict, context: dict) -> Non
             data['enum'] = [
                 {'value': i, 'description': f'{i!r} Interface'} for i in context['nic_choices']
             ]
-        elif ref == 'definitions/gpuConfiguration':
+        elif ref == 'definitions/gpu_configuration':
+            # How we will go about this is the following:
+            # If user has only nvidia gpus and we are able to retrieve nvidia gpu's uuid
+            # we will allow user to select any of the available nvidia gpu
+            # If user has any other GPU apart from nvidia vendor, he will have to passthrough all available gpus
+            # If user has nvidia + other gpu's, then we can show a boolean or a string enum
+            # highlighting the nvidia bits
+            gpu_choices = {entry for entry in context['gpu_choices'] if entry['gpu_details']['available_to_host']}
+            show_all_gpus_flag = any(
+                g['vendor'] != 'NVIDIA' or not g['vendor_specific_config'].get('uuid') for g in gpu_choices
+            )
+            show_nvidia_selection = any(
+                g['vendor'] == 'NVIDIA' and g['vendor_specific_config'].get('uuid') for g in gpu_choices
+            )
+            data['attrs'] = [
+                {
+                    'variable': 'use_all_gpus',
+                    'label': 'Passthrough available GPUs',
+                    'description': 'Please select this option to passthrough all available GPUs to the app',
+                    'schema': {
+                        'type': 'boolean',
+                        'default': False,
+                        'hidden': not show_all_gpus_flag,
+                    }
+                },
+                {
+                    'variable': 'nvidia_gpu_selection',
+                    'label': 'Select NVIDIA GPU',
+                    'description': 'Please select the NVIDIA GPU to passthrough to the app',
+                    'schema': {
+                        'type': 'dict',
+                        'attrs': []
+                    },
+                }
+            ]
+
             data['attrs'] = [
                 {
                     'variable': gpu,
