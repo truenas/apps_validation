@@ -8,6 +8,7 @@ from catalog_reader.app_utils import get_app_basic_details, get_values
 from catalog_templating.render import render_templates
 
 from .names import get_test_values_dir_path, get_test_values_from_test_dir
+from .portals import validate_portals_and_notes
 
 
 RE_APP_VERSION = re.compile(r'^v\d+_\d+_\d+$')
@@ -56,6 +57,7 @@ def validate_template_rendering(app_path: str, schema: str, verrors: ValidationE
 
     verrors.check()
 
+    rendered_config = {}
     for test_values_file in test_values_files:
         try:
             rendered = render_templates(
@@ -69,12 +71,18 @@ def validate_template_rendering(app_path: str, schema: str, verrors: ValidationE
             else:
                 for file_name, rendered_template in rendered.items():
                     try:
-                        yaml.safe_load(rendered_template)
+                        rendered_config.update(yaml.safe_load(rendered_template))
                     except yaml.YAMLError as e:
                         verrors.add(
                             f'{schema}.{file_name}',
                             f'Failed to verify rendered template is a valid yaml file using {test_values_file!r}: {e}'
                         )
+
+        if rendered_config:
+            try:
+                validate_portals_and_notes(schema, rendered_config)
+            except ValidationErrors as ve:
+                verrors.extend(ve)
 
 
 def validate_library(app_path: str, schema: str, verrors: ValidationErrors) -> None:
