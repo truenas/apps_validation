@@ -52,8 +52,8 @@ def normalize_question(question: dict, version_data: dict, context: dict) -> Non
             data['attrs'] = [
                 {
                     'variable': 'use_all_gpus',
-                    'label': 'Passthrough available GPUs',
-                    'description': 'Please select this option to passthrough all available GPUs to the app',
+                    'label': 'Passthrough available (non-NVIDIA) GPUs',
+                    'description': 'Please select this option to passthrough all (non-NVIDIA) GPUs to the app',
                     'schema': {
                         'type': 'boolean',
                         'default': False,
