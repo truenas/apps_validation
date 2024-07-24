@@ -42,7 +42,7 @@ def normalize_question(question: dict, version_data: dict, context: dict) -> Non
             # If user has any other GPU apart from nvidia vendor, he will have to passthrough all available gpus
             # If user has nvidia + other gpu's, then we can show a boolean or a string enum
             # highlighting the nvidia bits
-            gpu_choices = {entry for entry in context['gpu_choices'] if entry['gpu_details']['available_to_host']}
+            gpu_choices = [entry for entry in context['gpu_choices'] if entry['gpu_details']['available_to_host']]
             show_all_gpus_flag = any(
                 g['vendor'] != 'NVIDIA' or not g['vendor_specific_config'].get('uuid') for g in gpu_choices
             )
@@ -62,31 +62,47 @@ def normalize_question(question: dict, version_data: dict, context: dict) -> Non
                 },
                 {
                     'variable': 'nvidia_gpu_selection',
-                    'label': 'Select NVIDIA GPU',
-                    'description': 'Please select the NVIDIA GPU to passthrough to the app',
+                    'label': 'Select NVIDIA GPU(s)',
+                    'description': 'Please select the NVIDIA GPU(s) to passthrough to the app',
                     'schema': {
                         'type': 'dict',
-                        'attrs': []
+                        'additional_attrs': True,
+                        'hidden': not show_nvidia_selection,
+                        'attrs': [
+                            {
+                                'variable': gpu['gpu_details']['addr']['pci_slot'],
+                                'label': gpu['description'],
+                                'description': f'NVIDIA gpu {gpu["vendor_specific_config"]["uuid"]}',
+                                'schema': {
+                                    'type': 'dict',
+                                    'attrs': [
+                                        {
+                                            'variable': 'uuid',
+                                            'schema': {
+                                                'type': 'string',
+                                                'default': gpu['vendor_specific_config']['uuid'],
+                                                'hidden': True,
+                                            }
+                                        },
+                                        {
+                                            'variable': 'use_gpu',
+                                            'label': 'Use this GPU',
+                                            'description': 'Use this GPU for the app',
+                                            'schema': {
+                                                'type': 'boolean',
+                                                'default': False,
+                                            }
+                                        }
+                                    ],
+                                }
+                            }
+                            for gpu in (gpu_choices if show_nvidia_selection else [])
+                            if gpu['vendor'] == 'NVIDIA' and gpu['vendor_specific_config'].get('uuid')
+                        ]
                     },
-                }
+                },
             ]
 
-            data['attrs'] = [
-                {
-                    'variable': gpu,
-                    'label': f'GPU Resource ({gpu})',
-                    'description': 'Please enter the number of GPUs to allocate',
-                    'schema': {
-                        'type': 'int',
-                        'max': int(quantity),
-                        'enum': [
-                            {'value': i, 'description': f'Allocate {i!r} {gpu} GPU'}
-                            for i in range(int(quantity) + 1)
-                        ],
-                        'default': 0,
-                    }
-                } for gpu, quantity in context['gpus'].items()
-            ]
         elif ref == 'definitions/timezone':
             data.update({
                 'enum': [{'value': t, 'description': f'{t!r} timezone'} for t in sorted(context['timezones'])],
