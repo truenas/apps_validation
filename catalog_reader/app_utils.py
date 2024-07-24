@@ -31,13 +31,13 @@ def get_app_details_base(retrieve_complete_item_keys: bool = True) -> dict:
 
 def get_default_questions_context() -> dict:
     return {
-        'gpus': {},
         'timezones': {'Asia/Saigon': 'Asia/Saigon', 'Asia/Damascus': 'Asia/Damascus'},
         'ip_choices': {'192.168.0.10': '192.168.0.10', '0.0.0.0': '0.0.0.0'},
         'certificates': [],
         'certificate_authorities': [],
         'system.general.config': {'timezone': 'America/Los_Angeles'},
         'unused_ports': [i for i in range(1025, 65535)],
+        'gpu_choices': {}
     }
 
 
