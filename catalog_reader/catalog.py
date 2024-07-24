@@ -41,6 +41,8 @@ def retrieve_trains_data(
     trains_to_traverse: list, job: typing.Any = None, questions_context: typing.Optional[dict] = None
 ) -> typing.Tuple[dict, set]:
     questions_context = questions_context or get_default_questions_context()
+    # Truncate unused_ports to reduce the size of app_versions.json
+    questions_context['unused_ports'] = questions_context['unused_ports'][:3]
     trains = {
         'stable': {},
         **{k: {} for k in trains_to_traverse},
