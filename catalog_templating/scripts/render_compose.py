@@ -16,7 +16,9 @@ def render_templates_from_path(app_path: str, values_file: str) -> None:
 
     verrors.check()
 
-    rendered_data = render_templates(app_path, get_values(values_file))
+    rendered_data = render_templates(
+        app_path, get_values(values_file) | get_values(os.path.join(app_path, 'ix_values.yaml'))
+    )
     write_template_yaml(app_path, rendered_data)
 
 
