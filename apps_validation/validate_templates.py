@@ -61,7 +61,9 @@ def validate_template_rendering(app_path: str, schema: str, verrors: ValidationE
     for test_values_file in test_values_files:
         try:
             rendered = render_templates(
-                app_path, get_values(os.path.join(get_test_values_dir_path(app_path), test_values_file))
+                app_path, get_values(os.path.join(get_test_values_dir_path(app_path), test_values_file)) | get_values(
+                    os.path.join(app_path, 'ix_values.yaml')
+                )
             )
         except Exception as e:
             verrors.add(schema, f'Failed to render templates using {test_values_file!r}: {e}')
