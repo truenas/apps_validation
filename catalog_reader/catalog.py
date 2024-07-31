@@ -8,11 +8,15 @@ from .app_utils import get_default_questions_context
 from .train_utils import get_train_path, is_train_valid
 
 
-def app_details(apps: dict, location: str, questions_context: typing.Optional[dict], app_key: str) -> dict:
+def app_details(
+    apps: dict, location: str, questions_context: typing.Optional[dict], app_key: str, normalize_questions: bool = True,
+) -> dict:
     train = apps[app_key]
     app = app_key.removesuffix(f'_{train}')
     app_location = os.path.join(get_train_path(location), train, app)
-    return get_app_details(app_location, questions_context, {'retrieve_versions': True})
+    return get_app_details(
+        app_location, questions_context, {'retrieve_versions': True, 'normalize_questions': normalize_questions},
+    )
 
 
 def retrieve_train_names(location: str, all_trains=True, trains_filter=None) -> list:
@@ -37,8 +41,8 @@ def get_apps_in_trains(trains_to_traverse: list, catalog_location: str) -> dict:
 
 
 def retrieve_trains_data(
-    apps: dict, catalog_location: str, preferred_trains: list,
-    trains_to_traverse: list, job: typing.Any = None, questions_context: typing.Optional[dict] = None
+    apps: dict, catalog_location: str, preferred_trains: list, trains_to_traverse: list, job: typing.Any = None,
+    questions_context: typing.Optional[dict] = None, normalize_questions: bool = True,
 ) -> typing.Tuple[dict, set]:
     questions_context = questions_context or get_default_questions_context()
     trains = {

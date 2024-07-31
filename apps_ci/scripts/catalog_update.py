@@ -26,7 +26,8 @@ def get_trains(location: str) -> typing.Tuple[dict, dict]:
     catalog_data = {}
     versions_data = {}
     for train_name, train_data in retrieve_trains_data(
-        get_apps_in_trains(trains_to_traverse, location), location, preferred_trains, trains_to_traverse
+        get_apps_in_trains(trains_to_traverse, location), location, preferred_trains, trains_to_traverse,
+        normalize_questions=False,
     )[0].items():
         catalog_data[train_name] = {}
         versions_data[train_name] = {}
