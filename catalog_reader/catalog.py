@@ -54,7 +54,9 @@ def retrieve_trains_data(
     total_apps = len(apps)
     with concurrent.futures.ProcessPoolExecutor(max_workers=(5 if total_apps > 10 else 2)) as exc:
         for index, result in enumerate(zip(apps, exc.map(
-            functools.partial(app_details, apps, catalog_location, questions_context),
+            functools.partial(
+                app_details, apps, catalog_location, questions_context, normalize_questions=normalize_questions
+            ),
             apps, chunksize=(10 if total_apps > 10 else 5)
         ))):
             app_key = result[0]
