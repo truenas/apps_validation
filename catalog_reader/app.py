@@ -19,7 +19,7 @@ ITEM_KEYS = ['icon_url']
 
 
 def get_app_details(
-    item_location: str, questions_context: typing.Optional[dict] = None, options: typing.Optional[dict] = None
+    item_location: str, questions_context: typing.Optional[dict] = None, options: typing.Optional[dict] = None,
 ) -> dict:
     catalog_path = item_location.rstrip('/').rsplit('/', 2)[0]
     item = item_location.rsplit('/', 1)[-1]
@@ -51,6 +51,7 @@ def get_app_details(
     item_data.update(get_app_details_impl(item_location, schema, questions_context, {
         'retrieve_latest_version': not retrieve_versions,
         'default_values_callable': options.get('default_values_callable'),
+        'normalize_questions': options.get('normalize_questions', True),
     }))
     unhealthy_versions = []
     desired_keys_mapping = {
@@ -134,7 +135,11 @@ def get_app_details_impl(
 
         version_details.update({
             'healthy': True,
-            **get_app_version_details(version_details['location'], questions_context)
+            **get_app_version_details(
+                version_details['location'], questions_context, {
+                    'normalize_questions': options.get('normalize_questions', True),
+                },
+            )
         })
         if retrieve_latest_version:
             break
@@ -145,6 +150,7 @@ def get_app_details_impl(
 def get_app_version_details(
     version_path: str, questions_context: typing.Optional[dict], options: typing.Optional[dict] = None
 ) -> dict:
+    options = options or {}
     version_data = {'location': version_path, 'required_features': set()}
     for key, filename, parser in (
         ('app_metadata', 'app.yaml', yaml.safe_load),
@@ -160,13 +166,14 @@ def get_app_version_details(
 
     # We will normalise questions now so that if they have any references, we render them accordingly
     # like a field referring to available interfaces on the system
-    normalize_questions(version_data, questions_context or get_default_questions_context())
+    if options.get('normalize_questions', True):
+        normalize_questions(version_data, questions_context or get_default_questions_context())
 
     version_data.update({
         'supported': version_supported(version_data),
         'required_features': list(version_data['required_features']),
     })
-    if options and options.get('default_values_callable'):
+    if options.get('default_values_callable'):
         version_data['values'] = options['default_values_callable'](version_data)
 
     app_metadata = version_data['app_metadata']
