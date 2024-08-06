@@ -1,3 +1,22 @@
+APP_ITEM_JSON_SCHEMA = {
+    'type': 'object',
+    'properties': {
+        'categories': {
+            'type': 'array',
+            'items': {'type': 'string'},
+        },
+        'tags': {
+            'type': 'array',
+            'items': {'type': 'string'},
+        },
+        'screenshots': {
+            'type': 'array',
+            'items': {'type': 'string'},
+        },
+        'icon_url': {'type': 'string'},
+    },
+    'required': ['categories'],
+}
 APP_METADATA_JSON_SCHEMA = {
     'type': 'object',
     'properties': {
@@ -78,6 +97,14 @@ APP_METADATA_JSON_SCHEMA = {
                 },
                 'required': ['description', 'host_path'],
             },
+        },
+        'screenshots': {
+            'type': 'array',
+            'items': {'type': 'string'},
+        },
+        'categories': {
+            'type': 'array',
+            'items': {'type': 'string'},
         },
     },
     'required': [

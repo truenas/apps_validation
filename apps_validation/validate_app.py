@@ -2,11 +2,13 @@ import os
 import json
 import yaml
 
+from jsonschema import validate as json_schema_validate, ValidationError as JsonValidationError
+
 from apps_ci.names import CACHED_VERSION_FILE_NAME
 from apps_exceptions import ValidationErrors
 
+from .json_schema_utils import APP_ITEM_JSON_SCHEMA
 from .validate_app_version import validate_catalog_item_version_data, validate_catalog_item_version
-from .utils import validate_key_value_types
 
 
 def validate_catalog_item(catalog_item_path: str, schema: str, train_name: str, validate_versions: bool = True):
@@ -37,12 +39,10 @@ def validate_catalog_item(catalog_item_path: str, schema: str, train_name: str, 
         with open(os.path.join(catalog_item_path, 'item.yaml'), 'r') as f:
             item_config = yaml.safe_load(f.read())
 
-        # TODO: Remove validate key value type function and have json schemas for all of this
-        validate_key_value_types(
-            item_config, (
-                ('categories', list), ('tags', list, False), ('screenshots', list, False),
-            ), verrors, f'{schema}.item_config'
-        )
+        try:
+            json_schema_validate(item_config, APP_ITEM_JSON_SCHEMA)
+        except JsonValidationError as e:
+            verrors.add(f'{schema}.item_config', f'Invalid format specified for item configuration: {e}')
 
     cached_version_file_path = os.path.join(catalog_item_path, CACHED_VERSION_FILE_NAME)
     if os.path.exists(cached_version_file_path):
