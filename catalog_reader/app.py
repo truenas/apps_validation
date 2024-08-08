@@ -177,7 +177,7 @@ def get_app_version_details(
         version_data['values'] = options['default_values_callable'](version_data)
 
     app_metadata = version_data['app_metadata']
-    # TODO: See if this needs to change for our adaptation of ix-chart
+    # TODO: See if this needs to change for our adaptation of ix-app
     version_data.update({
         'human_version': get_human_version(app_metadata['app_version'], app_metadata['version']),
         'version': app_metadata['version'],
