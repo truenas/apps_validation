@@ -128,7 +128,7 @@ def normalize_question(question: dict, version_data: dict, context: dict) -> Non
         elif ref == 'definitions/port':
             data.update({
                 'min': 1,
-                'max': 65534,
+                'max': 65535,
             })
         elif ref == 'normalize/acl':
             data['attrs'] = ACL_QUESTION
