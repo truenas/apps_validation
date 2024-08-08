@@ -1,3 +1,6 @@
+from datetime import datetime
+
+
 APP_VERSION = 'custom'
 VERSION = '1.0.0'
 
@@ -27,4 +30,6 @@ def get_version_details() -> dict:
         'supported': True,
         'healthy': True,
         'healthy_error': None,
+        'location': None,
+        'last_update': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
     }
