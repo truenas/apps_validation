@@ -126,11 +126,10 @@ def normalize_question(question: dict, version_data: dict, context: dict) -> Non
                 for i in context['certificate_authorities']
             ]
         elif ref == 'definitions/port':
-            data['enum'] = [{'value': None, 'description': 'No Port Selected'}] if schema.get('null') else []
-            data['enum'] += [
-                {'value': i, 'description': f'{i!r} Port'}
-                for i in context['unused_ports']
-            ]
+            data.update({
+                'min': 1,
+                'max': 65535,
+            })
         elif ref == 'normalize/acl':
             data['attrs'] = ACL_QUESTION
         elif ref == 'normalize/ix_volume':
