@@ -152,15 +152,17 @@ def get_app_version_details(
 ) -> dict:
     options = options or {}
     version_data = {'location': version_path, 'required_features': set()}
-    for key, filename, parser in (
-        ('app_metadata', 'app.yaml', yaml.safe_load),
-        ('schema', 'questions.yaml', yaml.safe_load),
-        ('readme', 'README.md', markdown.markdown),
-        ('changelog', 'CHANGELOG.md', markdown.markdown),
+    for key, filename, parser, post_processor in (
+        ("app_metadata", "app.yaml", yaml.safe_load, None),
+        ("schema", "questions.yaml", yaml.safe_load, None),
+        ("readme", "README.md", markdown.markdown, lambda x: x.replace('\n', ' ')),
+        ("changelog", "CHANGELOG.md", markdown.markdown, None),
     ):
         if os.path.exists(os.path.join(version_path, filename)):
             with open(os.path.join(version_path, filename), 'r') as f:
                 version_data[key] = parser(f.read())
+                if post_processor:
+                    version_data[key] = post_processor(version_data[key])
         else:
             version_data[key] = None
 
