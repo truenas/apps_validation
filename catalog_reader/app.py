@@ -147,20 +147,26 @@ def get_app_details_impl(
     return item_data
 
 
+def new_line_to_space(text: str) -> str:
+    return text.replace('\n', ' ')
+
+
 def get_app_version_details(
     version_path: str, questions_context: typing.Optional[dict], options: typing.Optional[dict] = None
 ) -> dict:
     options = options or {}
     version_data = {'location': version_path, 'required_features': set()}
-    for key, filename, parser in (
-        ('app_metadata', 'app.yaml', yaml.safe_load),
-        ('schema', 'questions.yaml', yaml.safe_load),
-        ('readme', 'README.md', markdown.markdown),
-        ('changelog', 'CHANGELOG.md', markdown.markdown),
+    for key, filename, parser, post_processor in (
+        ('app_metadata', 'app.yaml', yaml.safe_load, None),
+        ('schema', 'questions.yaml', yaml.safe_load, None),
+        ('readme', 'README.md', markdown.markdown, new_line_to_space),
+        ('changelog', 'CHANGELOG.md', markdown.markdown, new_line_to_space),
     ):
         if os.path.exists(os.path.join(version_path, filename)):
             with open(os.path.join(version_path, filename), 'r') as f:
                 version_data[key] = parser(f.read())
+                if post_processor:
+                    version_data[key] = post_processor(version_data[key])
         else:
             version_data[key] = None
 
