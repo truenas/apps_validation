@@ -68,14 +68,14 @@ def update_catalog_hashes(catalog_path: str, bump_type: str | None = None) -> No
             catalog_base_lib_dir_path = os.path.join(library_dir.as_posix(), lib_version)
             shutil.copytree(catalog_base_lib_dir_path, app_base_lib_dir.as_posix())
 
-            if bump_type:
+            old_version = app_config["version"]
+            if bump_type and app_config['lib_version_hash'] != hashes[lib_version]:
                 if not is_valid_bump_type(bump_type):
                     print(
                         f'[\033[91mERROR\x1B[0m]\tInvalid bump type {bump_type!r}, '
                         f'skipping version bumping for {app_dir.name!r} in {train_dir.name}'
                     )
                 else:
-                    old_version = app_config["version"]
                     app_config["version"] = bump_version(old_version, bump_type)
                     rename_versioned_dir(old_version, app_config['version'], train_dir.name, app_dir)
 
@@ -85,7 +85,7 @@ def update_catalog_hashes(catalog_path: str, bump_type: str | None = None) -> No
 
             print(
                 f'[\033[92mOK\x1B[0m]\tUpdated library hash for {app_dir.name!r} in {train_dir.name}'
-                f' and bumped version from {old_version!r} to {app_config["version"]!r}'
+                f' and bumped version from {old_version!r} to {app_config["version"]!r}' if bump_type else ''
             )
 
 
