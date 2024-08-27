@@ -1,5 +1,3 @@
-import shutil
-
 from pathlib import Path
 from apps_exceptions import ValidationErrors
 
@@ -47,13 +45,13 @@ def rename_versioned_dir(version: str, new_version: str, train_name: str, app_di
     verrors.check()
 
     dir_base = app_dir / 'templates/library' / train_name / app_dir.name
-    curr_versioned_dir = dir_base / f'v{version}'
-    new_versioned_dir = dir_base / f'v{new_version}'
+    curr_versioned_dir = dir_base / f'v{version.replace(".", "_")}'
+    new_versioned_dir = dir_base / f'v{new_version.replace(".", "_")}'
     if not curr_versioned_dir.is_dir():
         return
 
     if new_versioned_dir.is_dir():
         verrors.add('version_bump', f'App {app_dir.name!r} library with version {new_version!r} already exists')
-    shutil.move(curr_versioned_dir, new_versioned_dir)
+    curr_versioned_dir.rename(new_versioned_dir)
 
     print(f'[\033[92mOK\x1B[0m]\tUpdated app {app_dir.name!r} library from {version!r} to {new_version!r}')

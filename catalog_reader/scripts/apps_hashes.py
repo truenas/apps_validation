@@ -75,15 +75,18 @@ def update_catalog_hashes(catalog_path: str, bump_type: str | None = None) -> No
                         f'skipping version bumping for {app_dir.name!r} in {train_dir.name}'
                     )
                 else:
-                    new_version = bump_version(app_config["version"], bump_type)
-                    rename_versioned_dir(app_config['version'], new_version, train_dir.name, app_dir)
-                    app_config['version'] = new_version
+                    old_version = app_config["version"]
+                    app_config["version"] = bump_version(old_version, bump_type)
+                    rename_versioned_dir(old_version, app_config['version'], train_dir.name, app_dir)
 
             app_config['lib_version_hash'] = hashes[lib_version]
             with open(str(app_metadata_file), 'w') as f:
                 f.write(yaml.safe_dump(app_config))
 
-            print(f'[\033[92mOK\x1B[0m]\tUpdated library hash for {app_dir.name!r} in {train_dir.name}')
+            print(
+                f'[\033[92mOK\x1B[0m]\tUpdated library hash for {app_dir.name!r} in {train_dir.name}'
+                f' and bumped version from {old_version!r} to {app_config["version"]!r}'
+            )
 
 
 def main():
