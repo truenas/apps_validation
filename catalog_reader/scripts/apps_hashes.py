@@ -8,7 +8,7 @@ import yaml
 from apps_exceptions import CatalogDoesNotExist, ValidationErrors
 from catalog_reader.dev_directory import get_ci_development_directory
 from catalog_reader.library import get_hashes_of_base_lib_versions
-from apps_ci.version_bump import is_valid_bump_type, bump_version, rename_versioned_dir
+from apps_ci.version_bump import bump_version, rename_versioned_dir
 from catalog_reader.names import get_library_path, get_library_hashes_path, get_base_library_dir_name_from_version
 
 
@@ -70,14 +70,8 @@ def update_catalog_hashes(catalog_path: str, bump_type: str | None = None) -> No
 
             old_version = app_config['version']
             if bump_type and app_config['lib_version_hash'] != hashes[lib_version]:
-                if not is_valid_bump_type(bump_type):
-                    print(
-                        f'[\033[91mERROR\x1B[0m]\tInvalid bump type {bump_type!r}, '
-                        f'skipping version bumping for {app_dir.name!r} in {train_dir.name}'
-                    )
-                else:
-                    app_config['version'] = bump_version(old_version, bump_type)
-                    rename_versioned_dir(old_version, app_config['version'], train_dir.name, app_dir)
+                app_config['version'] = bump_version(old_version, bump_type)
+                rename_versioned_dir(old_version, app_config['version'], train_dir.name, app_dir)
 
             app_config['lib_version_hash'] = hashes[lib_version]
             with open(str(app_metadata_file), 'w') as f:
@@ -92,7 +86,10 @@ def update_catalog_hashes(catalog_path: str, bump_type: str | None = None) -> No
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--path', help='Specify path of TrueNAS catalog')
-    parser.add_argument('--bump-type', default=None, help='Version bump type for app that the hash was updated')
+    parser.add_argument(
+        '--bump', nargs=1, type=str, choices=('major', 'minor', 'patch'), required=False,
+        help='Version bump type for app that the hash was updated'
+    )
 
     args = parser.parse_args()
     if not args.path:
