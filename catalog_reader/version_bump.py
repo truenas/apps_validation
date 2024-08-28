@@ -3,10 +3,7 @@ from apps_exceptions import ValidationErrors
 
 
 def is_valid_bump_type(bump: str) -> bool:
-    if bump in ('patch', 'minor', 'major'):
-        return True
-
-    return False
+    return bump in ('patch', 'minor', 'major')
 
 
 def is_valid_version(version: str) -> bool:
