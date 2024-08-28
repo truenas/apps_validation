@@ -7,7 +7,7 @@ def is_valid_bump_type(bump: str) -> bool:
 
 
 def is_valid_version(version: str) -> bool:
-    return isinstance(version, str) and version.count(".") == 2
+    return isinstance(version, str) and version.count('.') == 2
 
 
 def bump_version(version: str, bump: str) -> str:
