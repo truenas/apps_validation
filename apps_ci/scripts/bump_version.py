@@ -23,8 +23,6 @@ def update_app_version(app_path: str, bump_type: str) -> None:
     with open(str(app_metadata_file), 'r') as f:
         app_config = yaml.safe_load(f.read())
 
-    bump_type = map_renovate_bump_type(bump_type)
-
     old_version = app_config['version']
     app_config['version'] = bump_version(old_version, bump_type)
     rename_versioned_dir(old_version, app_config['version'], app_dir.parent.name, app_dir)
@@ -41,9 +39,8 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--path', help='Specify path of the app to be updated')
     parser.add_argument(
-        # We allow more choices here, as "Renovate" has more update types. We still map them to the ones we need.
-        '--bump', nargs=1, type=str, choices=('major', 'minor', 'patch', 'digest', 'pin', 'pinDigest'),
-        required=False, help='Version bump type for app that the hash was updated'
+        '--bump', type=map_renovate_bump_type,
+        help='Version bump type for app that the hash was updated'
     )
 
     args = parser.parse_args()
