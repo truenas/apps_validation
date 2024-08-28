@@ -2,10 +2,6 @@ from pathlib import Path
 from apps_exceptions import ValidationErrors
 
 
-def is_valid_bump_type(bump: str) -> bool:
-    return bump in ('patch', 'minor', 'major')
-
-
 def is_valid_version(version: str) -> bool:
     return isinstance(version, str) and version.count('.') == 2
 
