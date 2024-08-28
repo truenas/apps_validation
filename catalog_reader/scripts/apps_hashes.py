@@ -92,7 +92,7 @@ def update_catalog_hashes(catalog_path: str, bump_type: str | None = None) -> No
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--path', help='Specify path of TrueNAS catalog')
-    parser.add_argument('--bump', default=None, help='Bump type for app that the hash was updated')
+    parser.add_argument('--bump-type', default=None, help='Version bump type for app that the hash was updated')
 
     args = parser.parse_args()
     if not args.path:
