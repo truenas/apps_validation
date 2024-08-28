@@ -5,7 +5,7 @@ import pathlib
 import yaml
 
 from apps_exceptions import AppDoesNotExist, ValidationErrors
-from apps_ci.version_bump import is_valid_bump_type, map_renovate_bump_type, bump_version, rename_versioned_dir
+from apps_ci.version_bump import map_renovate_bump_type, bump_version, rename_versioned_dir
 
 
 def update_app_version(app_path: str, bump_type: str) -> None:
@@ -24,10 +24,6 @@ def update_app_version(app_path: str, bump_type: str) -> None:
         app_config = yaml.safe_load(f.read())
 
     bump_type = map_renovate_bump_type(bump_type)
-    if not is_valid_bump_type(bump_type):
-        verrors.add('app_metadata', f'Invalid bump type {bump_type!r}')
-
-    verrors.check()
 
     old_version = app_config['version']
     app_config['version'] = bump_version(old_version, bump_type)
