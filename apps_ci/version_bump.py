@@ -4,15 +4,7 @@ from apps_exceptions import AppDoesNotExist, ValidationErrors
 
 
 def map_renovate_bump_type(bump: str) -> str:
-    if bump in ('patch', 'minor', 'major'):
-        return bump
-
-    if bump in ('digest', 'pin', 'pinDigest'):
-        return 'patch'
-
-    # There are few other types, but we should not proceed with them.
-    # For example: rollback, replacement
-    raise ValueError(f'Invalid bump type {bump!r}')
+    return bump if bump in ('patch', 'minor', 'major') else 'patch'
 
 
 def is_valid_version(version: str) -> bool:

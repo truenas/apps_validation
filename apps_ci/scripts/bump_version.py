@@ -40,7 +40,11 @@ def update_app_version(app_path: str, bump_type: str) -> None:
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--path', help='Specify path of the app to be updated')
-    parser.add_argument('--bump', help='Bump type for app that the hash was updated')
+    parser.add_argument(
+        # We allow more choices here, as "Renovate" has more update types. We still map them to the ones we need.
+        '--bump', nargs=1, type=str, choices=('major', 'minor', 'patch', 'digest', 'pin', 'pinDigest'),
+        required=False, help='Version bump type for app that the hash was updated'
+    )
 
     args = parser.parse_args()
     if not args.path or not args.bump:
