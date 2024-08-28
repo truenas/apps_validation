@@ -5,7 +5,7 @@ import pathlib
 import yaml
 
 from apps_exceptions import AppDoesNotExist, ValidationErrors
-from catalog_reader.version_bump import is_valid_bump_type, map_renovate_bump_type, bump_version, rename_versioned_dir
+from apps_ci.version_bump import is_valid_bump_type, map_renovate_bump_type, bump_version, rename_versioned_dir
 
 
 def update_app_version(app_path: str, bump_type: str) -> None:
