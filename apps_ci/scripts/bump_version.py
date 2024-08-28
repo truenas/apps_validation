@@ -29,8 +29,8 @@ def update_app_version(app_path: str, bump_type: str) -> None:
 
     verrors.check()
 
-    old_version = app_config["version"]
-    app_config["version"] = bump_version(old_version, bump_type)
+    old_version = app_config['version']
+    app_config['version'] = bump_version(old_version, bump_type)
     rename_versioned_dir(old_version, app_config['version'], app_dir.parent.name, app_dir)
 
     with open(str(app_metadata_file), 'w') as f:
