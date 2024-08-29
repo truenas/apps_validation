@@ -45,8 +45,8 @@ def main():
         '--bump', type=map_renovate_bump_type,
         help='Version bump type for app that the hash was updated'
     )
-    parser.add_argument('--dep_name', help='Name of the dependency')
-    parser.add_argument('--dep_version', help='Version of the dependency')
+    parser.add_argument('--dep-name', help='Name of the dependency')
+    parser.add_argument('--dep-version', help='Version of the dependency')
 
     args = parser.parse_args()
     if not args.path or not args.bump:
