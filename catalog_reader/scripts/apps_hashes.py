@@ -77,10 +77,10 @@ def update_catalog_hashes(catalog_path: str, bump_type: str | None = None) -> No
             with open(str(app_metadata_file), 'w') as f:
                 f.write(yaml.safe_dump(app_config))
 
-            print(
-                f'[\033[92mOK\x1B[0m]\tUpdated library hash for {app_dir.name!r} in {train_dir.name}'
-                f' and bumped version from {old_version!r} to {app_config["version"]!r}' if bump_type else ''
-            )
+            message = f'[\033[92mOK\x1B[0m]\tUpdated library hash for {app_dir.name!r} in {train_dir.name}'
+            if bump_type:
+                message += f' and bumped version from {old_version!r} to {app_config["version"]!r}'
+            print(message)
 
 
 def main():
