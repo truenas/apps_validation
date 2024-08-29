@@ -1,4 +1,5 @@
 from pathlib import Path
+
 from apps_exceptions import AppDoesNotExist, ValidationErrors
 
 

@@ -5,10 +5,10 @@ import pathlib
 import shutil
 import yaml
 
+from apps_ci.version_bump import bump_version, rename_versioned_dir
 from apps_exceptions import CatalogDoesNotExist, ValidationErrors
 from catalog_reader.dev_directory import get_ci_development_directory
 from catalog_reader.library import get_hashes_of_base_lib_versions
-from apps_ci.version_bump import bump_version, rename_versioned_dir
 from catalog_reader.names import get_library_path, get_library_hashes_path, get_base_library_dir_name_from_version
 
 
