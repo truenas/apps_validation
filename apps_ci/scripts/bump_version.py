@@ -4,11 +4,12 @@ import os
 import pathlib
 import yaml
 
+from apps_ci.images_info import is_main_dep
 from apps_ci.version_bump import map_renovate_bump_type, bump_version, rename_versioned_dir
 from apps_exceptions import AppDoesNotExist, ValidationErrors
 
 
-def update_app_version(app_path: str, bump_type: str) -> None:
+def update_app_version(app_path: str, bump_type: str, dep_name: str, dep_version: str) -> None:
     if not os.path.exists(app_path):
         raise AppDoesNotExist(app_path)
 
@@ -25,6 +26,8 @@ def update_app_version(app_path: str, bump_type: str) -> None:
 
     old_version = app_config['version']
     app_config['version'] = bump_version(old_version, bump_type)
+    if dep_name and dep_version and is_main_dep(app_dir, dep_name):
+        app_config['app_version'] = dep_version
     rename_versioned_dir(old_version, app_config['version'], app_dir.parent.name, app_dir)
 
     with open(str(app_metadata_file), 'w') as f:
@@ -42,12 +45,14 @@ def main():
         '--bump', type=map_renovate_bump_type,
         help='Version bump type for app that the hash was updated'
     )
+    parser.add_argument('--dep_name', help='Name of the dependency')
+    parser.add_argument('--dep_version', help='Version of the dependency')
 
     args = parser.parse_args()
     if not args.path or not args.bump:
         parser.print_help()
     else:
-        update_app_version(args.path, args.bump)
+        update_app_version(args.path, args.bump, args.dep_name, args.dep_version)
 
 
 if __name__ == '__main__':
