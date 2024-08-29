@@ -4,8 +4,8 @@ import os
 import pathlib
 import yaml
 
-from apps_exceptions import AppDoesNotExist, ValidationErrors
 from apps_ci.version_bump import map_renovate_bump_type, bump_version, rename_versioned_dir
+from apps_exceptions import AppDoesNotExist, ValidationErrors
 
 
 def update_app_version(app_path: str, bump_type: str) -> None:
