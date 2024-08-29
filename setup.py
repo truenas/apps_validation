@@ -26,6 +26,7 @@ setup(
     platforms='any',
     entry_points={
         'console_scripts': [
+            'app_bump_version = apps_ci.scripts.bump_version:main',
             'apps_catalog_hash_generate = catalog_reader.scripts.apps_hashes:main',
             'apps_catalog_update = apps_ci.scripts.catalog_update:main',
             'apps_catalog_validate = apps_validation.scripts.catalog_validate:main',
