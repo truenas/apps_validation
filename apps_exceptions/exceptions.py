@@ -65,3 +65,8 @@ class ValidationErrors(ValidationException):
 class CatalogDoesNotExist(ValidationException):
     def __init__(self, path):
         super().__init__(f'Failed to find a catalog at {path}', errno.ENOENT)
+
+
+class AppDoesNotExist(ValidationException):
+    def __init__(self, path):
+        super().__init__(f'Failed to find an app at {path}', errno.ENOENT)

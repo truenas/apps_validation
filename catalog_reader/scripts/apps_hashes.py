@@ -5,13 +5,14 @@ import pathlib
 import shutil
 import yaml
 
+from apps_ci.version_bump import bump_version, rename_versioned_dir
 from apps_exceptions import CatalogDoesNotExist, ValidationErrors
 from catalog_reader.dev_directory import get_ci_development_directory
 from catalog_reader.library import get_hashes_of_base_lib_versions
 from catalog_reader.names import get_library_path, get_library_hashes_path, get_base_library_dir_name_from_version
 
 
-def update_catalog_hashes(catalog_path: str) -> None:
+def update_catalog_hashes(catalog_path: str, bump_type: str | None = None) -> None:
     if not os.path.exists(catalog_path):
         raise CatalogDoesNotExist(catalog_path)
 
@@ -67,22 +68,34 @@ def update_catalog_hashes(catalog_path: str) -> None:
             catalog_base_lib_dir_path = os.path.join(library_dir.as_posix(), lib_version)
             shutil.copytree(catalog_base_lib_dir_path, app_base_lib_dir.as_posix())
 
+            old_version = app_config['version']
+            if bump_type and app_config['lib_version_hash'] != hashes[lib_version]:
+                app_config['version'] = bump_version(old_version, bump_type)
+                rename_versioned_dir(old_version, app_config['version'], train_dir.name, app_dir)
+
             app_config['lib_version_hash'] = hashes[lib_version]
             with open(str(app_metadata_file), 'w') as f:
                 f.write(yaml.safe_dump(app_config))
 
-            print(f'[\033[92mOK\x1B[0m]\tUpdated library hash for {app_dir.name!r} in {train_dir.name}')
+            message = f'[\033[92mOK\x1B[0m]\tUpdated library hash for {app_dir.name!r} in {train_dir.name}'
+            if bump_type:
+                message += f' and bumped version from {old_version!r} to {app_config["version"]!r}'
+            print(message)
 
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--path', help='Specify path of TrueNAS catalog')
+    parser.add_argument(
+        '--bump', type=str, choices=('major', 'minor', 'patch'), required=False,
+        help='Version bump type for app that the hash was updated'
+    )
 
     args = parser.parse_args()
     if not args.path:
         parser.print_help()
     else:
-        update_catalog_hashes(args.path)
+        update_catalog_hashes(args.path, args.bump)
 
 
 if __name__ == '__main__':
