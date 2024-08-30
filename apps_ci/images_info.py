@@ -7,7 +7,7 @@ from apps_exceptions import AppDoesNotExist, ValidationErrors
 
 """
 ix_values.yaml example:
-"image" is the "main" container
+'image' is the 'main' container
 
 images:
   image:
@@ -26,13 +26,13 @@ def is_main_dep(app_dir: Path, dep_name: str) -> bool:
         return False
 
     verrors = ValidationErrors()
-    ix_values = app_dir / "ix_values.yaml"
+    ix_values = app_dir / 'ix_values.yaml'
     if not ix_values.is_file():
-        verrors.add("image_key", f"Missing ix_values.yaml file for {app_dir.name!r}")
+        verrors.add('image_key', f'Missing ix_values.yaml file for {app_dir.name!r}')
     verrors.check()
-    with open(ix_values, "r") as f:
+    with open(ix_values, 'r') as f:
         ix_values_data = yaml.safe_load(f.read())
-        if ix_values_data.get("images").get("image").get("repository") == dep_name:
+        if ix_values_data.get('images', {}).get('image', {}).get('repository', '') == dep_name:
             return True
 
     return False
