@@ -32,7 +32,7 @@ def is_main_dep(app_dir: Path, dep_name: str) -> bool:
     verrors.check()
     with open(ix_values, 'r') as f:
         ix_values_data = yaml.safe_load(f.read())
-        if ix_values_data.get('images', {}).get('image', {}).get('repository', '') == dep_name:
+        if ix_values_data.get('images', {}).get('image', {}).get('repository') == dep_name:
             return True
 
     return False
