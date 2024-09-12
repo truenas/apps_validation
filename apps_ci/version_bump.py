@@ -4,7 +4,7 @@ from apps_exceptions import AppDoesNotExist, ValidationErrors
 
 
 def map_renovate_bump_type(bump: str) -> str:
-    return bump if bump in ('patch', 'minor', 'major') else 'patch'
+    return bump if bump in ('patch', 'minor', 'major', '') else 'patch'
 
 
 def is_valid_version(version: str) -> bool:
