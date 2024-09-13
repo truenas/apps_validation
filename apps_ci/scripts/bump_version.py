@@ -51,7 +51,7 @@ def main():
     parser.add_argument('--dep-version', type=str, help='Version of the dependency')
 
     args = parser.parse_args()
-    if not args.path or not args.bump:
+    if not args.path:
         parser.print_help()
     else:
         update_app_version(args.path, args.bump, args.dep_name, args.dep_version)
