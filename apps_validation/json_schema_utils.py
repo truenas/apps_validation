@@ -17,6 +17,34 @@ APP_ITEM_JSON_SCHEMA = {
     },
     'required': ['categories'],
 }
+
+APP_CAPABILITIES_SCHEMA = {
+    'type': 'array',
+    'items': {
+        'type': 'object',
+        'properties': {
+            'description': {'type': 'string'},
+            'name': {'type': 'string'},
+        },
+        'required': ['description', 'name'],
+    },
+}
+
+APP_RUN_AS_CONTEXT_SCHEMA = {
+    'type': 'array',
+    'items': {
+        'type': 'object',
+        'properties': {
+            'description': {'type': 'string'},
+            'gid': {'type': 'integer'},
+            'group_name': {'type': 'string'},
+            'user_name': {'type': 'string'},
+            'uid': {'type': 'integer'},
+        },
+        'required': ['description'],
+    },
+}
+
 APP_METADATA_JSON_SCHEMA = {
     'type': 'object',
     'properties': {
@@ -62,31 +90,8 @@ APP_METADATA_JSON_SCHEMA = {
             'pattern': '[0-9]+.[0-9]+.[0-9]+',
         },
         'lib_version_hash': {'type': 'string'},
-        'run_as_context': {
-            'type': 'array',
-            'items': {
-                'type': 'object',
-                'properties': {
-                    'description': {'type': 'string'},
-                    'gid': {'type': 'integer'},
-                    'group_name': {'type': 'string'},
-                    'user_name': {'type': 'string'},
-                    'uid': {'type': 'integer'},
-                },
-                'required': ['description'],
-            },
-        },
-        'capabilities': {
-            'type': 'array',
-            'items': {
-                'type': 'object',
-                'properties': {
-                    'description': {'type': 'string'},
-                    'name': {'type': 'string'},
-                },
-                'required': ['description', 'name'],
-            },
-        },
+        'run_as_context': APP_RUN_AS_CONTEXT_SCHEMA,
+        'capabilities': APP_CAPABILITIES_SCHEMA,
         'host_mounts': {
             'type': 'array',
             'items': {
@@ -219,6 +224,8 @@ CATALOG_JSON_SCHEMA = {
                         'icon_url': {
                             'type': ['string', 'null'],
                         },
+                        'run_as_context': APP_RUN_AS_CONTEXT_SCHEMA,
+                        'capabilities': APP_CAPABILITIES_SCHEMA,
                         'maintainers': {
                             'type': 'array',
                             'items': {
