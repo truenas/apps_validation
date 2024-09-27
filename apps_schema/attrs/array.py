@@ -18,6 +18,6 @@ class ListSchema(BaseSchema):
 
     def json_schema(self):
         schema = super().json_schema()
-        schema['properties']['items'] = {'type': 'array'}
+        schema['properties']['items'] = {'type': 'array', 'maxItems': 1}
         schema['required'].append('items')
         return schema
