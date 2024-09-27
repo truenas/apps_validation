@@ -71,6 +71,11 @@ class BaseSchema(metaclass=SchemaMeta):
                 except ValidationErrors as e:
                     verrors.extend(e)
 
+        if 'default' in self._schema_data and 'enum' in self._schema_data:
+            enum_values = [enum['value'] for enum in self._schema_data['enum']]
+            if self._schema_data['default'] not in enum_values:
+                verrors.add(f'{schema}.default', 'Default value is not in enum list')
+
         verrors.check()
 
     def json_schema(self):
