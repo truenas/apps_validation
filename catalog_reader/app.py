@@ -71,6 +71,10 @@ def get_app_details(
                     item_data[desired_key] = app_metadata[desired_keys_mapping[desired_key]]
                 desired_keys_mapping.pop(desired_key)
 
+            # Use the human readable title from the app metadata if it is available
+            if app_metadata.get("title"):
+                item_data["title"] = app_metadata["title"]
+
             if not item_data['latest_version']:
                 item_data['latest_version'] = k
                 item_data['latest_app_version'] = app_metadata['app_version']
