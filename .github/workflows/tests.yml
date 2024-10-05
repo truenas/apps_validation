@@ -1,0 +1,28 @@
+name: Unit Tests
+
+on: [push]
+
+jobs:
+  run-unit-test:
+    name: Run Unit Tests
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/truenas/middleware:master
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+      
+      - name: Install dev-tools
+        run: |
+          install-dev-tools
+
+      - name: Install dependencies
+        run: |
+          apt install python3-pytest-mock -y
+
+      - name: Run Tests
+        run: |
+          PYTHONPATH=$(pwd) pytest apps_validation/pytest/unit/
+          PYTHONPATH=$(pwd) pytest catalog_reader/pytest/unit/
+          PYTHONPATH=$(pwd) pytest apps_schema/pytest/unit/
