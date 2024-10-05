@@ -176,7 +176,7 @@ def get_app_version_details(
 
     # We will normalise questions now so that if they have any references, we render them accordingly
     # like a field referring to available interfaces on the system
-    if options.get('normalize_questions', True):
+    if options.get('normalize_questions', True) and version_data.get('schema'):
         normalize_questions(version_data, questions_context or get_default_questions_context())
 
     version_data.update({
@@ -191,6 +191,6 @@ def get_app_version_details(
     version_data.update({
         'human_version': get_human_version(app_metadata['app_version'], app_metadata['version']),
         'version': app_metadata['version'],
-    })
+    }) if app_metadata else {}
 
     return version_data
