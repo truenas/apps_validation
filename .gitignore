@@ -11,3 +11,5 @@ catalog_reader/__pycache__/*
 catalog_reader/*/__pycache__/*
 catalog_templating/__pycache__/*
 catalog_templating/*/__pycache__/*
+__pycache__
+.coverage
