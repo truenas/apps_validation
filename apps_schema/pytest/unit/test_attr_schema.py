@@ -499,12 +499,56 @@ from apps_exceptions import ValidationErrors
         },
         False
     ),
+    (
+        'attribute',
+        False
+    ),
+    (
+        {
+            'type': 'string',
+            '$ref': [123]
+        },
+        False
+    ),
+    (
+        {
+            'type': 'text',
+        },
+        True
+    ),
+    (
+        {
+            'type': 'string',
+            'default': 'test',
+            'enum': [{
+                'value': 'test',
+                'description': 'test'
+            }]
+        },
+        True
+    ),
+    (
+        {
+            'type': 'string',
+            'default': 'invalid',
+            'enum': [{
+                'value': 'test',
+                'description': 'test'
+            }]
+        },
+        False
+    ),
 ])
 def test_schema_validation(schema, should_work):
+    schema_object = get_schema(schema)
     if not should_work:
-        with pytest.raises(ValidationErrors):
-            get_schema(schema).validate('')
+        if schema_object is None:
+            assert schema_object is None
+        else:
+            with pytest.raises(ValidationErrors):
+                schema_object.validate('')
     else:
-        assert get_schema(schema).validate('') is None
+        assert schema_object.validate('', schema) is None
+        assert schema_object.get_schema_str(schema) == str(schema)+"."
 
 # FIXME: Port validate_question test as well
