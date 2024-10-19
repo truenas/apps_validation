@@ -26,3 +26,4 @@ jobs:
           PYTHONPATH=$(pwd) pytest apps_validation/pytest/unit/
           PYTHONPATH=$(pwd) pytest catalog_reader/pytest/unit/
           PYTHONPATH=$(pwd) pytest apps_schema/pytest/unit/
+          PYTHONPATH=$(pwd) pytest apps_ci/pytest/unit/
