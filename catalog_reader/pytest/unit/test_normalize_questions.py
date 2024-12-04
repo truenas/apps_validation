@@ -224,6 +224,15 @@ GPU_DETAIL = [entry for entry in GPU_CHOICES if entry['gpu_details']['available_
                         }
                     },
                     {
+                        'variable': 'kfd_device_exists',
+                        'label': 'KFD Device Exists',
+                        'schema': {
+                            'type': 'boolean',
+                            'default': False,
+                            'hidden': True,
+                        }
+                    },
+                    {
                         'variable': 'nvidia_gpu_selection',
                         'label': 'Select NVIDIA GPU(s)',
                         'description': 'Please select the NVIDIA GPU(s) to passthrough to the app',
