@@ -61,7 +61,7 @@ def normalize_question(question: dict, version_data: dict, context: dict) -> Non
                     }
                 },
                 {
-                    'variable': 'kfd_device_exist',
+                    'variable': 'kfd_device_exists',
                     'label': 'KFD Device Exists',
                     'schema': {
                         'type': 'boolean',
