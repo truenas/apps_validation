@@ -61,6 +61,15 @@ def normalize_question(question: dict, version_data: dict, context: dict) -> Non
                     }
                 },
                 {
+                    'variable': 'kfd_device_exist',
+                    'label': 'KFD Device Exists',
+                    'schema': {
+                        'type': 'boolean',
+                        'default': False,
+                        'hidden': True,
+                    }
+                },
+                {
                     'variable': 'nvidia_gpu_selection',
                     'label': 'Select NVIDIA GPU(s)',
                     'description': 'Please select the NVIDIA GPU(s) to passthrough to the app',
