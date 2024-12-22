@@ -25,7 +25,7 @@ def render_templates(app_version_path: str, test_values: dict) -> dict:
     env = Environment(loader=file_loader, extensions=["jinja2.ext.do", "jinja2.ext.loopcontrols", "jinja2.ext.debug"])
     rendered_templates = {}
     with os.scandir(template_path) as sdir:
-        for i in filter(lambda x: x.is_file() and i.name.endswith('.yaml'), sdir):
+        for i in filter(lambda x: x.is_file() and x.name.endswith('.yaml'), sdir):
             # TODO: Let's look to adding dynamic filter support in the future
             # env.filters['make_capital'] = lambda st: st.upper()
             rendered_templates[i.name] = env.get_template(i.name).render(
