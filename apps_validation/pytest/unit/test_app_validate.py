@@ -3,6 +3,7 @@ import pytest
 from apps_exceptions import ValidationErrors
 from apps_validation.validate_app_version import WANTED_FILES_IN_ITEM_VERSION, validate_catalog_item_version
 from apps_validation.validate_app import validate_catalog_item
+from apps_validation.validate_migrations import validate_migration_config
 from apps_validation.validate_questions import validate_questions_yaml, validate_variable_uniqueness
 from apps_validation.validate_train import validate_train_structure
 
@@ -306,7 +307,7 @@ def test_validate_catalog_item(mocker, catalog_path, test_yaml, train, item_yaml
             validate_catalog_item(catalog_path, 'test_schema', train)
 
 
-@pytest.mark.parametrize('version_path ,app_yaml, schema, required_files, should_work', [
+@pytest.mark.parametrize('version_path, app_yaml, schema, required_files, should_work', [
     (
         '/mnt/mypool/ix-applications/catalogs/github_com_truenas_charts_git_master/charts/storj/1.0.4',
         '''
@@ -385,6 +386,7 @@ def test_validate_catalog_item_version(mocker, version_path, app_yaml, schema, r
     mocker.patch('apps_validation.validate_app_version.validate_questions_yaml', return_value=None)
     mocker.patch('apps_validation.validate_app_version.validate_ix_values_yaml', return_value=None)
     mocker.patch('apps_validation.validate_app_version.validate_templates', return_value=None)
+    mocker.patch('apps_validation.validate_app_version.validate_migration_config', return_value=None)
     mocker.patch('apps_validation.validate_app_version.validate_k8s_to_docker_migrations', return_value=None)
 
     if should_work:
@@ -451,3 +453,95 @@ def test_validate_variable_uniqueness(data, schema, should_work):
     else:
         with pytest.raises(ValidationErrors):
             validate_variable_uniqueness(data, schema, verrors)
+
+
+@pytest.mark.parametrize('yaml_data, should_work', [
+    (
+        '''
+        migrations:
+        - file: always.py
+          # Should run for any current/target combination
+
+        - file: only_min_version_from.py
+          from:
+            min_version: 1.0.0
+
+        ''',
+        True
+    ),
+    (
+        '''
+        migrations:
+        - file: always.py
+          # Should run for any current/target combination
+
+        - file: only_min_version_from.py
+          target:
+            min_version: 1.0.0
+            max_version: 2.0.0
+
+        ''',
+        True
+    ),
+    (
+        '''
+        migrations:
+        - file: always.py
+          # Should run for any current/target combination
+
+        - file: only_min_version_from.py
+          from:
+            min_version: 1.0.0
+
+        ''',
+        True
+    ),
+    (
+        '''
+        migrations:
+        - file: always.py
+          # Should run for any current/target combination
+        ''',
+        True
+    ),
+    (
+        '''
+        migrations
+        - file: always.py
+          # Should run for any current/target combination
+
+        - file: only_min_version_from.py
+          from:
+            min_version: 1.0.0
+
+        ''',
+        False
+    ),
+    (
+        '''
+        migrations:
+        ''',
+        False
+    ),
+    (
+        '''
+        ''',
+        False
+    ),
+    (
+        '''
+        migrations
+        - file: only_min_version_from.py
+          from:
+        ''',
+        False
+    ),
+])
+def test_validate_migrations_yaml(mocker, yaml_data, should_work):
+    mock_file = mocker.mock_open(read_data=yaml_data)
+    mocker.patch('builtins.open', mock_file)
+    if should_work:
+        assert validate_migration_config('/path/to/app_migrations.yaml', 'app_migration_config') is None
+    else:
+        with pytest.raises(ValidationErrors):
+            validate_migration_config('/path/to/app_migrations.yaml', 'app_migration_config')

@@ -372,3 +372,36 @@ VERSION_VALIDATION_SCHEMA = {
     },
     'additionalProperties': False
 }  # FIXME: See if all keys port
+APP_CONFIG_MIGRATIONS_SCHEMA = {
+    'type': 'object',
+    'properties': {
+        'migrations': {
+            'type': 'array',
+            'items': {
+                'type': 'object',
+                'properties': {
+                    'file': {'type': 'string'},
+                    'from': {
+                        'type': 'object',
+                        'properties': {
+                            'min_version': {'type': 'string', 'pattern': r'^\d+\.\d+\.\d+$'},
+                            'max_version': {'type': 'string', 'pattern': r'^\d+\.\d+\.\d+$'}
+                        },
+                        'additionalProperties': True,
+                    },
+                    'target': {
+                        'type': 'object',
+                        'properties': {
+                            'min_version': {'type': 'string', 'pattern': r'^\d+\.\d+\.\d+$'},
+                            'max_version': {'type': 'string', 'pattern': r'^\d+\.\d+\.\d+$'}
+                        },
+                        'additionalProperties': True,
+                    }
+                },
+                'required': ['file'],
+                'additionalProperties': True,
+            }
+        }
+    },
+    'required': ['migrations'],
+}

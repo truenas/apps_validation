@@ -16,6 +16,7 @@ from .app_version import validate_app_version_file
 from .ix_values import validate_ix_values_schema
 from .json_schema_utils import VERSION_VALIDATION_SCHEMA
 from .validate_k8s_to_docker_migration import validate_k8s_to_docker_migrations
+from .validate_migrations import validate_migration_config, validate_migration_file, get_migration_file_names
 from .validate_questions import validate_questions_yaml
 from .validate_templates import validate_templates
 
@@ -73,9 +74,27 @@ def validate_catalog_item_version(
             verrors.add(f'{schema}.lib_version', 'Library version hash does not match with the actual library version')
 
     questions_path = os.path.join(version_path, 'questions.yaml')
+    migrations_yaml_path = os.path.join(version_path, 'app_migrations.yaml')
+    app_migrations_dir = os.path.join(version_path, 'migrations')
     if os.path.exists(questions_path):
         try:
             validate_questions_yaml(questions_path, f'{schema}.questions_configuration')
+        except ValidationErrors as v:
+            verrors.extend(v)
+
+    # Validating structure of app_migrations YAML
+    if os.path.exists(migrations_yaml_path):
+        try:
+            validate_migration_config(migrations_yaml_path, f'{schema}.migrations_configuration')
+        except ValidationErrors as v:
+            verrors.extend(v)
+
+    # Validating actual migration file
+    if os.path.isdir(app_migrations_dir) and os.path.exists(migrations_yaml_path):
+        try:
+            for filename in get_migration_file_names(migrations_yaml_path, f'{schema}.migrations_configuration'):
+                migration_file_path = os.path.join(app_migrations_dir, filename)
+                validate_migration_file(migration_file_path, f'{schema}.migration_file.{filename}')
         except ValidationErrors as v:
             verrors.extend(v)
 
