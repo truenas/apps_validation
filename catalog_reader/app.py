@@ -191,6 +191,7 @@ def get_app_version_details(
     version_data.update({
         'human_version': get_human_version(app_metadata['app_version'], app_metadata['version']),
         'version': app_metadata['version'],
+        'chart_metadata': app_metadata,
     }) if app_metadata else {}
 
     return version_data
