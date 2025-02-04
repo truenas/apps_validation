@@ -319,6 +319,7 @@ VERSION_VALIDATION_SCHEMA = {
                     'pattern': '[0-9]+.[0-9]+.[0-9]+'
                 },
                 'app_metadata': APP_METADATA_JSON_SCHEMA,
+                'chart_metadata': APP_METADATA_JSON_SCHEMA,
                 'readme': {'type': ['string', 'null']},
                 'changelog': {'type': ['string', 'null']},
                 'schema': {
