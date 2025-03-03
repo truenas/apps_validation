@@ -122,17 +122,11 @@ def normalize_question(question: dict, version_data: dict, context: dict) -> Non
                 'default': '0.0.0.0',
                 'enum': [{'value': i, 'description': f'{i!r} IP Address'} for i in context['ip_choices']],
             })
-        elif ref == 'definitions/certificate':
+        elif ref in ('definitions/certificate', 'definitions/certificate_authority'):
             get_cert_ca_options(schema, data, {'value': None, 'description': 'No Certificate'})
             data['enum'] += [
                 {'value': i['id'], 'description': f'{i["name"]!r} Certificate'}
                 for i in context['certificates']
-            ]
-        elif ref == 'definitions/certificate_authority':
-            get_cert_ca_options(schema, data, {'value': None, 'description': 'No Certificate Authority'})
-            data['enum'] += [{'value': None, 'description': 'No Certificate Authority'}] + [
-                {'value': i['id'], 'description': f'{i["name"]!r} Certificate Authority'}
-                for i in context['certificate_authorities']
             ]
         elif ref == 'definitions/port':
             data.update({
