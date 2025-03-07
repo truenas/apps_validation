@@ -122,7 +122,7 @@ def normalize_question(question: dict, version_data: dict, context: dict) -> Non
                 'default': '0.0.0.0',
                 'enum': [{'value': i, 'description': f'{i!r} IP Address'} for i in context['ip_choices']],
             })
-        elif ref in ('definitions/certificate', 'definitions/certificate_authority'):
+        elif ref == 'definitions/certificate':
             get_cert_ca_options(schema, data, {'value': None, 'description': 'No Certificate'})
             data['enum'] += [
                 {'value': i['id'], 'description': f'{i["name"]!r} Certificate'}
