@@ -29,6 +29,7 @@ def write_template_yaml(app_path: str, rendered_templates: dict) -> None:
 
     for file_name, rendered_template in rendered_templates.items():
         with open(os.path.join(rendered_templates_path, file_name), 'w') as f:
+            os.fchmod(f.fileno(), 0o600)
             f.write(rendered_template)
 
 
