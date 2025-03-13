@@ -383,35 +383,6 @@ GPU_DETAIL = [entry for entry in GPU_CHOICES if entry['gpu_details']['available_
             'schema': {
                 'type': 'string',
                 'hidden': True,
-                '$ref': ['definitions/certificate_authority'],
-            }
-        },
-        {
-            'variable': 'datasetName',
-            'label': 'Plots Volume Name',
-            'schema': {
-                'type': 'string',
-                'hidden': True,
-                '$ref': ['definitions/certificate_authority'],
-                'enum': [
-                    {'value': None, 'description': 'No Certificate Authority'},
-                    {'value': None, 'description': 'No Certificate Authority'}
-                ],
-                'default': None,
-                'null': True
-            }
-        },
-        {
-            'certificate_authorities': [],
-        }
-    ),
-    (
-        {
-            'variable': 'datasetName',
-            'label': 'Plots Volume Name',
-            'schema': {
-                'type': 'string',
-                'hidden': True,
                 '$ref': ['definitions/port'],
             }
         },
