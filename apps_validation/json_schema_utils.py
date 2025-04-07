@@ -52,14 +52,14 @@ APP_METADATA_JSON_SCHEMA = {
         'train': {'type': 'string'},
         'description': {'type': 'string'},
         'home': {'type': 'string'},
+        'chagelog_url': {'type': 'string'},
+        'date_added': {'type': 'string'},
         'app_version': {'type': 'string'},
         'annotations': {
             'type': 'object',
             'properties': {
                 'min_scale_version': {'type': 'string'},
                 'max_scale_version': {'type': 'string'},
-                'chagelog_url': {'type': 'string'},
-                'date_added': {'type': 'string'},
             },
         },
         'title': {'type': 'string'},
