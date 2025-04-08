@@ -52,6 +52,11 @@ APP_METADATA_JSON_SCHEMA = {
         'train': {'type': 'string'},
         'description': {'type': 'string'},
         'home': {'type': 'string'},
+        'chagelog_url': {'type': 'string'},
+        'date_added': {
+            'type': 'string',
+            'pattern': '20[0-9][0-9]-[0-9][1-9]-[0-9][1-9]',
+        },
         'app_version': {'type': 'string'},
         'annotations': {
             'type': 'object',
@@ -115,6 +120,7 @@ APP_METADATA_JSON_SCHEMA = {
     'required': [
         'name', 'train', 'version', 'app_version', 'title', 'description', 'home',
         'sources', 'maintainers', 'run_as_context', 'capabilities', 'host_mounts',
+        'date_added',
     ],
     'if': {
         'properties': {

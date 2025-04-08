@@ -314,6 +314,7 @@ def test_validate_catalog_item(mocker, catalog_path, test_yaml, train, item_yaml
         name: storj
         version: 1.0.4
         train: stable
+        date_added: '2025-04-08'
         app_version: 1.0.0.8395
         title: storj
         description: Test description
@@ -337,6 +338,7 @@ def test_validate_catalog_item(mocker, catalog_path, test_yaml, train, item_yaml
         name: storj
         version: 1.0.4
         train: stable
+        date_added: '2025-04-08'
         app_version: 1.0.0.8395
         title: storj
         description: Test description
@@ -360,6 +362,7 @@ def test_validate_catalog_item(mocker, catalog_path, test_yaml, train, item_yaml
         name: storj
         version: 1.0.4
         train: stable
+        date_added: '2025-04-08'
         app_version: 1.0.0.8395
         title: storj
         description: Test description
