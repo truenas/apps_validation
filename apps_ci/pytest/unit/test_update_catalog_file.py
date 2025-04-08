@@ -103,6 +103,7 @@ from apps_exceptions import ValidationErrors
                     'healthy': True,
                     'healthy_error': None,
                     'last_update': '2024-10-01 14:30:00',
+                    'date_added': '2025-04-08',
                     'recommended': [],
                 },
             }
