@@ -69,6 +69,7 @@ from apps_exceptions import ValidationErrors
                                 'train': 'stable',
                                 'version': '1.0.1',
                                 'app_version': '1.0.1',
+                                'date_added': '2025-04-08',
                                 'title': 'chia',
                                 'description': 'desc',
                                 'home': 'None',
