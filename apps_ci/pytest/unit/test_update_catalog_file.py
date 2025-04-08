@@ -16,6 +16,7 @@ from apps_exceptions import ValidationErrors
                     'healthy': True,
                     'healthy_error': None,
                     'last_update': '2024-10-01 14:30:00',
+                    'date_added': '2025-04-08',
                     'recommended': [],
                     'latest_version': '1.2.0',
                     'latest_app_version': '1.2.0',
@@ -61,6 +62,7 @@ from apps_exceptions import ValidationErrors
                             'readme': None,
                             'changelog': None,
                             'last_update': '1200-20-00 00:00:00',
+                            'date_added': '2025-04-08',
                             'maintainers': {},
                             'app_metadata': {
                                 'name': 'chia',
