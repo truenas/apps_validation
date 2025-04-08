@@ -117,6 +117,7 @@ APP_METADATA_JSON_SCHEMA = {
     'required': [
         'name', 'train', 'version', 'app_version', 'title', 'description', 'home',
         'sources', 'maintainers', 'run_as_context', 'capabilities', 'host_mounts',
+        'date_added',
     ],
     'if': {
         'properties': {
