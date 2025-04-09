@@ -55,7 +55,7 @@ APP_METADATA_JSON_SCHEMA = {
         'chagelog_url': {'type': 'string'},
         'date_added': {
             'type': 'string',
-            'pattern': '20[0-9]{2}-[0-9]{2}-[0-9]{2}',
+            'pattern': '20[0-9]{2}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])',
         },
         'app_version': {'type': 'string'},
         'annotations': {
