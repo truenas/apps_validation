@@ -9,9 +9,9 @@ from .names import get_library_path, get_library_hashes_path
 
 
 RE_VERSION = re.compile(r'^\d+.\d+\.\d+$')
-EXCLUDED_PATTERNS = [
-    "tests/",
-    "__pycache__/",
+DIR_EXCLUDED_PATTERNS = [
+    "tests",
+    "__pycache__",
 ]
 
 
@@ -32,6 +32,8 @@ def get_hashes_of_base_lib_versions(catalog_path: str) -> dict:
         if not lib_entry.is_dir() or not RE_VERSION.match(lib_entry.name):
             continue
 
-        hashes[lib_entry.name] = get_hash_of_directory(os.path.join(library_path, lib_entry.name), EXCLUDED_PATTERNS)
+        hashes[lib_entry.name] = get_hash_of_directory(
+            os.path.join(library_path, lib_entry.name), DIR_EXCLUDED_PATTERNS
+        )
 
     return hashes
