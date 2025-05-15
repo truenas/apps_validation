@@ -3,7 +3,7 @@ name: build_image
 on:
   push:
     branches:
-      - 'master'
+      - "master"
   workflow_dispatch:
 
 env:
@@ -24,9 +24,17 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build and push
         id: docker_build
+        if: github.ref == 'refs/heads/master'
         uses: docker/build-push-action@v3
         with:
           push: true
           tags: ghcr.io/truenas/apps_validation:latest
+      - name: Build and push (dev)
+        id: docker_build_dev
+        if: github.ref != 'refs/heads/master'
+        uses: docker/build-push-action@v3
+        with:
+          push: true
+          tags: ghcr.io/truenas/apps_validation:dev
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
