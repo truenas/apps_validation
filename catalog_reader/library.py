@@ -14,6 +14,7 @@ EXCLUDED_PATTERNS = [
     "__pycache__/",
 ]
 
+
 def get_library_hashes(library_path: str) -> dict:
     """
     This reads from library hashes file and returns the hashes
