@@ -11,6 +11,7 @@ from jsonschema import validate as json_schema_validate, ValidationError as Json
 from apps_ci.names import CACHED_CATALOG_FILE_NAME, CACHED_VERSION_FILE_NAME
 from apps_exceptions import ValidationErrors
 from apps_validation.json_schema_utils import CATALOG_JSON_SCHEMA
+from apps_validation.names import TEST_VALUES_DIR
 from apps_validation.validate_app_version import validate_catalog_item_version_data
 from catalog_reader.catalog import retrieve_train_names, retrieve_trains_data, get_apps_in_trains
 from catalog_reader.dev_directory import (
@@ -120,7 +121,7 @@ def publish_updated_apps(catalog_path: str) -> None:
             shutil.copy(dev_item_yaml_path, publish_item_yaml_path)
             shutil.copytree(
                 dev_app_path, publish_app_version_path,
-                ignore=shutil.ignore_patterns(*DIR_EXCLUDED_PATTERNS),
+                ignore=shutil.ignore_patterns(TEST_VALUES_DIR, *DIR_EXCLUDED_PATTERNS),
             )
 
             for file_name in OPTIONAL_METADATA_FILES + REQUIRED_METADATA_FILES:
