@@ -20,6 +20,7 @@ from catalog_reader.dev_directory import (
 from catalog_reader.train_utils import get_train_path
 from catalog_reader.library import DIR_EXCLUDED_PATTERNS
 
+
 def get_trains(location: str) -> typing.Tuple[dict, dict]:
     preferred_trains: list = []
     trains_to_traverse = retrieve_train_names(get_train_path(location))
