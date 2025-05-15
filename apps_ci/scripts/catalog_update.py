@@ -117,7 +117,7 @@ def publish_updated_apps(catalog_path: str) -> None:
             publish_item_yaml_path = os.path.join(publish_app_path, 'item.yaml')
 
             shutil.copy(dev_item_yaml_path, publish_item_yaml_path)
-            shutil.copytree(dev_app_path, publish_app_version_path, ignore=shutil.ignore_patterns('test_values'))
+            shutil.copytree(dev_app_path, publish_app_version_path)
 
             for file_name in OPTIONAL_METADATA_FILES + REQUIRED_METADATA_FILES:
                 with contextlib.suppress(OSError):
