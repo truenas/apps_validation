@@ -119,9 +119,9 @@ def publish_updated_apps(catalog_path: str) -> None:
 
             shutil.copy(dev_item_yaml_path, publish_item_yaml_path)
             # Library patterns to be excluded, explicitly prefixing with library path
-            patterns = [f'library/**/{p} ' for p in EXCLUDED_PATTERNS] 
+            patterns = [f'library/**/{p} ' for p in EXCLUDED_PATTERNS]
             shutil.copytree(
-                dev_app_path, publish_app_version_path, 
+                dev_app_path, publish_app_version_path,
                 ignore=shutil.ignore_patterns(*patterns)
             )
 
