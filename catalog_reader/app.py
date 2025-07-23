@@ -83,6 +83,9 @@ def get_app_details(
             if not item_data['app_readme']:
                 item_data['app_readme'] = v['readme']
 
+    item_data['last_update'] = get_last_updated_date(
+        catalog_path, os.path.join(item_location, item_data['latest_version'])
+    )
     if unhealthy_versions:
         item_data['healthy_error'] = f'Errors were found with {", ".join(unhealthy_versions)} version(s)'
     else:
