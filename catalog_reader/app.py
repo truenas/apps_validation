@@ -30,6 +30,7 @@ def get_app_details(
     item_data = get_app_details_base()
     item_data.update({
         'location': item_location,
+        'last_update': get_last_updated_date(catalog_path, item_location),
         'name': item,
         'title': item.capitalize(),
     })
