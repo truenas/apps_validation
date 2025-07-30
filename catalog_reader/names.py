@@ -5,7 +5,6 @@ import typing
 LIBRARY_HASHES_FILENAME = 'hashes.yaml'
 RECOMMENDED_APPS_FILENAME = 'recommended_apps.yaml'
 TO_KEEP_VERSIONS = 'to_keep_versions.yaml'
-UPGRADE_STRATEGY_FILENAME = 'upgrade_strategy'
 
 
 def get_app_library_dir_name_from_version(version: str) -> str:
