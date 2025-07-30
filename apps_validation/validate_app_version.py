@@ -15,7 +15,6 @@ from catalog_reader.questions_util import CUSTOM_PORTALS_KEY
 from .app_version import validate_app_version_file
 from .ix_values import validate_ix_values_schema
 from .json_schema_utils import VERSION_VALIDATION_SCHEMA
-from .validate_k8s_to_docker_migration import validate_k8s_to_docker_migrations
 from .validate_migrations import validate_migration_config, validate_migration_file, get_migration_file_names
 from .validate_questions import validate_questions_yaml
 from .validate_templates import validate_templates
@@ -109,9 +108,6 @@ def validate_catalog_item_version(
             except ValidationErrors as v:
                 verrors.extend(v)
 
-    validate_k8s_to_docker_migrations(
-        verrors, os.path.join(version_path, 'migrations'), f'{schema}.migrations.migrate_from_kubernetes'
-    )
     # validate_app_migrations(verrors, version_path, f'{schema}.app_migrations')
     # FIXME: Add validation for app migrations
 
