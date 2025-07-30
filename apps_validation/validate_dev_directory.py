@@ -8,7 +8,7 @@ from catalog_reader.dev_directory import (
     get_app_version, get_ci_development_directory, get_to_keep_versions, REQUIRED_METADATA_FILES,
     version_has_been_bumped,
 )
-from catalog_reader.names import UPGRADE_STRATEGY_FILENAME, TO_KEEP_VERSIONS
+from catalog_reader.names import TO_KEEP_VERSIONS
 from catalog_reader.train_utils import get_train_path
 
 from .app_version import validate_app_version_file
@@ -63,12 +63,6 @@ def validate_train(catalog_path: str, train_path: str, schema: str, to_check_app
         verrors.check()
 
 
-def validate_upgrade_strategy(app_path: str, schema: str, verrors: ValidationErrors):
-    upgrade_strategy_path = os.path.join(app_path, UPGRADE_STRATEGY_FILENAME)
-    if os.path.exists(upgrade_strategy_path) and not os.access(upgrade_strategy_path, os.X_OK):
-        verrors.add(schema, f'{upgrade_strategy_path!r} is not executable')
-
-
 def validate_app(app_dir_path: str, schema: str, train_name: str) -> None:
     app_name = os.path.basename(app_dir_path)
     chart_version_path = os.path.join(app_dir_path, 'app.yaml')
@@ -89,7 +83,6 @@ def validate_app(app_dir_path: str, schema: str, train_name: str) -> None:
             f'{schema}.required_files',
             f'{", ".join(missing_files)!r} file(s) must be specified'
         )
-    validate_upgrade_strategy(app_dir_path, f'{schema}.{UPGRADE_STRATEGY_FILENAME}', verrors)
     verrors.check()
 
 
