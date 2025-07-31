@@ -18,6 +18,7 @@ from catalog_reader.dev_directory import (
     REQUIRED_METADATA_FILES, version_has_been_bumped,
 )
 from catalog_reader.train_utils import get_train_path
+from catalog_reader.library import DIR_EXCLUDED_PATTERNS
 
 
 def get_trains(location: str) -> typing.Tuple[dict, dict]:
@@ -117,7 +118,10 @@ def publish_updated_apps(catalog_path: str) -> None:
             publish_item_yaml_path = os.path.join(publish_app_path, 'item.yaml')
 
             shutil.copy(dev_item_yaml_path, publish_item_yaml_path)
-            shutil.copytree(dev_app_path, publish_app_version_path)
+            shutil.copytree(
+                dev_app_path, publish_app_version_path,
+                ignore=shutil.ignore_patterns(*DIR_EXCLUDED_PATTERNS),
+            )
 
             for file_name in OPTIONAL_METADATA_FILES + REQUIRED_METADATA_FILES:
                 with contextlib.suppress(OSError):

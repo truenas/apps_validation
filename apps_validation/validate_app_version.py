@@ -9,6 +9,7 @@ from semantic_version import Version
 from apps_exceptions import ValidationErrors
 from catalog_reader.app_utils import get_app_basic_details
 from catalog_reader.hash_utils import get_hash_of_directory
+from catalog_reader.library import DIR_EXCLUDED_PATTERNS
 from catalog_reader.names import get_base_library_dir_name_from_version
 from catalog_reader.questions_util import CUSTOM_PORTALS_KEY
 
@@ -69,7 +70,7 @@ def validate_catalog_item_version(
             )
         elif not base_lib_dir.is_dir():
             verrors.add(f'{schema}.lib_version', f'{base_lib_dir!r} is not a directory')
-        elif get_hash_of_directory(str(base_lib_dir)) != app_basic_details['lib_version_hash']:
+        elif get_hash_of_directory(str(base_lib_dir), DIR_EXCLUDED_PATTERNS) != app_basic_details['lib_version_hash']:
             verrors.add(f'{schema}.lib_version', 'Library version hash does not match with the actual library version')
 
     questions_path = os.path.join(version_path, 'questions.yaml')
