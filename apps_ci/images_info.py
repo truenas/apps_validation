@@ -32,7 +32,7 @@ def is_main_dep(app_dir: Path, dep_name: str, dep_version: str) -> bool:
     verrors.check()
     with open(ix_values, 'r') as f:
         ix_values_data = yaml.safe_load(f.read())
-        main_image = ix_values_data.get('image', {})
+        main_image = ix_values_data.get('images', {}).get('image', {})
         repo = main_image.get('repository')
         tag = main_image.get('tag')
         if repo == dep_name and tag == dep_version:
