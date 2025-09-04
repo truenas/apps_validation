@@ -542,6 +542,7 @@ def test_validate_variable_uniqueness(data, schema, should_work):
 def test_validate_migrations_yaml(mocker, yaml_data, should_work):
     mock_file = mocker.mock_open(read_data=yaml_data)
     mocker.patch('builtins.open', mock_file)
+    mocker.patch("os.path.isdir", return_value=True)
     if should_work:
         assert validate_migration_config('/path/to/app_migrations.yaml', 'app_migration_config') is None
     else:
