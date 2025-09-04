@@ -25,7 +25,7 @@ def update_app_version(app_path: str, bump_type: str, dep_name: str, dep_version
         app_config = yaml.safe_load(f.read())
 
     msg = ''
-    if dep_name and dep_version and is_main_dep(app_dir, dep_name):
+    if dep_name and dep_version and is_main_dep(app_dir, dep_name, dep_version):
         app_config['app_version'] = dep_version
         msg += f', set app_version to {dep_version!r}'
     if bump_type:
