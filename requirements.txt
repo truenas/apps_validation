@@ -2,5 +2,6 @@ gitpython
 jinja2
 jsonschema==4.10.3
 markdown
+packaging
 pyyaml
 semantic_version

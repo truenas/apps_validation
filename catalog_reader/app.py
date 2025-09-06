@@ -3,7 +3,7 @@ import os
 import typing
 import yaml
 
-from pkg_resources import parse_version
+from packaging.version import Version
 
 from apps_exceptions import ValidationErrors
 from apps_validation.validate_app import validate_catalog_item
@@ -61,7 +61,7 @@ def get_app_details(
         'home': 'home',
         'sources': 'sources',
     }
-    for k, v in sorted(item_data['versions'].items(), key=lambda v: parse_version(v[0]), reverse=True):
+    for k, v in sorted(item_data['versions'].items(), key=lambda v: Version(v[0]), reverse=True):
         if not v['healthy']:
             unhealthy_versions.append(k)
         else:
@@ -116,7 +116,7 @@ def get_app_details_impl(
 
     for version in sorted(
         filter(lambda p: os.path.isdir(os.path.join(item_path, p)), os.listdir(item_path)),
-        reverse=True, key=parse_version,
+        reverse=True, key=Version,
     ):
         catalog_path = item_path.rstrip('/').rsplit('/', 2)[0]
         version_path = os.path.join(item_path, version)
