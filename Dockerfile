@@ -7,5 +7,12 @@ ENV WORK_DIR=/app
 RUN mkdir -p ${WORK_DIR}
 WORKDIR ${WORK_DIR}
 
-ADD . ${WORK_DIR}/
-RUN pip install --break-system-packages .
+# Copy only dependency files first for better layer caching
+COPY pyproject.toml ${WORK_DIR}/
+RUN pip install --break-system-packages --no-cache-dir .
+
+# Copy the rest of the application code
+COPY . ${WORK_DIR}/
+
+# Reinstall in case any package metadata changed
+RUN pip install --break-system-packages --no-cache-dir --no-deps .
