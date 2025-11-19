@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "apps_validation"
+version = "0.1"
+description = "Validate TrueNAS Apps Catalog"
+license = {text = "GNU3"}
+requires-python = ">=3.11"
+dependencies = [
+    "gitpython",
+    "jinja2",
+    "jsonschema>=4.10.3",
+    "markdown",
+    "packaging",
+    "pyyaml",
+    "semantic_version",
+]
+
+[project.scripts]
+app_bump_version = "apps_ci.scripts.bump_version:main"
+apps_catalog_hash_generate = "catalog_reader.scripts.apps_hashes:main"
+apps_catalog_update = "apps_ci.scripts.catalog_update:main"
+apps_catalog_validate = "apps_validation.scripts.catalog_validate:main"
+apps_dev_charts_validate = "apps_validation.scripts.dev_apps_validate:main"
+apps_render_app = "catalog_templating.scripts.render_compose:main"
+
+[tool.setuptools.packages.find]
+include = [
+    "apps_ci",
+    "apps_ci.*",
+    "apps_exceptions",
+    "apps_exceptions.*",
+    "apps_schema",
+    "apps_schema.*",
+    "apps_validation",
+    "apps_validation.*",
+    "catalog_reader",
+    "catalog_reader.*",
+    "catalog_templating",
+    "catalog_templating.*",
+]
