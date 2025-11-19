@@ -4,11 +4,11 @@ import yaml
 from jsonschema import validate as json_schema_validate
 from semantic_version import Version
 
-from .names import TO_KEEP_VERSIONS
+from .names import DEPRECATED_APPS_FILENAME, TO_KEEP_VERSIONS
 
 
 DEV_DIRECTORY_RELATIVE_PATH = 'ix-dev'
-OPTIONAL_METADATA_FILES = ['upgrade_info.json', 'upgrade_strategy', TO_KEEP_VERSIONS]
+OPTIONAL_METADATA_FILES = ['upgrade_info.json', 'upgrade_strategy', DEPRECATED_APPS_FILENAME, TO_KEEP_VERSIONS]
 REQUIRED_METADATA_FILES = ['item.yaml']
 REQUIRED_VERSIONS_JSON_SCHEMA = {
     'type': 'array',

@@ -2,6 +2,7 @@ import os
 import typing
 
 
+DEPRECATED_APPS_FILENAME = 'deprecations.yaml'
 LIBRARY_HASHES_FILENAME = 'hashes.yaml'
 RECOMMENDED_APPS_FILENAME = 'recommended_apps.yaml'
 TO_KEEP_VERSIONS = 'to_keep_versions.yaml'
