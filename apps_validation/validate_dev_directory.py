@@ -13,6 +13,7 @@ from catalog_reader.train_utils import get_train_path
 
 from .app_version import validate_app_version_file
 from .validate_app_version import validate_catalog_item_version
+from .validate_deprecated_apps_file import validate_deprecated_apps
 from .validate_library import validate_base_libraries
 
 
@@ -68,6 +69,7 @@ def validate_app(app_dir_path: str, schema: str, train_name: str) -> None:
     chart_version_path = os.path.join(app_dir_path, 'app.yaml')
     verrors = validate_app_version_file(ValidationErrors(), chart_version_path, schema, app_name)
     validate_keep_versions(app_dir_path, app_name, verrors)
+    validate_deprecated_apps(app_dir_path, schema, verrors)
     verrors.check()
 
     validate_catalog_item_version(
