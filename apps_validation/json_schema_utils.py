@@ -411,3 +411,63 @@ APP_CONFIG_MIGRATIONS_SCHEMA = {
     },
     'required': ['migrations'],
 }
+DEPRECATED_APPS_SCHEMA = {
+    'type': 'array',
+    'items': {
+        'type': 'object',
+        'properties': {
+            'scope': {
+                'type': 'string',
+                'enum': [
+                    'partial',
+                    'full'
+                ]
+            },
+            'deprecated_date': {
+                'type': 'string',
+                'pattern': r'^\d{4}-\d{2}-\d{2}$',
+            },
+            'removal_date': {
+                'type': 'string',
+                'pattern': r'^\d{4}-\d{2}-\d{2}$',
+            },
+            'reason': {
+                'type': 'string',
+            },
+            'partial_details': {
+                'type': 'object',
+                'properties': {
+                    'feature': {
+                        'type': 'string',
+                    },
+                    'description': {
+                        'type': 'string',
+                    },
+                    'steps': {
+                        'type': 'array',
+                        'items': {
+                            'type': 'string'
+                        }
+                    }
+                },
+                'required': [
+                    'feature',
+                    'description',
+                    'steps'
+                ]
+            },
+            'alternative_app': {
+                'type': 'string',
+            },
+            'migration_guide': {
+                'type': 'string',
+                'format': 'uri',
+            },
+        },
+        'required': [
+            'scope',
+            'deprecated_date',
+            'removal_date',
+        ]
+    }
+}
