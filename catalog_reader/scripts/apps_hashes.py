@@ -23,7 +23,7 @@ def update_catalog_hashes(
 
     verrors = ValidationErrors()
     if (train_name and not app_name) or (app_name and not train_name):
-        verrors.add('app_train', 'Both --train and --app must be specified together')
+        verrors.add('train_app_pair', 'Both --train and --app must be specified together')
 
     library_dir = pathlib.Path(get_library_path(catalog_path))
     if not library_dir.exists():
@@ -125,11 +125,11 @@ def main():
     )
     parser.add_argument(
         '--train', type=str, required=False,
-        help='Specify a train name to filter apps'
+        help='Specify a train name (must be used with --app)'
     )
     parser.add_argument(
         '--app', type=str, required=False,
-        help='Specify a single app name to update instead of updating all apps'
+        help='Specify a single app name to update (must be used with --train)'
     )
 
     args = parser.parse_args()
