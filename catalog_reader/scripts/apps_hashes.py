@@ -12,11 +12,19 @@ from catalog_reader.library import get_hashes_of_base_lib_versions
 from catalog_reader.names import get_library_path, get_library_hashes_path, get_base_library_dir_name_from_version
 
 
-def update_catalog_hashes(catalog_path: str, bump_type: str | None = None) -> None:
+def update_catalog_hashes(
+    catalog_path: str,
+    bump_type: str | None = None,
+    train_name: str | None = None,
+    app_name: str | None = None,
+) -> None:
     if not os.path.exists(catalog_path):
         raise CatalogDoesNotExist(catalog_path)
 
     verrors = ValidationErrors()
+    if (train_name and not app_name) or (app_name and not train_name):
+        verrors.add('app_train', 'Both --train and --app must be specified together')
+
     library_dir = pathlib.Path(get_library_path(catalog_path))
     if not library_dir.exists():
         verrors.add('library', 'Library directory is missing')
@@ -37,17 +45,32 @@ def update_catalog_hashes(catalog_path: str, bump_type: str | None = None) -> No
         print('[\033[92mOK\x1B[0m]\tNo hashes found for library versions, skipping updating apps hashes')
         return
 
+    app_found = False
+    is_single_app = train_name and app_name
     for train_dir in dev_directory.iterdir():
+        if is_single_app and app_found:
+            break
         if not train_dir.is_dir():
             continue
 
+        if is_single_app and train_dir.name != train_name:
+            continue
+
         for app_dir in train_dir.iterdir():
+            if is_single_app and app_found:
+                break
+
             if not app_dir.is_dir():
+                continue
+
+            if is_single_app and app_dir.name != app_name:
                 continue
 
             app_metadata_file = app_dir / 'app.yaml'
             if not app_metadata_file.is_file():
                 continue
+
+            app_found = True
 
             with open(str(app_metadata_file), 'r') as f:
                 app_config = yaml.safe_load(f.read())
@@ -82,6 +105,9 @@ def update_catalog_hashes(catalog_path: str, bump_type: str | None = None) -> No
                 message += f' and bumped version from {old_version!r} to {app_config["version"]!r}'
             print(message)
 
+    if is_single_app and not app_found:
+        print(f'[\033[91mERROR\x1B[0m]\tApp {app_name!r} not found in train {train_name!r}')
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -90,12 +116,20 @@ def main():
         '--bump', type=str, choices=('major', 'minor', 'patch'), required=False,
         help='Version bump type for app that the hash was updated'
     )
+    parser.add_argument(
+        '--train', type=str, required=False,
+        help='Specify a train name to filter apps'
+    )
+    parser.add_argument(
+        '--app', type=str, required=False,
+        help='Specify a single app name to update instead of updating all apps'
+    )
 
     args = parser.parse_args()
     if not args.path:
         parser.print_help()
     else:
-        update_catalog_hashes(args.path, args.bump)
+        update_catalog_hashes(args.path, args.bump, args.train, args.app)
 
 
 if __name__ == '__main__':
