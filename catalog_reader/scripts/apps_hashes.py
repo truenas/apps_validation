@@ -88,7 +88,7 @@ def update_catalog_hashes(
 
             # Remove all old library versions
             for old_lib_dir in app_lib_dir.iterdir():
-                if old_lib_dir.is_dir():
+                if old_lib_dir.is_dir() and old_lib_dir.name.startswith("base_"):
                     shutil.rmtree(old_lib_dir.as_posix(), ignore_errors=True)
 
             app_base_lib_dir = app_lib_dir / base_lib_name
@@ -110,7 +110,8 @@ def update_catalog_hashes(
             print(message)
 
     if is_single_app and not app_found:
-        print(f'[\033[91mERROR\x1B[0m]\tApp {app_name!r} not found in train {train_name!r}')
+        verrors.add('app', f'App {app_name!r} not found in train {train_name!r}')
+        verrors.check()
 
 
 def main():
