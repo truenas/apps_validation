@@ -85,9 +85,13 @@ def update_catalog_hashes(
             base_lib_name = get_base_library_dir_name_from_version(lib_version)
             app_lib_dir = app_dir / 'templates/library'
             app_lib_dir.mkdir(exist_ok=True, parents=True)
-            app_base_lib_dir = app_lib_dir / base_lib_name
-            shutil.rmtree(app_base_lib_dir.as_posix(), ignore_errors=True)
 
+            # Remove all old library versions
+            for old_lib_dir in app_lib_dir.iterdir():
+                if old_lib_dir.is_dir():
+                    shutil.rmtree(old_lib_dir.as_posix(), ignore_errors=True)
+
+            app_base_lib_dir = app_lib_dir / base_lib_name
             catalog_base_lib_dir_path = os.path.join(library_dir.as_posix(), lib_version)
             shutil.copytree(catalog_base_lib_dir_path, app_base_lib_dir.as_posix())
 
