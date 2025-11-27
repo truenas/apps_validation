@@ -45,8 +45,12 @@ def update_catalog_hashes(
         print('[\033[92mOK\x1B[0m]\tNo hashes found for library versions, skipping updating apps hashes')
         return
 
+    app_found = False
     is_single_app = train_name and app_name
     for train_dir in dev_directory.iterdir():
+        if is_single_app and app_found:
+            break
+
         if not train_dir.is_dir():
             continue
 
@@ -54,11 +58,17 @@ def update_catalog_hashes(
             continue
 
         for app_dir in train_dir.iterdir():
+            if is_single_app and app_found:
+                break
+
             if not app_dir.is_dir():
                 continue
 
             if is_single_app and app_dir.name != app_name:
                 continue
+
+            if is_single_app:
+                app_found = True
 
             app_metadata_file = app_dir / 'app.yaml'
             if not app_metadata_file.is_file():
@@ -101,10 +111,7 @@ def update_catalog_hashes(
                 message += f' and bumped version from {old_version!r} to {app_config["version"]!r}'
             print(message)
 
-            if is_single_app:
-                return
-
-    if is_single_app:
+    if is_single_app and not app_found:
         verrors.add('app', f'App {app_name!r} not found in train {train_name!r}')
         verrors.check()
 
