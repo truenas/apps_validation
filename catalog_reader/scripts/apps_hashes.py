@@ -70,8 +70,6 @@ def update_catalog_hashes(
             if not app_metadata_file.is_file():
                 continue
 
-            app_found = True
-
             with open(str(app_metadata_file), 'r') as f:
                 app_config = yaml.safe_load(f.read())
 
@@ -108,6 +106,9 @@ def update_catalog_hashes(
             if bump_type:
                 message += f' and bumped version from {old_version!r} to {app_config["version"]!r}'
             print(message)
+
+            if is_single_app:
+                app_found = True
 
     if is_single_app and not app_found:
         verrors.add('app', f'App {app_name!r} not found in train {train_name!r}')
