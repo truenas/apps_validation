@@ -15,7 +15,7 @@ jobs:
 
       - name: Install dev-tools
         run: |
-          install-dev-tools
+          FAKE_ENV=1 install-dev-tools
 
       - name: Install dependencies
         run: |
