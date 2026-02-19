@@ -8,6 +8,8 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/truenas/middleware:master
+    env:
+      FAKE_ENV: "1"
 
     steps:
       - name: Checkout Code
@@ -15,7 +17,7 @@ jobs:
 
       - name: Install dev-tools
         run: |
-          FAKE_ENV=1 install-dev-tools
+          install-dev-tools
 
       - name: Install dependencies
         run: |
