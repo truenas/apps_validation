@@ -63,6 +63,7 @@ APP_METADATA_JSON_SCHEMA = {
             'properties': {
                 'min_scale_version': {'type': 'string'},
                 'max_scale_version': {'type': 'string'},
+                'disallow_multiple_instances': {'type': 'boolean'},
             },
         },
         'title': {'type': 'string'},

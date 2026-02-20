@@ -8,6 +8,8 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/truenas/middleware:master
+    env:
+      FAKE_ENV: "1"
 
     steps:
       - name: Checkout Code
