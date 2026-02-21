@@ -89,7 +89,11 @@ def validate_catalog_item_version(
             verrors.extend(v)
 
     # Validating actual migration file
-    if os.path.isdir(app_migrations_dir) and os.path.exists(migrations_yaml_path):
+    if os.path.exists(migrations_yaml_path):
+        if not os.path.isdir(app_migrations_dir):
+            verrors.add(f'{schema}.migrations_configuration', f'{app_migrations_dir!r} is not a directory')
+        verrors.check()
+
         try:
             for filename in get_migration_file_names(migrations_yaml_path, f'{schema}.migrations_configuration'):
                 migration_file_path = os.path.join(app_migrations_dir, filename)
