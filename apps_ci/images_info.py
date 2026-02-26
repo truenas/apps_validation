@@ -1,8 +1,7 @@
-import yaml
-
 from pathlib import Path
 
 from apps_exceptions import AppDoesNotExist, ValidationErrors
+from apps_validation.utils import safe_yaml_load
 
 
 """
@@ -31,7 +30,7 @@ def is_main_dep(app_dir: Path, dep_name: str, dep_version: str) -> bool:
         verrors.add('image_key', f'Missing ix_values.yaml file for {app_dir.name!r}')
     verrors.check()
     with open(ix_values, 'r') as f:
-        ix_values_data = yaml.safe_load(f.read())
+        ix_values_data = safe_yaml_load(f)
         main_image = ix_values_data.get('images', {}).get('image', {})
         repo = main_image.get('repository')
         tag = main_image.get('tag')

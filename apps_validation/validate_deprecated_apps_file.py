@@ -7,6 +7,7 @@ from apps_exceptions import ValidationErrors
 from catalog_reader.names import DEPRECATED_APPS_FILENAME
 
 from .json_schema_utils import DEPRECATED_APPS_SCHEMA
+from .utils import safe_yaml_load
 
 
 def validate_deprecated_apps(app_dir_path: str, schema: str, verrors: ValidationErrors):
@@ -14,7 +15,7 @@ def validate_deprecated_apps(app_dir_path: str, schema: str, verrors: Validation
 
     try:
         with open(deprecated_apps_file_path, 'r') as f:
-            data = yaml.safe_load(f.read())
+            data = safe_yaml_load(f)
             json_schema_validate(data, DEPRECATED_APPS_SCHEMA)
     except FileNotFoundError:
         return

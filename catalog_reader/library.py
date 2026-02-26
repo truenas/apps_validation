@@ -4,6 +4,7 @@ import pathlib
 import re
 import yaml
 
+from apps_validation.utils import safe_yaml_load
 from .hash_utils import get_hash_of_directory
 from .names import get_library_path, get_library_hashes_path
 
@@ -17,7 +18,7 @@ def get_library_hashes(library_path: str) -> dict:
     """
     with contextlib.suppress(FileNotFoundError, yaml.YAMLError):
         with open(get_library_hashes_path(library_path), 'r') as f:
-            return yaml.safe_load(f.read())
+            return safe_yaml_load(f)
 
 
 def get_hashes_of_base_lib_versions(catalog_path: str) -> dict:

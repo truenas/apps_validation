@@ -6,7 +6,7 @@ from apps_exceptions import ValidationErrors
 from catalog_reader.questions import CUSTOM_PORTALS_ENABLE_KEY, CUSTOM_PORTAL_GROUP_KEY
 from catalog_reader.questions_util import CUSTOM_PORTALS_KEY
 
-from .utils import validate_key_value_types
+from .utils import safe_yaml_load, validate_key_value_types
 
 
 def validate_questions_yaml(questions_yaml_path: str, schema: str):
@@ -14,7 +14,7 @@ def validate_questions_yaml(questions_yaml_path: str, schema: str):
 
     with open(questions_yaml_path, 'r') as f:
         try:
-            questions_config = yaml.safe_load(f.read())
+            questions_config = safe_yaml_load(f)
         except yaml.YAMLError:
             verrors.add(schema, 'Must be a valid yaml file')
         else:
