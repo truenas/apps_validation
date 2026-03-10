@@ -6,13 +6,14 @@ from jsonschema import validate, ValidationError as JsonValidationError
 from apps_exceptions import ValidationErrors
 
 from .json_schema_utils import APP_CONFIG_MIGRATIONS_SCHEMA
+from .utils import safe_yaml_load
 
 
 def get_migration_file_names(migration_yaml_path: str, schema: str) -> list[str]:
     verrors = ValidationErrors()
     try:
         with open(migration_yaml_path, 'r') as f:
-            yaml_data = yaml.safe_load(f)
+            yaml_data = safe_yaml_load(f)
             # Collect file names from the migrations
             files = [migration['file'] for migration in yaml_data['migrations']]
         return files
@@ -28,7 +29,7 @@ def validate_migration_config(migration_yaml_path: str, schema: str):
     verrors = ValidationErrors()
     with open(migration_yaml_path, 'r') as f:
         try:
-            data = yaml.safe_load(f)
+            data = safe_yaml_load(f)
         except yaml.YAMLError:
             verrors.add(f'{schema}.yaml_file', 'Must be a valid YAML file')
 

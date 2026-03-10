@@ -7,6 +7,7 @@ import yaml
 
 from apps_ci.version_bump import bump_version, rename_versioned_dir
 from apps_exceptions import CatalogDoesNotExist, ValidationErrors
+from apps_validation.utils import safe_yaml_load
 from catalog_reader.dev_directory import get_ci_development_directory
 from catalog_reader.library import get_hashes_of_base_lib_versions
 from catalog_reader.names import get_library_path, get_library_hashes_path, get_base_library_dir_name_from_version
@@ -75,7 +76,7 @@ def update_catalog_hashes(
                 continue
 
             with open(str(app_metadata_file), 'r') as f:
-                app_config = yaml.safe_load(f.read())
+                app_config = safe_yaml_load(f)
 
             if (lib_version := app_config.get('lib_version')) and lib_version not in hashes:
                 print(

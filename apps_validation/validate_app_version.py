@@ -15,6 +15,7 @@ from catalog_reader.questions_util import CUSTOM_PORTALS_KEY
 from .app_version import validate_app_version_file
 from .ix_values import validate_ix_values_schema
 from .json_schema_utils import VERSION_VALIDATION_SCHEMA
+from .utils import safe_yaml_load
 from .validate_migrations import validate_migration_config, validate_migration_file, get_migration_file_names
 from .validate_questions import validate_questions_yaml
 from .validate_templates import validate_templates
@@ -119,7 +120,7 @@ def validate_ix_values_yaml(ix_values_yaml_path: str, schema: str):
 
     with open(ix_values_yaml_path, 'r') as f:
         try:
-            ix_values = yaml.safe_load(f.read())
+            ix_values = safe_yaml_load(f)
         except yaml.YAMLError:
             verrors.add(schema, 'Must be a valid yaml file')
 

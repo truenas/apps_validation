@@ -9,7 +9,7 @@ from apps_exceptions import ValidationErrors
 
 from .json_schema_utils import APP_METADATA_JSON_SCHEMA
 from .scale_version import validate_min_max_version_values
-from .utils import validate_key_value_types
+from .utils import safe_yaml_load, validate_key_value_types
 
 
 def validate_app_version_file(
@@ -22,7 +22,7 @@ def validate_app_version_file(
 
     with open(app_version_path, 'r') as f:
         try:
-            app_config = yaml.safe_load(f.read())
+            app_config = safe_yaml_load(f)
         except yaml.YAMLError:
             verrors.add(schema, 'Must be a valid yaml file')
             return verrors

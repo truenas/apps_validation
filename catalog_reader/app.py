@@ -1,11 +1,11 @@
 import markdown
 import os
 import typing
-import yaml
 
 from packaging.version import Version
 
 from apps_exceptions import ValidationErrors
+from apps_validation.utils import safe_yaml_load
 from apps_validation.validate_app import validate_catalog_item
 from apps_validation.validate_app_version import validate_catalog_item_version  # FIXME: rename this
 
@@ -110,7 +110,7 @@ def get_app_details_impl(
         'versions': {},
     }
     with open(os.path.join(item_path, 'item.yaml'), 'r') as f:
-        item_data.update(yaml.safe_load(f.read()))
+        item_data.update(safe_yaml_load(f))
 
     item_data.update({k: item_data.get(k) for k in ITEM_KEYS})
 
@@ -164,8 +164,8 @@ def get_app_version_details(
     options = options or {}
     version_data = {'location': version_path, 'required_features': set()}
     for key, filename, parser, post_processor in (
-        ('app_metadata', 'app.yaml', yaml.safe_load, None),
-        ('schema', 'questions.yaml', yaml.safe_load, None),
+        ('app_metadata', 'app.yaml', safe_yaml_load, None),
+        ('schema', 'questions.yaml', safe_yaml_load, None),
         ('readme', 'README.md', markdown.markdown, new_line_to_space),
         ('changelog', 'CHANGELOG.md', markdown.markdown, new_line_to_space),
     ):
