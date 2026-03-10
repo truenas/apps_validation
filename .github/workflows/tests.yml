@@ -15,10 +15,6 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Install dev-tools
-        run: |
-          install-dev-tools
-
       - name: Install dependencies
         run: |
           apt install python3-pytest-mock -y
