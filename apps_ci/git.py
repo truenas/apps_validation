@@ -18,7 +18,7 @@ def get_changed_apps(catalog_path: str, base_branch: str = 'master') -> dict:
         capture_output=True, check=True,
     )
     dev_directory_path = get_ci_development_directory(catalog_path)
-    to_check_apps = defaultdict(list)
+    to_check_apps: defaultdict[str, list[str]] = defaultdict(list)
     for file_path in filter(
         lambda path: path and path.startswith(f'{DEV_DIRECTORY_RELATIVE_PATH}/'),
         map(str.strip, cp.stdout.decode().split('\n'))

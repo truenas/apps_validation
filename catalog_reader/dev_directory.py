@@ -22,7 +22,8 @@ REQUIRED_VERSIONS_JSON_SCHEMA = {
 def get_app_version(app_path: str) -> str:
     # This assumes that file exists and version is specified and is good
     with open(os.path.join(app_path, 'app.yaml'), 'r') as f:
-        return yaml.safe_load(f.read())['version']
+        result: str = yaml.safe_load(f.read())['version']
+        return result
 
 
 def get_ci_development_directory(catalog_path: str) -> str:
@@ -46,6 +47,6 @@ def get_to_keep_versions(app_dir_path: str) -> list:
         return []
 
     with open(required_version_path, 'r') as f:
-        data = yaml.safe_load(f.read())
+        data: list = yaml.safe_load(f.read())
         json_schema_validate(data, REQUIRED_VERSIONS_JSON_SCHEMA)
     return data

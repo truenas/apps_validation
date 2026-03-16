@@ -44,7 +44,7 @@ def test_get_changed_apps(mocker, path, base_branch, path_exists, is_train_valid
     if should_work:
         result = get_changed_apps(path, base_branch)
 
-        os.path.exists.assert_called_once_with(path)
+        os.path.exists.assert_called_once_with(path)  # type: ignore[attr-defined]
         mock_subprocess_run.assert_called_once_with(
             ['git', '-C', path, '--no-pager', 'diff', '--name-only', base_branch],
             capture_output=True, check=True,

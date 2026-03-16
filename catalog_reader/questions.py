@@ -1,5 +1,7 @@
 import itertools
 
+from typing import Any
+
 from .questions_util import ACL_QUESTION, get_custom_portal_question, IX_VOLUMES_ACL_QUESTION
 
 
@@ -27,7 +29,7 @@ def normalize_question(question: dict, version_data: dict, context: dict) -> Non
     if '$ref' not in schema:
         return
 
-    data = {}
+    data: dict[str, Any] = {}
     for ref in schema['$ref']:
         version_data['required_features'].add(ref)
         if ref == 'definitions/interface':

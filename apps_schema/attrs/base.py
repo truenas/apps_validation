@@ -1,5 +1,7 @@
 from jsonschema import validate as json_schema_validate, ValidationError as JsonValidationError
 
+from typing import Any, ClassVar
+
 from apps_exceptions import ValidationErrors
 
 from .utils import ATTRIBUTES_SCHEMA
@@ -9,17 +11,17 @@ class SchemaMeta(type):
 
     def __new__(cls, name, bases, dct):
         klass = type.__new__(cls, name, bases, dct)
-        if klass.__name__ != 'BaseSchema' and getattr(klass, 'SCHEMA_NAME', NotImplementedError) is NotImplementedError:
+        if klass.__name__ != 'BaseSchema' and not klass.SCHEMA_NAME:  # type: ignore[attr-defined]
             raise ValueError(f'{name!r} attr schema does not has SCHEMA_NAME defined')
 
-        ATTRIBUTES_SCHEMA[klass.SCHEMA_NAME] = klass
+        ATTRIBUTES_SCHEMA[klass.SCHEMA_NAME] = klass  # type: ignore[attr-defined, assignment]
         return klass
 
 
 class BaseSchema(metaclass=SchemaMeta):
 
-    DEFAULT_TYPE = NotImplementedError
-    SCHEMA_NAME = NotImplementedError
+    DEFAULT_TYPE: ClassVar[str] = ''
+    SCHEMA_NAME: ClassVar[str] = ''
 
     def __init__(self, include_subquestions_attrs=True, data=None):
         self.required = self.null = self.show_if = self.ref = self.ui_ref = self.type =\
@@ -79,7 +81,7 @@ class BaseSchema(metaclass=SchemaMeta):
         verrors.check()
 
     def json_schema(self):
-        schema = {
+        schema: dict[str, Any] = {
             'type': 'object',
             'properties': {
                 'required': {

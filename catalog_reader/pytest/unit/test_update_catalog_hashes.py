@@ -122,7 +122,7 @@ def test_update_catalog_hashes(mocker, path, dir_exists, lib_exists, is_dir, ope
     mocker.patch('catalog_reader.scripts.apps_hashes.get_hashes_of_base_lib_versions', return_value=hash)
     mocker.patch('builtins.open', mock_file)
     if should_work:
-        assert update_catalog_hashes(path) is None
+        assert update_catalog_hashes(path) is None  # type: ignore[func-returns-value]
     else:
         with pytest.raises((CatalogDoesNotExist, ValidationErrors)):
             update_catalog_hashes(path)

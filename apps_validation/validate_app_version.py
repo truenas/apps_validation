@@ -1,6 +1,5 @@
 import os
 import pathlib
-import typing
 import yaml
 
 from jsonschema import validate as json_schema_validate, ValidationError as JsonValidationError
@@ -36,8 +35,8 @@ def validate_catalog_item_version_data(version_data: dict, schema: str, verrors:
 
 
 def validate_catalog_item_version(
-    version_path: str, schema: str, version_name: typing.Optional[str] = None,
-    item_name: typing.Optional[str] = None, validate_values: bool = False, train_name: typing.Optional[str] = None,
+    version_path: str, schema: str, version_name: str | None = None,
+    item_name: str | None = None, validate_values: bool = False, train_name: str | None = None,
 ):
     verrors = ValidationErrors()
     version_name = version_name or os.path.basename(version_path)

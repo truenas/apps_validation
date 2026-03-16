@@ -21,7 +21,7 @@ from apps_validation.scripts.catalog_validate import validate
         ),
         (
             "/valid/path_with_errors",
-            ValidationErrors([("error_field", "Sample validation error")]),
+            ValidationErrors([("error_field", "Sample validation error")]),  # type: ignore[list-item]
             "[\x1b[91mFAILED\x1b[0m]\tFollowing validation failures were found:\n"
             "[\x1b[91m0\x1b[0m]\t('error_field', 'Sample validation error')",
             1
