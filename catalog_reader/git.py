@@ -2,10 +2,9 @@ import contextlib
 import subprocess
 
 from datetime import datetime
-from typing import Optional
 
 
-def get_last_updated_date(repo_path: str, folder_path: str) -> Optional[str]:
+def get_last_updated_date(repo_path: str, folder_path: str) -> str | None:
     with contextlib.suppress(Exception):
         # We don't want to fail querying items if for whatever reason this fails
         output = subprocess.check_output(
@@ -16,3 +15,4 @@ def get_last_updated_date(repo_path: str, folder_path: str) -> Optional[str]:
         if output:
             timestamp = datetime.fromtimestamp(int(output))
             return timestamp.strftime('%Y-%m-%d %H:%M:%S')
+    return None

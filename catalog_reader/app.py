@@ -1,7 +1,8 @@
 import markdown
 import os
-import typing
 import yaml
+
+from typing import Any
 
 from packaging.version import Version
 
@@ -19,7 +20,7 @@ ITEM_KEYS = ['icon_url']
 
 
 def get_app_details(
-    item_location: str, questions_context: typing.Optional[dict] = None, options: typing.Optional[dict] = None,
+    item_location: str, questions_context: dict | None = None, options: dict | None = None,
 ) -> dict:
     catalog_path = item_location.rstrip('/').rsplit('/', 2)[0]
     item = item_location.rsplit('/', 1)[-1]
@@ -97,12 +98,13 @@ def get_app_details(
 
 
 def get_app_details_impl(
-    item_path: str, schema: str, questions_context: typing.Optional[dict], options: typing.Optional[dict]
+    item_path: str, schema: str, questions_context: dict | None, options: dict | None
 ) -> dict:
+    options = options or {}
     # Each directory under item path represents a version of the item and we need to retrieve details
     # for each version available under the item
     retrieve_latest_version = options.get('retrieve_latest_version')
-    item_data = {
+    item_data: dict[str, Any] = {
         'categories': [],
         'icon_url': None,
         'screenshots': [],
@@ -120,7 +122,7 @@ def get_app_details_impl(
     ):
         catalog_path = item_path.rstrip('/').rsplit('/', 2)[0]
         version_path = os.path.join(item_path, version)
-        item_data['versions'][version] = version_details = {
+        version_details: dict[str, Any] = {
             'healthy': False,
             'supported': False,
             'healthy_error': None,
@@ -130,6 +132,7 @@ def get_app_details_impl(
             'human_version': version,
             'version': version,
         }
+        item_data['versions'][version] = version_details
         try:
             validate_catalog_item_version(version_details['location'], f'{schema}.{version}')
         except ValidationErrors as verrors:
@@ -159,10 +162,10 @@ def new_line_to_space(text: str) -> str:
 
 
 def get_app_version_details(
-    version_path: str, questions_context: typing.Optional[dict], options: typing.Optional[dict] = None
+    version_path: str, questions_context: dict | None, options: dict | None = None
 ) -> dict:
     options = options or {}
-    version_data = {'location': version_path, 'required_features': set()}
+    version_data: dict[str, Any] = {'location': version_path, 'required_features': set()}
     for key, filename, parser, post_processor in (
         ('app_metadata', 'app.yaml', yaml.safe_load, None),
         ('schema', 'questions.yaml', yaml.safe_load, None),
@@ -191,10 +194,11 @@ def get_app_version_details(
 
     app_metadata = version_data['app_metadata']
     # TODO: See if this needs to change for our adaptation of ix-app
-    version_data.update({
-        'human_version': get_human_version(app_metadata['app_version'], app_metadata['version']),
-        'version': app_metadata['version'],
-        'chart_metadata': app_metadata,
-    }) if app_metadata else {}
+    if app_metadata:
+        version_data.update({
+            'human_version': get_human_version(app_metadata['app_version'], app_metadata['version']),
+            'version': app_metadata['version'],
+            'chart_metadata': app_metadata,
+        })
 
     return version_data

@@ -53,4 +53,4 @@ def test_publish_updated_apps(mocker, capsys, version, app_name, isdir, listdir_
         assert expected_out in capsys.readouterr().out
 
     else:
-        assert publish_updated_apps('/path/to/catalog') is None
+        assert publish_updated_apps('/path/to/catalog') is None  # type: ignore[func-returns-value]

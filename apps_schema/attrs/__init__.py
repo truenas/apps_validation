@@ -14,7 +14,7 @@ def get_schema(schema_data):
     if not isinstance(schema_data, dict):
         return schema
 
-    if schema_klass := ATTRIBUTES_SCHEMA.get(schema_data.get('type')):
+    if schema_klass := ATTRIBUTES_SCHEMA.get(schema_data.get('type')):  # type: ignore[arg-type]
         schema = schema_klass(data=schema_data)
 
     return schema

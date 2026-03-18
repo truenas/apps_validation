@@ -37,7 +37,7 @@ def rename_versioned_dir(version: str, new_version: str, train_name: str, app_di
     verrors.check()
 
     if not app_dir.is_dir():
-        raise AppDoesNotExist(app_dir)
+        raise AppDoesNotExist(str(app_dir))
 
     dir_base = app_dir / 'templates/library' / train_name / app_dir.name
     curr_versioned_dir = dir_base / f'v{version.replace(".", "_")}'

@@ -1,3 +1,5 @@
+from typing import ClassVar
+
 from apps_exceptions import ValidationErrors
 
 from .utils import FEATURES
@@ -7,17 +9,17 @@ class FeatureMeta(type):
 
     def __new__(cls, name, bases, dct):
         klass = type.__new__(cls, name, bases, dct)
-        if getattr(klass, 'NAME', NotImplementedError) is NotImplementedError:
+        if klass.__name__ != 'BaseFeature' and not klass.NAME:  # type: ignore[attr-defined]
             raise ValueError(f'Feature {name!r} must have a NAME attribute')
 
-        FEATURES[klass.NAME] = klass
+        FEATURES[klass.NAME] = klass  # type: ignore[attr-defined, assignment]
         return klass
 
 
 class BaseFeature(metaclass=FeatureMeta):
 
-    NAME = NotImplementedError
-    VALID_SCHEMAS = []
+    NAME: ClassVar[str] = ''
+    VALID_SCHEMAS: ClassVar[list[type]] = []
 
     def __str__(self):
         return self.NAME

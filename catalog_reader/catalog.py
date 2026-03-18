@@ -1,7 +1,7 @@
 import concurrent.futures
 import functools
 import os
-import typing
+from typing import Any
 
 from .app import get_app_details
 from .app_utils import get_default_questions_context
@@ -9,7 +9,7 @@ from .train_utils import get_train_path, is_train_valid
 
 
 def app_details(
-    apps: dict, location: str, questions_context: typing.Optional[dict], app_key: str, normalize_questions: bool = True,
+    apps: dict, location: str, questions_context: dict | None, app_key: str, normalize_questions: bool = True,
 ) -> dict:
     train = apps[app_key]
     app = app_key.removesuffix(f'_{train}')
@@ -41,11 +41,11 @@ def get_apps_in_trains(trains_to_traverse: list, catalog_location: str) -> dict:
 
 
 def retrieve_trains_data(
-    apps: dict, catalog_location: str, preferred_trains: list, trains_to_traverse: list, job: typing.Any = None,
-    questions_context: typing.Optional[dict] = None, normalize_questions: bool = True,
-) -> typing.Tuple[dict, set]:
+    apps: dict, catalog_location: str, preferred_trains: list, trains_to_traverse: list, job: Any = None,
+    questions_context: dict | None = None, normalize_questions: bool = True,
+) -> tuple[dict, set]:
     questions_context = questions_context or get_default_questions_context()
-    trains = {
+    trains: dict[str, dict] = {
         'stable': {},
         **{k: {} for k in trains_to_traverse},
     }

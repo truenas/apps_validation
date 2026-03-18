@@ -34,7 +34,7 @@ def test_recommended_apps_file(mocker, recommended_apps, should_work):
     mocker.patch('builtins.open', mock_file)
 
     if should_work:
-        assert validate_recommended_apps_file('') is None
+        assert validate_recommended_apps_file('') is None  # type: ignore[func-returns-value]
     else:
         with pytest.raises(ValidationErrors):
             validate_recommended_apps_file('')

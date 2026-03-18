@@ -3,6 +3,7 @@ import contextlib
 import importlib
 import os
 import shutil
+import sys
 
 from jinja2 import Environment, FileSystemLoader
 
@@ -36,7 +37,7 @@ def render_templates(app_version_path: str, test_values: dict) -> dict:
 
 
 def import_library(library_path: str, app_config) -> dict:
-    modules_context = collections.defaultdict(dict)
+    modules_context: dict[str, dict] = collections.defaultdict(dict)
     # 2 dirs which we want to import from
     global_base_lib = os.path.join(library_path, get_base_library_dir_name_from_version(app_config['lib_version']))
     app_lib = os.path.join(
@@ -66,6 +67,8 @@ def import_app_modules(
     def import_module_context(module_name, file_path):
         try:
             spec = importlib.util.spec_from_file_location(module_name, file_path)
+            assert spec is not None
+            assert spec.loader is not None
             module = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(module)
         except Exception as e:
@@ -80,7 +83,7 @@ def import_app_modules(
     additional_package_syspath = (additional_package_syspath or []) + [modules_path]
     sub_modules_context = {}
     try:
-        importlib.sys.path.extend([os.path.dirname(entry) for entry in additional_package_syspath])
+        sys.path.extend([os.path.dirname(entry) for entry in additional_package_syspath])
         with os.scandir(modules_path) as sdir:
             for i in filter(lambda x: x.is_file() and x.name.endswith('.py'), sdir):
                 sub_modules = i.name.removesuffix('.py')
@@ -90,7 +93,7 @@ def import_app_modules(
     finally:
         for entry in additional_package_syspath:
             with contextlib.suppress(ValueError):
-                importlib.sys.path.remove(entry)
+                sys.path.remove(entry)
 
             remove_pycache(entry)
 
