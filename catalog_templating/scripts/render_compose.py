@@ -3,6 +3,8 @@ import argparse
 import os
 import shutil
 
+from truenas_os_pyutils.io import atomic_write
+
 from apps_exceptions import ValidationErrors
 from catalog_reader.app_utils import get_values
 from catalog_templating.render import render_templates
@@ -28,8 +30,7 @@ def write_template_yaml(app_path: str, rendered_templates: dict) -> None:
     os.makedirs(rendered_templates_path)
 
     for file_name, rendered_template in rendered_templates.items():
-        with open(os.path.join(rendered_templates_path, file_name), 'w') as f:
-            os.fchmod(f.fileno(), 0o600)
+        with atomic_write(os.path.join(rendered_templates_path, file_name), perms=0o600) as f:
             f.write(rendered_template.strip() + '\n')
 
 
