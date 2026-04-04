@@ -6,6 +6,7 @@ import shutil
 from collections import defaultdict
 
 from jsonschema import validate as json_schema_validate, ValidationError as JsonValidationError
+from truenas_os_pyutils.io import atomic_write
 
 from apps_ci.names import CACHED_CATALOG_FILE_NAME, CACHED_VERSION_FILE_NAME
 from apps_exceptions import ValidationErrors
@@ -148,7 +149,7 @@ def update_catalog_file(location: str) -> None:
     validate_train_data(catalog_data)
     validate_versions_data(versions_data)
 
-    with open(catalog_file_path, 'w') as f:
+    with atomic_write(catalog_file_path) as f:
         f.write(json.dumps(catalog_data, indent=4))
 
     print(f'[\033[92mOK\x1B[0m]\tUpdated {catalog_file_path!r} successfully!')
@@ -156,7 +157,7 @@ def update_catalog_file(location: str) -> None:
     for train_name, train_data in versions_data.items():
         for app_name, app_data in train_data.items():
             version_path = os.path.join(get_train_path(location), train_name, app_name, CACHED_VERSION_FILE_NAME)
-            with open(version_path, 'w') as f:
+            with atomic_write(version_path) as f:
                 f.write(json.dumps(app_data['versions'], indent=4))
 
             print(f'[\033[92mOK\x1B[0m]\tUpdated {version_path!r} successfully!')

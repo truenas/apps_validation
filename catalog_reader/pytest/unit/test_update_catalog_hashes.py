@@ -5,6 +5,11 @@ from apps_exceptions import CatalogDoesNotExist, ValidationErrors
 from catalog_reader.scripts.apps_hashes import update_catalog_hashes
 
 
+@pytest.fixture
+def mock_atomic_write(mocker):
+    return mocker.patch('catalog_reader.scripts.apps_hashes.atomic_write', mocker.mock_open())
+
+
 @pytest.mark.parametrize('path, dir_exists, lib_exists, is_dir, open_yaml, hash, should_work', [
     (
         '/path/to/catalog',
@@ -107,7 +112,9 @@ from catalog_reader.scripts.apps_hashes import update_catalog_hashes
         True
     ),
 ])
-def test_update_catalog_hashes(mocker, path, dir_exists, lib_exists, is_dir, open_yaml, hash, should_work):
+def test_update_catalog_hashes(
+    mocker, mock_atomic_write, path, dir_exists, lib_exists, is_dir, open_yaml, hash, should_work
+):
     mock_file = mocker.mock_open(read_data=open_yaml)
     mocker.patch('os.path.exists', return_value=dir_exists)
     mocker.patch('pathlib.Path.exists', return_value=lib_exists)
