@@ -35,7 +35,7 @@ def update_catalog_hashes(
 
     hashes = get_hashes_of_base_lib_versions(catalog_path)
     hashes_file_path = get_library_hashes_path(get_library_path(catalog_path))
-    with atomic_write(hashes_file_path) as f:
+    with atomic_write(hashes_file_path, uid=-1, gid=-1) as f:
         yaml.safe_dump(hashes, f)
 
     print(f'[\033[92mOK\x1B[0m]\tGenerated hashes for library versions at {hashes_file_path!r}')
@@ -105,7 +105,7 @@ def update_catalog_hashes(
                 rename_versioned_dir(old_version, app_config['version'], train_dir.name, app_dir)
 
             app_config['lib_version_hash'] = hashes[lib_version]
-            with atomic_write(str(app_metadata_file)) as f:
+            with atomic_write(str(app_metadata_file), uid=-1, gid=-1) as f:
                 f.write(yaml.safe_dump(app_config))
 
             message = f'[\033[92mOK\x1B[0m]\tUpdated library hash for {app_dir.name!r} in {train_dir.name}'

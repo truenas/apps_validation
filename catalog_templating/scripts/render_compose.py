@@ -30,7 +30,7 @@ def write_template_yaml(app_path: str, rendered_templates: dict) -> None:
     os.makedirs(rendered_templates_path)
 
     for file_name, rendered_template in rendered_templates.items():
-        with atomic_write(os.path.join(rendered_templates_path, file_name), perms=0o600) as f:
+        with atomic_write(os.path.join(rendered_templates_path, file_name), perms=0o600, uid=-1, gid=-1) as f:
             f.write(rendered_template.strip() + '\n')
 
 

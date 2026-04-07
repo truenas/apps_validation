@@ -36,7 +36,7 @@ def update_app_version(app_path: str, bump_type: str, dep_name: str, dep_version
         rename_versioned_dir(old_version, app_config['version'], app_dir.parent.name, app_dir)
         msg += f' and bumped version from {old_version!r} to {app_config["version"]!r}'
 
-    with atomic_write(str(app_metadata_file)) as f:
+    with atomic_write(str(app_metadata_file), uid=-1, gid=-1) as f:
         f.write(yaml.safe_dump(app_config))
 
     print(f'[\033[92mOK\x1B[0m]\tUpdated app {app_dir.name!r}' + msg)

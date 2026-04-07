@@ -149,7 +149,7 @@ def update_catalog_file(location: str) -> None:
     validate_train_data(catalog_data)
     validate_versions_data(versions_data)
 
-    with atomic_write(catalog_file_path) as f:
+    with atomic_write(catalog_file_path, uid=-1, gid=-1) as f:
         f.write(json.dumps(catalog_data, indent=4))
 
     print(f'[\033[92mOK\x1B[0m]\tUpdated {catalog_file_path!r} successfully!')
@@ -157,7 +157,7 @@ def update_catalog_file(location: str) -> None:
     for train_name, train_data in versions_data.items():
         for app_name, app_data in train_data.items():
             version_path = os.path.join(get_train_path(location), train_name, app_name, CACHED_VERSION_FILE_NAME)
-            with atomic_write(version_path) as f:
+            with atomic_write(version_path, uid=-1, gid=-1) as f:
                 f.write(json.dumps(app_data['versions'], indent=4))
 
             print(f'[\033[92mOK\x1B[0m]\tUpdated {version_path!r} successfully!')
