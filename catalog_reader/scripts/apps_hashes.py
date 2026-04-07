@@ -5,6 +5,8 @@ import pathlib
 import shutil
 import yaml
 
+from truenas_os_pyutils.io import atomic_write
+
 from apps_ci.version_bump import bump_version, rename_versioned_dir
 from apps_exceptions import CatalogDoesNotExist, ValidationErrors
 from catalog_reader.dev_directory import get_ci_development_directory
@@ -33,7 +35,7 @@ def update_catalog_hashes(
 
     hashes = get_hashes_of_base_lib_versions(catalog_path)
     hashes_file_path = get_library_hashes_path(get_library_path(catalog_path))
-    with open(hashes_file_path, 'w') as f:
+    with atomic_write(hashes_file_path) as f:
         yaml.safe_dump(hashes, f)
 
     print(f'[\033[92mOK\x1B[0m]\tGenerated hashes for library versions at {hashes_file_path!r}')
@@ -103,7 +105,7 @@ def update_catalog_hashes(
                 rename_versioned_dir(old_version, app_config['version'], train_dir.name, app_dir)
 
             app_config['lib_version_hash'] = hashes[lib_version]
-            with open(str(app_metadata_file), 'w') as f:
+            with atomic_write(str(app_metadata_file)) as f:
                 f.write(yaml.safe_dump(app_config))
 
             message = f'[\033[92mOK\x1B[0m]\tUpdated library hash for {app_dir.name!r} in {train_dir.name}'
