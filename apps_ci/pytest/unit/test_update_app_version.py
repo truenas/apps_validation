@@ -4,6 +4,11 @@ from apps_ci.scripts.bump_version import update_app_version
 from apps_exceptions import AppDoesNotExist, ValidationErrors
 
 
+@pytest.fixture
+def mock_atomic_write(mocker):
+    return mocker.patch('apps_ci.scripts.bump_version.atomic_write', mocker.mock_open())
+
+
 @pytest.mark.parametrize('path, bump, dep, dep_version, yaml, expected_out', [
     (
         '/valid/path',
@@ -21,7 +26,7 @@ from apps_exceptions import AppDoesNotExist, ValidationErrors
         '\'1.0.0\' to \'1.1.0\'\n'
     )
 ])
-def test_update_app_version(mocker, capsys, path, bump, dep, dep_version, yaml, expected_out):
+def test_update_app_version(mocker, capsys, mock_atomic_write, path, bump, dep, dep_version, yaml, expected_out):
     mocker.patch('os.path.exists', return_value=True)
     mocker.patch('pathlib.Path.is_file', return_value=True)
     mock_file = mocker.mock_open(read_data=yaml)
@@ -62,7 +67,7 @@ def test_update_app_version(mocker, capsys, path, bump, dep, dep_version, yaml, 
         '''
     ),
 ])
-def test_update_app_version_Errors(mocker, path, bump, dep, dep_version, exists, is_file, yaml):
+def test_update_app_version_Errors(mocker, mock_atomic_write, path, bump, dep, dep_version, exists, is_file, yaml):
     mocker.patch('os.path.exists', return_value=exists)
     mocker.patch('pathlib.Path.is_file', return_value=is_file)
     mock_file = mocker.mock_open(read_data=yaml)
