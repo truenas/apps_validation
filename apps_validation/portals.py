@@ -5,10 +5,14 @@ from apps_exceptions import ValidationErrors
 
 IX_NOTES_KEY = 'x-notes'
 IX_PORTAL_KEY = 'x-portals'
+IX_ACTION_REQUIRED_KEY = 'x-action-required'
 VALIDATION_SCHEMA = {
     '$schema': 'https://json-schema.org/draft/2020-12/schema',
     'type': 'object',
     'properties': {
+        'x-action-required': {
+            'type': ['boolean', 'null'],
+        },
         'x-portals': {
             'type': 'array',
             'items': {
