@@ -99,3 +99,23 @@ def test_is_main_dep(mocker, yaml_data, dep_name, dep_version, is_dir, is_file, 
     else:
         with pytest.raises((AppDoesNotExist, ValidationErrors)):
             is_main_dep(pathlib.Path('/valid/path'), dep_name, dep_version)
+
+
+@pytest.mark.parametrize('tag, dep_version, expected', [
+    ('1.2.3@sha256:abcdef0123', '1.2.3', True),
+    ('1.2.3@sha256:abcdef0123', '1.2.4', False),
+    ('1.2.3', '1.2.3', True),
+])
+def test_is_main_dep_with_digest_pin(mocker, tag, dep_version, expected):
+    yaml_data = textwrap.dedent(
+        f'''
+        images:
+            image:
+                repository: ABC
+                tag: "{tag}"
+        '''
+    )
+    mocker.patch('builtins.open', mocker.mock_open(read_data=yaml_data))
+    mocker.patch('pathlib.Path.is_dir', return_value=True)
+    mocker.patch('pathlib.Path.is_file', return_value=True)
+    assert is_main_dep(pathlib.Path('/valid/path'), 'ABC', dep_version) is expected
