@@ -390,12 +390,56 @@ def test_validate_catalog_item_version(mocker, version_path, app_yaml, schema, r
     mocker.patch('apps_validation.validate_app_version.validate_ix_values_yaml', return_value=None)
     mocker.patch('apps_validation.validate_app_version.validate_templates', return_value=None)
     mocker.patch('apps_validation.validate_app_version.validate_migration_config', return_value=None)
+    mocker.patch('apps_validation.validate_app_version.get_migration_file_names', return_value=[])
 
     if should_work:
         assert validate_catalog_item_version(version_path, schema) is None
     else:
         with pytest.raises(ValidationErrors):
             validate_catalog_item_version(version_path, schema)
+
+
+@pytest.mark.parametrize('migration_files, migrations_dir_exists, should_work', [
+    (['migrate_1'], True, True),
+    (['migrate_1'], False, False),
+    ([], False, True),
+])
+def test_validate_catalog_item_version_migrations_dir(mocker, migration_files, migrations_dir_exists, should_work):
+    app_yaml = '''
+        name: storj
+        version: 1.0.4
+        train: stable
+        date_added: '2025-04-08'
+        app_version: 1.0.0.8395
+        title: storj
+        description: Test description
+        home: https://storj.com
+        sources: [https://storj.com]
+        maintainers:
+        - email: dev@ixsystems.com
+          name: truenas
+          url: https://www.truenas.com/
+        run_as_context: []
+        capabilities: []
+        host_mounts: []
+    '''
+    version_path = '/mnt/mypool/ix-applications/catalogs/github_com_truenas_charts_git_master/charts/storj/1.0.4'
+    mocker.patch('builtins.open', mocker.mock_open(read_data=app_yaml))
+    mocker.patch('os.listdir', return_value=WANTED_FILES_IN_ITEM_VERSION)
+    mocker.patch('os.path.exists', return_value=True)
+    mocker.patch('os.path.isdir', side_effect=lambda path: migrations_dir_exists and path.endswith('/migrations'))
+    mocker.patch('apps_validation.validate_app_version.validate_questions_yaml', return_value=None)
+    mocker.patch('apps_validation.validate_app_version.validate_ix_values_yaml', return_value=None)
+    mocker.patch('apps_validation.validate_app_version.validate_templates', return_value=None)
+    mocker.patch('apps_validation.validate_app_version.validate_migration_config', return_value=None)
+    mocker.patch('apps_validation.validate_app_version.get_migration_file_names', return_value=migration_files)
+    mocker.patch('apps_validation.validate_app_version.validate_migration_file', return_value=None)
+
+    if should_work:
+        assert validate_catalog_item_version(version_path, 'charts.storj.versions.1.0.4') is None
+    else:
+        with pytest.raises(ValidationErrors, match='directory is missing'):
+            validate_catalog_item_version(version_path, 'charts.storj.versions.1.0.4')
 
 
 @pytest.mark.parametrize('data, schema, should_work', [
