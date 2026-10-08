@@ -1,6 +1,5 @@
 import os
 import json
-import yaml
 
 from jsonschema import validate as json_schema_validate, ValidationError as JsonValidationError
 
@@ -8,6 +7,7 @@ from apps_ci.names import CACHED_VERSION_FILE_NAME
 from apps_exceptions import ValidationErrors
 
 from .json_schema_utils import APP_ITEM_JSON_SCHEMA
+from .utils import safe_yaml_load
 from .validate_app_version import validate_catalog_item_version_data, validate_catalog_item_version
 
 
@@ -37,7 +37,7 @@ def validate_catalog_item(catalog_item_path: str, schema: str, train_name: str, 
         verrors.add(f'{schema}.item', 'Item configuration (item.yaml) not found')
     else:
         with open(os.path.join(catalog_item_path, 'item.yaml'), 'r') as f:
-            item_config = yaml.safe_load(f.read())
+            item_config = safe_yaml_load(f)
 
         try:
             json_schema_validate(item_config, APP_ITEM_JSON_SCHEMA)

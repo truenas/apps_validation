@@ -1,9 +1,9 @@
 import os
-import yaml
 
 from jsonschema import validate as json_schema_validate
 from semantic_version import Version
 
+from apps_validation.utils import safe_yaml_load
 from .names import DEPRECATED_APPS_FILENAME, TO_KEEP_VERSIONS
 
 
@@ -22,7 +22,7 @@ REQUIRED_VERSIONS_JSON_SCHEMA = {
 def get_app_version(app_path: str) -> str:
     # This assumes that file exists and version is specified and is good
     with open(os.path.join(app_path, 'app.yaml'), 'r') as f:
-        result: str = yaml.safe_load(f.read())['version']
+        result: str = safe_yaml_load(f)['version']
         return result
 
 
@@ -47,6 +47,6 @@ def get_to_keep_versions(app_dir_path: str) -> list:
         return []
 
     with open(required_version_path, 'r') as f:
-        data: list = yaml.safe_load(f.read())
+        data: list = safe_yaml_load(f)
         json_schema_validate(data, REQUIRED_VERSIONS_JSON_SCHEMA)
     return data

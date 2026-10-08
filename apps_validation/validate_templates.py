@@ -4,6 +4,7 @@ import re
 import yaml
 
 from apps_exceptions import ValidationErrors
+from apps_validation.utils import safe_yaml_load
 from catalog_reader.app_utils import get_app_basic_details, get_values
 from catalog_templating.render import render_templates
 
@@ -73,7 +74,7 @@ def validate_template_rendering(app_path: str, schema: str, verrors: ValidationE
             else:
                 for file_name, rendered_template in rendered.items():
                     try:
-                        rendered_config.update(yaml.safe_load(rendered_template))
+                        rendered_config.update(safe_yaml_load(rendered_template))
                     except yaml.YAMLError as e:
                         verrors.add(
                             f'{schema}.{file_name}',

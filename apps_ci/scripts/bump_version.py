@@ -9,6 +9,7 @@ from truenas_os_pyutils.io import atomic_write
 from apps_ci.images_info import is_main_dep
 from apps_ci.version_bump import map_renovate_bump_type, bump_version, rename_versioned_dir
 from apps_exceptions import AppDoesNotExist, ValidationErrors
+from apps_validation.utils import safe_yaml_load
 
 
 def update_app_version(app_path: str, bump_type: str, dep_name: str, dep_version: str) -> None:
@@ -24,7 +25,7 @@ def update_app_version(app_path: str, bump_type: str, dep_name: str, dep_version
     verrors.check()
 
     with open(str(app_metadata_file), 'r') as f:
-        app_config = yaml.safe_load(f.read())
+        app_config = safe_yaml_load(f)
 
     msg = ''
     if dep_name and dep_version and is_main_dep(app_dir, dep_name, dep_version):
