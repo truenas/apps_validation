@@ -1,5 +1,7 @@
 import itertools
 
+from typing import Any
+
 from .questions_util import ACL_QUESTION, get_custom_portal_question, IX_VOLUMES_ACL_QUESTION
 
 
@@ -27,7 +29,7 @@ def normalize_question(question: dict, version_data: dict, context: dict) -> Non
     if '$ref' not in schema:
         return
 
-    data = {}
+    data: dict[str, Any] = {}
     for ref in schema['$ref']:
         version_data['required_features'].add(ref)
         if ref == 'definitions/interface':
@@ -127,12 +129,6 @@ def normalize_question(question: dict, version_data: dict, context: dict) -> Non
             data['enum'] += [
                 {'value': i['id'], 'description': f'{i["name"]!r} Certificate'}
                 for i in context['certificates']
-            ]
-        elif ref == 'definitions/certificate_authority':
-            get_cert_ca_options(schema, data, {'value': None, 'description': 'No Certificate Authority'})
-            data['enum'] += [{'value': None, 'description': 'No Certificate Authority'}] + [
-                {'value': i['id'], 'description': f'{i["name"]!r} Certificate Authority'}
-                for i in context['certificate_authorities']
             ]
         elif ref == 'definitions/port':
             data.update({

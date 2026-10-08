@@ -4,6 +4,11 @@ from apps_ci.scripts.catalog_update import update_catalog_file
 from apps_exceptions import ValidationErrors
 
 
+@pytest.fixture
+def mock_atomic_write(mocker):
+    return mocker.patch('apps_ci.scripts.catalog_update.atomic_write', mocker.mock_open())
+
+
 @pytest.mark.parametrize('catalog_data, version_data, expected', [
     (
         {
@@ -16,6 +21,7 @@ from apps_exceptions import ValidationErrors
                     'healthy': True,
                     'healthy_error': None,
                     'last_update': '2024-10-01 14:30:00',
+                    'date_added': '2025-04-08',
                     'recommended': [],
                     'latest_version': '1.2.0',
                     'latest_app_version': '1.2.0',
@@ -61,12 +67,14 @@ from apps_exceptions import ValidationErrors
                             'readme': None,
                             'changelog': None,
                             'last_update': '1200-20-00 00:00:00',
+                            'date_added': '2025-04-08',
                             'maintainers': {},
                             'app_metadata': {
                                 'name': 'chia',
                                 'train': 'stable',
                                 'version': '1.0.1',
                                 'app_version': '1.0.1',
+                                'date_added': '2025-04-08',
                                 'title': 'chia',
                                 'description': 'desc',
                                 'home': 'None',
@@ -101,6 +109,7 @@ from apps_exceptions import ValidationErrors
                     'healthy': True,
                     'healthy_error': None,
                     'last_update': '2024-10-01 14:30:00',
+                    'date_added': '2025-04-08',
                     'recommended': [],
                 },
             }
@@ -120,10 +129,8 @@ from apps_exceptions import ValidationErrors
         'Error'
     )
 ])
-def test_update_catalog_file(mocker, capsys, catalog_data, version_data, expected):
+def test_update_catalog_file(mocker, capsys, mock_atomic_write, catalog_data, version_data, expected):
     mocker.patch('apps_ci.scripts.catalog_update.get_trains', return_value=[catalog_data, version_data])
-    mock_file = mocker.mock_open(read_data='')
-    mocker.patch('builtins.open', mock_file)
     if expected != 'Error':
         update_catalog_file('/valid/path/')
         stdout = capsys.readouterr()

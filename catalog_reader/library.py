@@ -17,7 +17,9 @@ def get_library_hashes(library_path: str) -> dict:
     """
     with contextlib.suppress(FileNotFoundError, yaml.YAMLError):
         with open(get_library_hashes_path(library_path), 'r') as f:
-            return yaml.safe_load(f.read())
+            data: dict = yaml.safe_load(f.read())
+            return data
+    return {}
 
 
 def get_hashes_of_base_lib_versions(catalog_path: str) -> dict:

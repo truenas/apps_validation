@@ -22,6 +22,7 @@ def get_migration_file_names(migration_yaml_path: str, schema: str) -> list[str]
         verrors.add(f'{schema}.yaml_file', 'Must be a valid YAML file')
 
     verrors.check()
+    return []
 
 
 def validate_migration_config(migration_yaml_path: str, schema: str):

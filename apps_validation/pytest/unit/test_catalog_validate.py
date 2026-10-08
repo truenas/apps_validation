@@ -1,5 +1,3 @@
-import sys
-
 import pytest
 
 from apps_exceptions import CatalogDoesNotExist, ValidationErrors
@@ -23,7 +21,7 @@ from apps_validation.scripts.catalog_validate import validate
         ),
         (
             "/valid/path_with_errors",
-            ValidationErrors([("error_field", "Sample validation error")]),
+            ValidationErrors([("error_field", "Sample validation error")]),  # type: ignore[list-item]
             "[\x1b[91mFAILED\x1b[0m]\tFollowing validation failures were found:\n"
             "[\x1b[91m0\x1b[0m]\t('error_field', 'Sample validation error')",
             1
@@ -34,9 +32,9 @@ def test_validate(mocker, capsys, catalog_path, side_effect, expected_output, ex
     mocker.patch('apps_validation.scripts.catalog_validate.validate_catalog', side_effect=side_effect)
 
     if expected_exit_code:
-        with pytest.raises(SystemExit):
+        with pytest.raises(SystemExit) as exc:
             validate(catalog_path)
-        assert mocker.spy(sys, 'exit').called_once_with(expected_exit_code)
+        assert exc.value.code == expected_exit_code
     else:
         validate(catalog_path)
 

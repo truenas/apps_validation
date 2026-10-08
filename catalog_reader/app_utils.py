@@ -55,7 +55,8 @@ def get_app_basic_details(app_path: str) -> dict:
 def get_values(values_path: str) -> dict:
     with contextlib.suppress(FileNotFoundError, yaml.YAMLError):
         with open(values_path, 'r') as f:
-            return yaml.safe_load(f.read())
+            data: dict = yaml.safe_load(f.read())
+            return data
 
     return {}
 

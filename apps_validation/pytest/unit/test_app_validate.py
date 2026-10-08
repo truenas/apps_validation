@@ -314,6 +314,7 @@ def test_validate_catalog_item(mocker, catalog_path, test_yaml, train, item_yaml
         name: storj
         version: 1.0.4
         train: stable
+        date_added: '2025-04-08'
         app_version: 1.0.0.8395
         title: storj
         description: Test description
@@ -337,6 +338,7 @@ def test_validate_catalog_item(mocker, catalog_path, test_yaml, train, item_yaml
         name: storj
         version: 1.0.4
         train: stable
+        date_added: '2025-04-08'
         app_version: 1.0.0.8395
         title: storj
         description: Test description
@@ -360,6 +362,7 @@ def test_validate_catalog_item(mocker, catalog_path, test_yaml, train, item_yaml
         name: storj
         version: 1.0.4
         train: stable
+        date_added: '2025-04-08'
         app_version: 1.0.0.8395
         title: storj
         description: Test description
@@ -387,7 +390,6 @@ def test_validate_catalog_item_version(mocker, version_path, app_yaml, schema, r
     mocker.patch('apps_validation.validate_app_version.validate_ix_values_yaml', return_value=None)
     mocker.patch('apps_validation.validate_app_version.validate_templates', return_value=None)
     mocker.patch('apps_validation.validate_app_version.validate_migration_config', return_value=None)
-    mocker.patch('apps_validation.validate_app_version.validate_k8s_to_docker_migrations', return_value=None)
 
     if should_work:
         assert validate_catalog_item_version(version_path, schema) is None

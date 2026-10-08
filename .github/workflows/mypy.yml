@@ -1,0 +1,16 @@
+name: mypy
+
+on: [push]
+
+jobs:
+  type-check:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/truenas/middleware:master
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+        run: pip install --break-system-packages --ignore-installed .
+      - name: Run mypy
+        run: mypy apps_exceptions/ apps_schema/ apps_validation/ catalog_reader/ catalog_templating/ apps_ci/

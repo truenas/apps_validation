@@ -4,11 +4,11 @@ import yaml
 from jsonschema import validate as json_schema_validate
 from semantic_version import Version
 
-from .names import TO_KEEP_VERSIONS
+from .names import DEPRECATED_APPS_FILENAME, TO_KEEP_VERSIONS
 
 
 DEV_DIRECTORY_RELATIVE_PATH = 'ix-dev'
-OPTIONAL_METADATA_FILES = ['upgrade_info.json', 'upgrade_strategy', TO_KEEP_VERSIONS]
+OPTIONAL_METADATA_FILES = ['upgrade_info.json', 'upgrade_strategy', DEPRECATED_APPS_FILENAME, TO_KEEP_VERSIONS]
 REQUIRED_METADATA_FILES = ['item.yaml']
 REQUIRED_VERSIONS_JSON_SCHEMA = {
     'type': 'array',
@@ -22,7 +22,8 @@ REQUIRED_VERSIONS_JSON_SCHEMA = {
 def get_app_version(app_path: str) -> str:
     # This assumes that file exists and version is specified and is good
     with open(os.path.join(app_path, 'app.yaml'), 'r') as f:
-        return yaml.safe_load(f.read())['version']
+        result: str = yaml.safe_load(f.read())['version']
+        return result
 
 
 def get_ci_development_directory(catalog_path: str) -> str:
@@ -46,6 +47,6 @@ def get_to_keep_versions(app_dir_path: str) -> list:
         return []
 
     with open(required_version_path, 'r') as f:
-        data = yaml.safe_load(f.read())
+        data: list = yaml.safe_load(f.read())
         json_schema_validate(data, REQUIRED_VERSIONS_JSON_SCHEMA)
     return data

@@ -52,12 +52,18 @@ APP_METADATA_JSON_SCHEMA = {
         'train': {'type': 'string'},
         'description': {'type': 'string'},
         'home': {'type': 'string'},
+        'chagelog_url': {'type': 'string'},
+        'date_added': {
+            'type': 'string',
+            'pattern': '20[0-9]{2}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])',
+        },
         'app_version': {'type': 'string'},
         'annotations': {
             'type': 'object',
             'properties': {
                 'min_scale_version': {'type': 'string'},
                 'max_scale_version': {'type': 'string'},
+                'disallow_multiple_instances': {'type': 'boolean'},
             },
         },
         'title': {'type': 'string'},
@@ -405,4 +411,64 @@ APP_CONFIG_MIGRATIONS_SCHEMA = {
         }
     },
     'required': ['migrations'],
+}
+DEPRECATED_APPS_SCHEMA = {
+    'type': 'array',
+    'items': {
+        'type': 'object',
+        'properties': {
+            'scope': {
+                'type': 'string',
+                'enum': [
+                    'partial',
+                    'full'
+                ]
+            },
+            'deprecated_date': {
+                'type': 'string',
+                'pattern': r'^\d{4}-\d{2}-\d{2}$',
+            },
+            'removal_date': {
+                'type': 'string',
+                'pattern': r'^\d{4}-\d{2}-\d{2}$',
+            },
+            'reason': {
+                'type': 'string',
+            },
+            'partial_details': {
+                'type': 'object',
+                'properties': {
+                    'feature': {
+                        'type': 'string',
+                    },
+                    'description': {
+                        'type': 'string',
+                    },
+                    'steps': {
+                        'type': 'array',
+                        'items': {
+                            'type': 'string'
+                        }
+                    }
+                },
+                'required': [
+                    'feature',
+                    'description',
+                    'steps'
+                ]
+            },
+            'alternative_app': {
+                'type': 'string',
+            },
+            'migration_guide': {
+                'type': 'string',
+                'format': 'uri',
+            },
+        },
+        'required': [
+            'scope',
+            'deprecated_date',
+            'removal_date',
+        ]
+    }
 }

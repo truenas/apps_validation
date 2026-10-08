@@ -1,19 +1,18 @@
 import os
 import yaml
 
-from typing import Optional
-
 from jsonschema import validate as json_schema_validate, ValidationError as JsonValidationError
 
 from apps_exceptions import ValidationErrors
 
 from .json_schema_utils import APP_METADATA_JSON_SCHEMA
 from .scale_version import validate_min_max_version_values
+from .utils import validate_key_value_types
 
 
 def validate_app_version_file(
-    verrors: ValidationErrors, app_version_path: str, schema: str, item_name: str, version_name: Optional[str] = None,
-    train_name: Optional[str] = None,
+    verrors: ValidationErrors, app_version_path: str, schema: str, item_name: str, version_name: str | None = None,
+    train_name: str | None = None,
 ) -> ValidationErrors:
     if not os.path.exists(app_version_path):
         verrors.add(schema, 'Missing app version file')
@@ -37,6 +36,10 @@ def validate_app_version_file(
 
     if app_config.get('annotations'):
         validate_min_max_version_values(app_config['annotations'], verrors, schema)
+        validate_key_value_types(
+            app_config['annotations'], (('disallow_multiple_instances', bool, False),),
+            verrors, schema
+        )
 
     if version_name is not None and app_config['version'] != version_name:
         verrors.add(f'{schema}.version', 'Version name does not match with the version name in the app version file')

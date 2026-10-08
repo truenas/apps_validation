@@ -117,7 +117,7 @@ GPU_CHOICES = [
     }
 ]
 
-GPU_DETAIL = [entry for entry in GPU_CHOICES if entry['gpu_details']['available_to_host']]
+GPU_DETAIL = [entry for entry in GPU_CHOICES if entry['gpu_details']['available_to_host']]  # type: ignore[index]
 
 
 @pytest.mark.parametrize('question, normalized_data, context', [
@@ -374,35 +374,6 @@ GPU_DETAIL = [entry for entry in GPU_CHOICES if entry['gpu_details']['available_
         },
         {
             'certificates': [],
-        }
-    ),
-    (
-        {
-            'variable': 'datasetName',
-            'label': 'Plots Volume Name',
-            'schema': {
-                'type': 'string',
-                'hidden': True,
-                '$ref': ['definitions/certificate_authority'],
-            }
-        },
-        {
-            'variable': 'datasetName',
-            'label': 'Plots Volume Name',
-            'schema': {
-                'type': 'string',
-                'hidden': True,
-                '$ref': ['definitions/certificate_authority'],
-                'enum': [
-                    {'value': None, 'description': 'No Certificate Authority'},
-                    {'value': None, 'description': 'No Certificate Authority'}
-                ],
-                'default': None,
-                'null': True
-            }
-        },
-        {
-            'certificate_authorities': [],
         }
     ),
     (

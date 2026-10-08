@@ -3,10 +3,10 @@ import contextlib
 import json
 import os
 import shutil
-import typing
 from collections import defaultdict
 
 from jsonschema import validate as json_schema_validate, ValidationError as JsonValidationError
+from truenas_os_pyutils.io import atomic_write
 
 from apps_ci.names import CACHED_CATALOG_FILE_NAME, CACHED_VERSION_FILE_NAME
 from apps_exceptions import ValidationErrors
@@ -20,11 +20,11 @@ from catalog_reader.dev_directory import (
 from catalog_reader.train_utils import get_train_path
 
 
-def get_trains(location: str) -> typing.Tuple[dict, dict]:
+def get_trains(location: str) -> tuple[dict, dict]:
     preferred_trains: list = []
     trains_to_traverse = retrieve_train_names(get_train_path(location))
-    catalog_data = {}
-    versions_data = {}
+    catalog_data: dict = {}
+    versions_data: dict = {}
     for train_name, train_data in retrieve_trains_data(
         get_apps_in_trains(trains_to_traverse, location), location, preferred_trains, trains_to_traverse,
         normalize_questions=False,
@@ -42,7 +42,7 @@ def get_trains(location: str) -> typing.Tuple[dict, dict]:
 
             # We will add capabilities and run as context from latest version to catalog data now
             latest_version = app_data.get('latest_version')
-            metadata_info = {'capabilities': [], 'run_as_context': []}
+            metadata_info: dict[str, list] = {'capabilities': [], 'run_as_context': []}
             if latest_version in app_data.get('versions', {}):
                 version_metadata_info = app_data['versions'][latest_version].get('app_metadata', {})
                 metadata_info.update({
@@ -61,7 +61,8 @@ def validate_train_data(train_data):
     except (json.JSONDecodeError, JsonValidationError) as e:
         verrors.add(
             'catalog_json',
-            f'Failed to validate contents of train data ({".".join([str(p) for p in e.path])}): {e!r}'
+            f'Failed to validate contents of train data '
+            f'({".".join([str(p) for p in e.path])}): {e!r}'  # type: ignore[union-attr]
         )
     verrors.check()
 
@@ -148,7 +149,7 @@ def update_catalog_file(location: str) -> None:
     validate_train_data(catalog_data)
     validate_versions_data(versions_data)
 
-    with open(catalog_file_path, 'w') as f:
+    with atomic_write(catalog_file_path, uid=-1, gid=-1) as f:
         f.write(json.dumps(catalog_data, indent=4))
 
     print(f'[\033[92mOK\x1B[0m]\tUpdated {catalog_file_path!r} successfully!')
@@ -156,7 +157,7 @@ def update_catalog_file(location: str) -> None:
     for train_name, train_data in versions_data.items():
         for app_name, app_data in train_data.items():
             version_path = os.path.join(get_train_path(location), train_name, app_name, CACHED_VERSION_FILE_NAME)
-            with open(version_path, 'w') as f:
+            with atomic_write(version_path, uid=-1, gid=-1) as f:
                 f.write(json.dumps(app_data['versions'], indent=4))
 
             print(f'[\033[92mOK\x1B[0m]\tUpdated {version_path!r} successfully!')

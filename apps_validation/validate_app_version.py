@@ -1,6 +1,5 @@
 import os
 import pathlib
-import typing
 import yaml
 
 from jsonschema import validate as json_schema_validate, ValidationError as JsonValidationError
@@ -15,7 +14,6 @@ from catalog_reader.questions_util import CUSTOM_PORTALS_KEY
 from .app_version import validate_app_version_file
 from .ix_values import validate_ix_values_schema
 from .json_schema_utils import VERSION_VALIDATION_SCHEMA
-from .validate_k8s_to_docker_migration import validate_k8s_to_docker_migrations
 from .validate_migrations import validate_migration_config, validate_migration_file, get_migration_file_names
 from .validate_questions import validate_questions_yaml
 from .validate_templates import validate_templates
@@ -37,8 +35,8 @@ def validate_catalog_item_version_data(version_data: dict, schema: str, verrors:
 
 
 def validate_catalog_item_version(
-    version_path: str, schema: str, version_name: typing.Optional[str] = None,
-    item_name: typing.Optional[str] = None, validate_values: bool = False, train_name: typing.Optional[str] = None,
+    version_path: str, schema: str, version_name: str | None = None,
+    item_name: str | None = None, validate_values: bool = False, train_name: str | None = None,
 ):
     verrors = ValidationErrors()
     version_name = version_name or os.path.basename(version_path)
@@ -113,9 +111,6 @@ def validate_catalog_item_version(
             except ValidationErrors as v:
                 verrors.extend(v)
 
-    validate_k8s_to_docker_migrations(
-        verrors, os.path.join(version_path, 'migrations'), f'{schema}.migrations.migrate_from_kubernetes'
-    )
     # validate_app_migrations(verrors, version_path, f'{schema}.app_migrations')
     # FIXME: Add validation for app migrations
 

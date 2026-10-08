@@ -19,9 +19,9 @@ images:
 """
 
 
-def is_main_dep(app_dir: Path, dep_name: str) -> bool:
+def is_main_dep(app_dir: Path, dep_name: str, dep_version: str) -> bool:
     if not app_dir.is_dir():
-        raise AppDoesNotExist(app_dir)
+        raise AppDoesNotExist(str(app_dir))
     if not dep_name:
         return False
 
@@ -32,7 +32,13 @@ def is_main_dep(app_dir: Path, dep_name: str) -> bool:
     verrors.check()
     with open(ix_values, 'r') as f:
         ix_values_data = yaml.safe_load(f.read())
-        if ix_values_data.get('images', {}).get('image', {}).get('repository') == dep_name:
+        main_image = ix_values_data.get('images', {}).get('image', {})
+        repo = main_image.get('repository')
+        tag = main_image.get('tag')
+        # Drop the digest pin (tag@sha256:...), renovate passes only the tag as dep_version
+        if isinstance(tag, str):
+            tag = tag.split('@')[0]
+        if repo == dep_name and tag == dep_version:
             return True
 
     return False

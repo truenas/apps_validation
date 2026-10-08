@@ -28,17 +28,29 @@ QUESTION_CONTEXT = {
             'healthy_error': None,
             'home': None,
             'last_update': None,
-            'versions': {},
             'maintainers': [],
-            'latest_version': None,
-            'latest_app_version': None,
-            'latest_human_version': None,
+            'latest_version': '1.0.0',
+            'latest_app_version': '1.0.0',
+            'latest_human_version': '1.0.0',
             'recommended': False,
             'title': 'Chia',
             'description': None,
             'tags': [],
             'screenshots': [],
             'sources': [],
+            'versions': {
+                '1.0.0': {
+                    'healthy': True,
+                    'app_metadata': {
+                        'app_version': '1.0.0',
+                        'maintainers': [],
+                        'description': None,
+                        'home': None,
+                        'sources': []
+                    },
+                    'readme': None,
+                }
+            }
         }
     ),
     (
@@ -54,9 +66,9 @@ QUESTION_CONTEXT = {
             'home': None,
             'last_update': None,
             'maintainers': [],
-            'latest_version': None,
-            'latest_app_version': None,
-            'latest_human_version': None,
+            'latest_version': '1.0.0',
+            'latest_app_version': '1.0.0',
+            'latest_human_version': '1.0.0',
             'recommended': False,
             'title': 'Chia',
             'description': None,
@@ -68,7 +80,21 @@ QUESTION_CONTEXT = {
 ])
 def test_get_app_details(mocker, item_path, options, items_data):
     mocker.patch('catalog_reader.app.validate_catalog_item', return_value=None)
-    mocker.patch('catalog_reader.app.get_app_details_impl', return_value={})
+    mocker.patch('catalog_reader.app.get_app_details_impl', return_value={
+        'versions': {
+                '1.0.0': {
+                    'healthy': True,
+                    'app_metadata': {
+                        'app_version': '1.0.0',
+                        'maintainers': [],
+                        'description': None,
+                        'home': None,
+                        'sources': []
+                    },
+                    'readme': None,
+                }
+        }
+    })
     assert get_app_details(item_path, QUESTION_CONTEXT, options) == items_data
 
 

@@ -8,22 +8,21 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/truenas/middleware:master
+    env:
+      FAKE_ENV: "1"
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
-      
-      - name: Install dev-tools
-        run: |
-          install-dev-tools
 
       - name: Install dependencies
         run: |
           apt install python3-pytest-mock -y
+          pip install --break-system-packages --ignore-installed .
 
       - name: Run Tests
         run: |
-          PYTHONPATH=$(pwd) pytest apps_validation/pytest/unit/
-          PYTHONPATH=$(pwd) pytest catalog_reader/pytest/unit/
-          PYTHONPATH=$(pwd) pytest apps_schema/pytest/unit/
-          PYTHONPATH=$(pwd) pytest apps_ci/pytest/unit/
+          pytest apps_validation/pytest/unit/
+          pytest catalog_reader/pytest/unit/
+          pytest apps_schema/pytest/unit/
+          pytest apps_ci/pytest/unit/
