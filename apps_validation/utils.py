@@ -1,7 +1,9 @@
 import yaml
 
+from typing import IO, Any
 
-def safe_yaml_load(stream):
+
+def safe_yaml_load(stream: str | IO[str]) -> Any:
     """
     Load YAML data using the C-based safe loader.
 
