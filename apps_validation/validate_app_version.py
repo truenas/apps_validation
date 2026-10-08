@@ -87,16 +87,19 @@ def validate_catalog_item_version(
         except ValidationErrors as v:
             verrors.extend(v)
 
-    # Validating actual migration file
+    # Validating actual migration files
     if os.path.exists(migrations_yaml_path):
-        if not os.path.isdir(app_migrations_dir):
-            verrors.add(f'{schema}.migrations_configuration', f'{app_migrations_dir!r} is not a directory')
-        verrors.check()
-
         try:
-            for filename in get_migration_file_names(migrations_yaml_path, f'{schema}.migrations_configuration'):
-                migration_file_path = os.path.join(app_migrations_dir, filename)
-                validate_migration_file(migration_file_path, f'{schema}.migration_file.{filename}')
+            filenames = get_migration_file_names(migrations_yaml_path, f'{schema}.migrations_configuration')
+            if filenames and not os.path.isdir(app_migrations_dir):
+                verrors.add(
+                    f'{schema}.migrations_configuration',
+                    f'{app_migrations_dir!r} directory is missing, but app_migrations.yaml lists migration files',
+                )
+            else:
+                for filename in filenames:
+                    migration_file_path = os.path.join(app_migrations_dir, filename)
+                    validate_migration_file(migration_file_path, f'{schema}.migration_file.{filename}')
         except ValidationErrors as v:
             verrors.extend(v)
 
