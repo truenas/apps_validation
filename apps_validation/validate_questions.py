@@ -1,4 +1,3 @@
-import typing
 import yaml
 
 from apps_schema.variable import Variable
@@ -78,7 +77,7 @@ def validate_questions_yaml(questions_yaml_path: str, schema: str):
 
 
 def validate_question(
-    question_data: dict, schema: str, verrors: ValidationErrors, validate_top_level_attrs: typing.Optional[tuple] = None
+    question_data: dict, schema: str, verrors: ValidationErrors, validate_top_level_attrs: tuple | None = None
 ):
     if not isinstance(question_data, dict):
         verrors.add(schema, 'Question must be a valid dictionary.')

@@ -4,6 +4,11 @@ from apps_ci.scripts.catalog_update import update_catalog_file
 from apps_exceptions import ValidationErrors
 
 
+@pytest.fixture
+def mock_atomic_write(mocker):
+    return mocker.patch('apps_ci.scripts.catalog_update.atomic_write', mocker.mock_open())
+
+
 @pytest.mark.parametrize('catalog_data, version_data, expected', [
     (
         {
@@ -124,10 +129,8 @@ from apps_exceptions import ValidationErrors
         'Error'
     )
 ])
-def test_update_catalog_file(mocker, capsys, catalog_data, version_data, expected):
+def test_update_catalog_file(mocker, capsys, mock_atomic_write, catalog_data, version_data, expected):
     mocker.patch('apps_ci.scripts.catalog_update.get_trains', return_value=[catalog_data, version_data])
-    mock_file = mocker.mock_open(read_data='')
-    mocker.patch('builtins.open', mock_file)
     if expected != 'Error':
         update_catalog_file('/valid/path/')
         stdout = capsys.readouterr()

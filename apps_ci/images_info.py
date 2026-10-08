@@ -20,7 +20,7 @@ images:
 
 def is_main_dep(app_dir: Path, dep_name: str, dep_version: str) -> bool:
     if not app_dir.is_dir():
-        raise AppDoesNotExist(app_dir)
+        raise AppDoesNotExist(str(app_dir))
     if not dep_name:
         return False
 

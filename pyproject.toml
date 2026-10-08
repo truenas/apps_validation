@@ -41,3 +41,20 @@ include = [
     "catalog_templating",
     "catalog_templating.*",
 ]
+
+[tool.mypy]
+python_version = "3.13"
+warn_return_any = true
+warn_unused_configs = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+check_untyped_defs = true
+no_implicit_optional = true
+show_error_codes = true
+
+[[tool.mypy.overrides]]
+module = [
+    "semantic_version.*",
+    "middlewared.*",
+]
+ignore_missing_imports = true

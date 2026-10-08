@@ -1,5 +1,4 @@
 import os
-import typing
 
 from apps_exceptions import ValidationErrors
 
@@ -15,7 +14,7 @@ def validate_train_structure(train_path: str, schema: str):
     verrors.check()
 
 
-def get_train_items(train_path: str) -> typing.List[typing.Tuple[str, str]]:
+def get_train_items(train_path: str) -> list[tuple[str, str, str]]:
     train = os.path.basename(train_path)
     items = []
     for catalog_item in os.listdir(train_path):

@@ -1,5 +1,4 @@
 import os
-import typing
 
 
 DEPRECATED_APPS_FILENAME = 'deprecations.yaml'
@@ -12,7 +11,7 @@ def get_app_library_dir_name_from_version(version: str) -> str:
     return f'v{version.replace(".", "_")}'
 
 
-def get_base_library_dir_name_from_version(version: typing.Optional[str]) -> str:
+def get_base_library_dir_name_from_version(version: str | None) -> str:
     return f'base_v{version.replace(".", "_")}' if version else ''
 
 

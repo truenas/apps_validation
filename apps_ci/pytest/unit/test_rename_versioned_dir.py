@@ -41,7 +41,9 @@ def test_rename_versioned_dir(mocker, version, new_version, train_name, is_dir, 
     mocker.patch('pathlib.Path.is_dir', side_effect=is_dir)
     mocker.patch('pathlib.Path.rename', return_value=None)
     if should_work:
-        result = rename_versioned_dir(version, new_version, train_name, pathlib.Path('/valid/path'))
+        result = rename_versioned_dir(  # type: ignore[func-returns-value]
+            version, new_version, train_name, pathlib.Path('/valid/path')
+        )
         assert result is None
     else:
         with pytest.raises((AppDoesNotExist, ValidationErrors)):

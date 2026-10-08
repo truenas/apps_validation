@@ -117,7 +117,7 @@ GPU_CHOICES = [
     }
 ]
 
-GPU_DETAIL = [entry for entry in GPU_CHOICES if entry['gpu_details']['available_to_host']]
+GPU_DETAIL = [entry for entry in GPU_CHOICES if entry['gpu_details']['available_to_host']]  # type: ignore[index]
 
 
 @pytest.mark.parametrize('question, normalized_data, context', [
