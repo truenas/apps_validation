@@ -1,7 +1,31 @@
 import pytest
 
-from catalog_reader.questions import normalize_question
+from catalog_reader.questions import normalize_question, normalize_questions
 from catalog_reader.questions_util import ACL_QUESTION, IX_VOLUMES_ACL_QUESTION
+
+
+def test_normalize_questions_adds_legacy_compatible_image_override_defaults():
+    version_data = {'schema': {'questions': []}}
+    normalize_questions(version_data, {})
+    question = version_data['schema']['questions'][0]
+    assert question['variable'] == 'image_overrides'
+    assert question['schema']['default'] == []
+    assert any(group['name'] == 'Application Images' for group in version_data['schema']['groups'])
+    normalize_questions(version_data, {})
+    assert [q['variable'] for q in version_data['schema']['questions']].count('image_overrides') == 1
+
+
+def test_normalize_questions_discovers_image_keys_and_hides_empty_apps(tmp_path):
+    (tmp_path / 'ix_values.yaml').write_text('images:\n  image:\n    repository: example/app\n    tag: latest\n')
+    data = {'location': str(tmp_path), 'schema': {'questions': []}}
+    normalize_questions(data, {})
+    question = data['schema']['questions'][0]
+    assert question['schema']['items'][0]['schema']['attrs'][0]['schema']['enum'] == [
+        {'value': 'image', 'description': 'image'}
+    ]
+    empty = {'location': str(tmp_path / 'empty'), 'schema': {'questions': []}}
+    normalize_questions(empty, {})
+    assert empty['schema']['questions'][0]['hidden'] is True
 
 
 VERSION_DATA = {

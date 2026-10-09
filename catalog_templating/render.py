@@ -10,6 +10,7 @@ from jinja2 import Environment, FileSystemLoader
 from apps_exceptions import ValidationError
 from catalog_reader.app_utils import get_app_basic_details
 from catalog_reader.names import get_app_library_dir_name_from_version, get_base_library_dir_name_from_version
+from catalog_templating.image_overrides import apply_image_overrides
 
 
 def render_templates(app_version_path: str, test_values: dict) -> dict:
@@ -17,6 +18,10 @@ def render_templates(app_version_path: str, test_values: dict) -> dict:
     if not app_details:
         raise ValidationError('app_version_path', 'Unable to retrieve app metadata from specified app version path')
 
+    # Apply the catalog-wide image contract before importing/rendering app
+    # templates. Existing apps continue to use their normal ``images`` map;
+    # apps with multiple dependencies can override any named image uniformly.
+    test_values = apply_image_overrides(test_values)
     template_path = os.path.join(app_version_path, 'templates')
     if not os.path.isdir(os.path.join(template_path, 'library')):
         return {}

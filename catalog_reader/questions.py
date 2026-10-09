@@ -1,16 +1,95 @@
+import copy
 import itertools
+import os
 
 from typing import Any
 
 from .questions_util import ACL_QUESTION, get_custom_portal_question, IX_VOLUMES_ACL_QUESTION
+from apps_validation.utils import safe_yaml_load
 
 
 CUSTOM_PORTALS_ENABLE_KEY = 'enableIXPortals'
 CUSTOM_PORTAL_GROUP_KEY = 'iXPortalsGroupName'  # FIXME: Talk to Stavros if this is even valid now
 
 
+IMAGE_OVERRIDES_QUESTION = {
+    'variable': 'image_overrides',
+    'label': 'Container image overrides',
+    'group': 'Application Images',
+    'description': (
+        'Optionally replace an app image for testing or a private mirror. Leave empty to use the '
+        'catalog-pinned image. Registry-only overrides retain the official repository path and tag.'
+    ),
+    'schema': {
+        'type': 'list',
+        'default': [],
+        'items': [{
+            'variable': 'override',
+            'label': 'Image override',
+            'schema': {
+                'type': 'dict',
+                'attrs': [
+                    {
+                        'variable': 'image',
+                        'label': 'Image key',
+                        'description': 'The image key from this app, for example image or redis_image.',
+                        'schema': {'type': 'string', 'required': True},
+                    },
+                    {
+                        'variable': 'registry',
+                        'label': 'Registry',
+                        'description': 'Optional registry host; keeps the official repository path and tag.',
+                        'schema': {'type': 'string', 'default': ''},
+                    },
+                    {
+                        'variable': 'repository',
+                        'label': 'Repository',
+                        'description': 'Optional complete OCI repository replacement.',
+                        'schema': {'type': 'string', 'default': ''},
+                    },
+                    {
+                        'variable': 'tag',
+                        'label': 'Tag',
+                        'description': 'Optional tag replacement; changing the tag clears the old digest unless a new digest is supplied.',
+                        'schema': {'type': 'string', 'default': ''},
+                    },
+                    {
+                        'variable': 'digest',
+                        'label': 'Digest',
+                        'description': 'Optional sha256 digest replacement.',
+                        'schema': {'type': 'string', 'default': ''},
+                    },
+                ],
+            },
+        }],
+    },
+}
+
+
 def normalize_questions(version_data: dict, context: dict) -> None:
     version_data['required_features'] = set()
+    groups = version_data['schema'].setdefault('groups', []) or []
+    version_data['schema']['groups'] = groups
+    if not any(g.get('name') == 'Application Images' for g in groups):
+        groups.append({
+            'name': 'Application Images',
+            'description': 'Override catalog container images for testing or a private registry.',
+        })
+    if not any(q.get('variable') == 'image_overrides' for q in version_data['schema']['questions']):
+        image_question = copy.deepcopy(IMAGE_OVERRIDES_QUESTION)
+        ix_values_path = os.path.join(version_data.get('location', ''), 'ix_values.yaml')
+        try:
+            with open(ix_values_path) as f:
+                image_keys = sorted((safe_yaml_load(f) or {}).get('images', {}))
+        except (FileNotFoundError, OSError, TypeError):
+            image_keys = []
+        if image_keys:
+            image_question['schema']['items'][0]['schema']['attrs'][0]['schema']['enum'] = [
+                {'value': key, 'description': key} for key in image_keys
+            ]
+        else:
+            image_question['hidden'] = True
+        version_data['schema']['questions'].append(image_question)
     version_data['schema']['questions'].extend(
         [
             get_custom_portal_question(version_data['schema'][CUSTOM_PORTAL_GROUP_KEY])
