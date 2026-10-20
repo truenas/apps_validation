@@ -11,6 +11,7 @@ from apps_ci.version_bump import bump_version, rename_versioned_dir
 from apps_exceptions import CatalogDoesNotExist, ValidationErrors
 from apps_validation.utils import safe_yaml_load
 from catalog_reader.dev_directory import get_ci_development_directory
+from catalog_reader.hash_utils import EXCLUDED_NAMES
 from catalog_reader.library import get_hashes_of_base_lib_versions
 from catalog_reader.names import get_library_path, get_library_hashes_path, get_base_library_dir_name_from_version
 
@@ -98,7 +99,10 @@ def update_catalog_hashes(
 
             app_base_lib_dir = app_lib_dir / base_lib_name
             catalog_base_lib_dir_path = os.path.join(library_dir.as_posix(), lib_version)
-            shutil.copytree(catalog_base_lib_dir_path, app_base_lib_dir.as_posix())
+            shutil.copytree(
+                catalog_base_lib_dir_path, app_base_lib_dir.as_posix(),
+                ignore=shutil.ignore_patterns(*EXCLUDED_NAMES),
+            )
 
             old_version = app_config['version']
             if bump_type and app_config['lib_version_hash'] != hashes[lib_version]:
