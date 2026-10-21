@@ -1,56 +1,109 @@
-import collections
+import pathlib
 
 import pytest
+import yaml
 
 from apps_ci.scripts.catalog_update import publish_updated_apps
+from apps_exceptions import ValidationErrors
 
 
-@pytest.mark.parametrize('version, app_name, isdir, listdir_ver, should_work', [
-    (
-        '1.0.1',
-        'test_app',
-        [True, True, True],
-        ['1.0.0', '1.0.1'],
-        True
-    ),
-    (
-        '1.0.0',
-        'test_app',
-        [False],
-        ['1.0.0'],
-        False
-    ),
-    (
-        '1.0.1',
-        'test_app',
-        [True, True, True],
-        ['1.0.0'],
-        True
-    ),
-])
-def test_publish_updated_apps(mocker, capsys, version, app_name, isdir, listdir_ver, should_work):
-    to_publish_apps = collections.defaultdict(list)
-    to_publish_apps[version].append({'name': app_name, 'version': version})
-    mocker.patch('os.path.isdir', side_effect=isdir)
-    mocker.patch('os.makedirs')
-    mocker.patch('os.listdir', return_value=listdir_ver)
-    mocker.patch('os.path.exists', side_effect=[False, True])
-    mocker.patch('shutil.copy')
-    mocker.patch('shutil.copytree')
-    mocker.patch('shutil.move')
-    mocker.patch('shutil.rmtree')
+def write_file(path: pathlib.Path, content: str = '') -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(content)
 
-    mocker.patch('apps_ci.scripts.catalog_update.get_apps_to_publish', return_value=to_publish_apps)
-    mocker.patch('apps_ci.scripts.catalog_update.get_to_keep_versions', return_value=[version])
 
-    if should_work:
-        publish_updated_apps('/path/to/catalog')
-        expected_out = (
-            f'\x1b[92mOK\x1b[0m]\tPublished '
-            f'\'{app_name}\' having \'{version}\' version '
-            f'to \'{version}\' train successfully!'
-        )
-        assert expected_out in capsys.readouterr().out
+def make_app(catalog: pathlib.Path, version: str = '1.0.1', lib_version: str | None = '2.0.0') -> pathlib.Path:
+    app = catalog / 'ix-dev/stable/test_app'
+    app_config = {'name': 'test_app', 'train': 'stable', 'version': version}
+    if lib_version:
+        app_config['lib_version'] = lib_version
+    write_file(app / 'app.yaml', yaml.safe_dump(app_config))
+    write_file(app / 'item.yaml', yaml.safe_dump({'categories': []}))
+    write_file(app / 'templates/docker-compose.yaml')
+    return app
 
-    else:
-        assert publish_updated_apps('/path/to/catalog') is None  # type: ignore[func-returns-value]
+
+def published_files(catalog: pathlib.Path, version: str = '1.0.1') -> set[str]:
+    version_path = catalog / 'trains/stable/test_app' / version
+    return {p.relative_to(version_path).as_posix() for p in version_path.rglob('*') if p.is_file()}
+
+
+@pytest.fixture
+def catalog(tmp_path):
+    # This should appear in the published app
+    write_file(tmp_path / 'library/2.0.0/render.py')
+    # This should not appear in the published app
+    write_file(tmp_path / 'library/2.0.0/tests/test_render.py')
+    return tmp_path
+
+
+def test_publish_builds_base_library_from_catalog_library(catalog):
+    app = make_app(catalog)
+    write_file(app / 'templates/library/base_v1_0_0/render.py')
+    write_file(app / 'templates/library/base_v2_0_0/stale.py')
+
+    publish_updated_apps(str(catalog))
+
+    assert published_files(catalog) == {
+        'app.yaml',
+        'templates/docker-compose.yaml',
+        'templates/library/base_v2_0_0/render.py',
+    }
+    assert (catalog / 'trains/stable/test_app/item.yaml').is_file()
+
+
+def test_publish_builds_app_library_from_its_source(catalog):
+    app = make_app(catalog)
+    write_file(app / 'lib/config.py')
+    write_file(app / 'lib/__pycache__/config.cpython-311.pyc')
+    write_file(app / 'templates/library/stable/test_app/v1_0_0/stale.py')
+
+    publish_updated_apps(str(catalog))
+
+    assert published_files(catalog) == {
+        'app.yaml',
+        'templates/docker-compose.yaml',
+        'templates/library/base_v2_0_0/render.py',
+        'templates/library/stable/test_app/v1_0_1/config.py',
+    }
+
+
+def test_publish_drops_app_library_without_source(catalog):
+    app = make_app(catalog)
+    write_file(app / 'templates/library/stable/test_app/v1_0_1/config.py')
+
+    publish_updated_apps(str(catalog))
+
+    assert published_files(catalog) == {
+        'app.yaml',
+        'templates/docker-compose.yaml',
+        'templates/library/base_v2_0_0/render.py',
+    }
+
+
+def test_publish_without_lib_version(catalog):
+    make_app(catalog, lib_version=None)
+
+    publish_updated_apps(str(catalog))
+
+    assert published_files(catalog) == {'app.yaml', 'templates/docker-compose.yaml'}
+
+
+def test_publish_fails_on_missing_library_version(catalog):
+    make_app(catalog, lib_version='9.9.9')
+
+    with pytest.raises(ValidationErrors, match='9.9.9'):
+        publish_updated_apps(str(catalog))
+
+
+def test_publish_removes_older_versions(catalog):
+    make_app(catalog)
+    write_file(catalog / 'trains/stable/test_app/1.0.0/app.yaml')
+
+    publish_updated_apps(str(catalog))
+
+    assert sorted(p.name for p in (catalog / 'trains/stable/test_app').iterdir()) == ['1.0.1', 'item.yaml']
+
+
+def test_publish_without_dev_directory(catalog):
+    assert publish_updated_apps(str(catalog)) is None  # type: ignore[func-returns-value]

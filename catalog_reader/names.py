@@ -1,6 +1,9 @@
 import os
 
 
+# Unversioned source of an app's own library in the dev directory,
+# published as templates/library/<train>/<app>/v<version>
+APP_LIBRARY_SOURCE_DIR = 'lib'
 DEPRECATED_APPS_FILENAME = 'deprecations.yaml'
 LIBRARY_HASHES_FILENAME = 'hashes.yaml'
 RECOMMENDED_APPS_FILENAME = 'recommended_apps.yaml'
