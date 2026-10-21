@@ -32,7 +32,6 @@ def test_update_app_version(mocker, capsys, mock_atomic_write, path, bump, dep, 
     mock_file = mocker.mock_open(read_data=yaml)
     mocker.patch('builtins.open', mock_file)
     mocker.patch('apps_ci.scripts.bump_version.is_main_dep', return_value=True)
-    mocker.patch('apps_ci.scripts.bump_version.rename_versioned_dir', return_value=None)
     update_app_version(path, bump, dep, dep_version)
     assert expected_out in capsys.readouterr().out
 
@@ -73,6 +72,5 @@ def test_update_app_version_Errors(mocker, mock_atomic_write, path, bump, dep, d
     mock_file = mocker.mock_open(read_data=yaml)
     mocker.patch('builtins.open', mock_file)
     mocker.patch('apps_ci.scripts.bump_version.is_main_dep', return_value=True)
-    mocker.patch('apps_ci.scripts.bump_version.rename_versioned_dir', return_value=None)
     with pytest.raises((AppDoesNotExist, ValidationErrors)):
         update_app_version(path, bump, dep, dep_version)
