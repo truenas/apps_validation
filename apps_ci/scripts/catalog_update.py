@@ -12,18 +12,14 @@ from truenas_os_pyutils.io import atomic_write
 from apps_ci.names import CACHED_CATALOG_FILE_NAME, CACHED_VERSION_FILE_NAME
 from apps_exceptions import ValidationErrors
 from apps_validation.json_schema_utils import CATALOG_JSON_SCHEMA
-from apps_validation.utils import safe_yaml_load
 from apps_validation.validate_app_version import validate_catalog_item_version_data
 from catalog_reader.catalog import retrieve_train_names, retrieve_trains_data, get_apps_in_trains
 from catalog_reader.dev_directory import (
     get_app_version, get_ci_development_directory, get_to_keep_versions, OPTIONAL_METADATA_FILES,
     REQUIRED_METADATA_FILES, version_has_been_bumped,
 )
-from catalog_reader.hash_utils import EXCLUDED_NAMES
-from catalog_reader.names import (
-    APP_LIBRARY_SOURCE_DIR, get_app_library_dir_name_from_version, get_base_library_dir_name_from_version,
-    get_library_path,
-)
+from catalog_reader.library import copy_app_libraries
+from catalog_reader.names import APP_LIBRARY_SOURCE_DIR
 from catalog_reader.train_utils import get_train_path
 
 
@@ -102,53 +98,15 @@ def get_apps_to_publish(catalog_path: str) -> dict:
     return to_publish_apps
 
 
-def ignore_built_libraries(dev_app_path: str, train_name: str) -> Callable[[str, list[str]], list[str]]:
+def ignore_app_library_source(dev_app_path: str) -> Callable[[str, list[str]], list[str]]:
     """
-    Leave out of the published copy everything build_app_libraries publishes itself: the app library source
-    and any copies of the base or app library in the dev directory
+    Skip the app's lib/ directory when copying the app to the trains.
+    copy_app_libraries publishes its contents under templates/library/<train>/<app>/v<version> instead.
     """
-    dev_library_path = os.path.join(dev_app_path, 'templates/library')
-
     def ignore(directory: str, names: list[str]) -> list[str]:
-        if directory == dev_app_path:
-            return [name for name in names if name == APP_LIBRARY_SOURCE_DIR]
-        if directory == dev_library_path:
-            return [name for name in names if name.startswith('base_') or name == train_name]
-        return []
+        return [APP_LIBRARY_SOURCE_DIR] if directory == dev_app_path and APP_LIBRARY_SOURCE_DIR in names else []
 
     return ignore
-
-
-def build_app_libraries(catalog_path: str, dev_app_path: str, publish_app_version_path: str, train_name: str) -> None:
-    """
-    Publish the base library the app uses from the catalog library and the app library from its unversioned
-    source, so the published version does not depend on library copies lying around in the dev directory
-    """
-    with open(os.path.join(dev_app_path, 'app.yaml'), 'r') as f:
-        app_config = safe_yaml_load(f)
-
-    publish_library_path = os.path.join(publish_app_version_path, 'templates/library')
-    if lib_version := app_config.get('lib_version'):
-        base_lib_path = os.path.join(get_library_path(catalog_path), lib_version)
-        if not os.path.isdir(base_lib_path):
-            verrors = ValidationErrors()
-            verrors.add('lib_version', f'Library version {lib_version!r} of {app_config["name"]!r} does not exist')
-            verrors.check()
-
-        shutil.copytree(
-            base_lib_path, os.path.join(publish_library_path, get_base_library_dir_name_from_version(lib_version)),
-            ignore=shutil.ignore_patterns(*EXCLUDED_NAMES),
-        )
-
-    app_lib_path = os.path.join(dev_app_path, APP_LIBRARY_SOURCE_DIR)
-    if os.path.isdir(app_lib_path):
-        shutil.copytree(
-            app_lib_path, os.path.join(
-                publish_library_path, train_name, app_config['name'],
-                get_app_library_dir_name_from_version(app_config['version']),
-            ),
-            ignore=shutil.ignore_patterns(*EXCLUDED_NAMES),
-        )
 
 
 def publish_updated_apps(catalog_path: str) -> None:
@@ -173,10 +131,9 @@ def publish_updated_apps(catalog_path: str) -> None:
             publish_item_yaml_path = os.path.join(publish_app_path, 'item.yaml')
 
             shutil.copy(dev_item_yaml_path, publish_item_yaml_path)
-            shutil.copytree(
-                dev_app_path, publish_app_version_path, ignore=ignore_built_libraries(dev_app_path, train_name)
-            )
-            build_app_libraries(catalog_path, dev_app_path, publish_app_version_path, train_name)
+            shutil.copytree(dev_app_path, publish_app_version_path, ignore=ignore_app_library_source(dev_app_path))
+            # Replaces any library copies the dev directory has with ones built from the catalog library and lib/
+            copy_app_libraries(catalog_path, dev_app_path, publish_app_version_path)
 
             for file_name in OPTIONAL_METADATA_FILES + REQUIRED_METADATA_FILES:
                 with contextlib.suppress(OSError):

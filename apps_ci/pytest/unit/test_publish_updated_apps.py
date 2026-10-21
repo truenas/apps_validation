@@ -4,7 +4,9 @@ import pytest
 import yaml
 
 from apps_ci.scripts.catalog_update import publish_updated_apps
-from apps_exceptions import ValidationErrors
+
+
+# What the libraries are built from is covered by catalog_reader/pytest/unit/test_app_libraries.py
 
 
 def write_file(path: pathlib.Path, content: str = '') -> None:
@@ -12,12 +14,11 @@ def write_file(path: pathlib.Path, content: str = '') -> None:
     path.write_text(content)
 
 
-def make_app(catalog: pathlib.Path, version: str = '1.0.1', lib_version: str | None = '2.0.0') -> pathlib.Path:
+def make_app(catalog: pathlib.Path, version: str = '1.0.1') -> pathlib.Path:
     app = catalog / 'ix-dev/stable/test_app'
-    app_config = {'name': 'test_app', 'train': 'stable', 'version': version}
-    if lib_version:
-        app_config['lib_version'] = lib_version
-    write_file(app / 'app.yaml', yaml.safe_dump(app_config))
+    write_file(app / 'app.yaml', yaml.safe_dump({
+        'name': 'test_app', 'train': 'stable', 'version': version, 'lib_version': '2.0.0',
+    }))
     write_file(app / 'item.yaml', yaml.safe_dump({'categories': []}))
     write_file(app / 'templates/docker-compose.yaml')
     return app
@@ -30,33 +31,16 @@ def published_files(catalog: pathlib.Path, version: str = '1.0.1') -> set[str]:
 
 @pytest.fixture
 def catalog(tmp_path):
-    # This should appear in the published app
     write_file(tmp_path / 'library/2.0.0/render.py')
-    # This should not appear in the published app
-    write_file(tmp_path / 'library/2.0.0/tests/test_render.py')
     return tmp_path
 
 
-def test_publish_builds_base_library_from_catalog_library(catalog):
-    app = make_app(catalog)
-    write_file(app / 'templates/library/base_v1_0_0/render.py')
-    write_file(app / 'templates/library/base_v2_0_0/stale.py')
-
-    publish_updated_apps(str(catalog))
-
-    assert published_files(catalog) == {
-        'app.yaml',
-        'templates/docker-compose.yaml',
-        'templates/library/base_v2_0_0/render.py',
-    }
-    assert (catalog / 'trains/stable/test_app/item.yaml').is_file()
-
-
-def test_publish_builds_app_library_from_its_source(catalog):
+def test_publish_builds_libraries(catalog):
     app = make_app(catalog)
     write_file(app / 'lib/config.py')
-    write_file(app / 'lib/__pycache__/config.cpython-311.pyc')
-    write_file(app / 'templates/library/stable/test_app/v1_0_0/stale.py')
+    # Copies lying around in the dev directory are not what gets published
+    write_file(app / 'templates/library/base_v1_0_0/render.py')
+    write_file(app / 'templates/library/stable/test_app/v1_0_0/config.py')
 
     publish_updated_apps(str(catalog))
 
@@ -66,34 +50,7 @@ def test_publish_builds_app_library_from_its_source(catalog):
         'templates/library/base_v2_0_0/render.py',
         'templates/library/stable/test_app/v1_0_1/config.py',
     }
-
-
-def test_publish_drops_app_library_without_source(catalog):
-    app = make_app(catalog)
-    write_file(app / 'templates/library/stable/test_app/v1_0_1/config.py')
-
-    publish_updated_apps(str(catalog))
-
-    assert published_files(catalog) == {
-        'app.yaml',
-        'templates/docker-compose.yaml',
-        'templates/library/base_v2_0_0/render.py',
-    }
-
-
-def test_publish_without_lib_version(catalog):
-    make_app(catalog, lib_version=None)
-
-    publish_updated_apps(str(catalog))
-
-    assert published_files(catalog) == {'app.yaml', 'templates/docker-compose.yaml'}
-
-
-def test_publish_fails_on_missing_library_version(catalog):
-    make_app(catalog, lib_version='9.9.9')
-
-    with pytest.raises(ValidationErrors, match='9.9.9'):
-        publish_updated_apps(str(catalog))
+    assert (catalog / 'trains/stable/test_app/item.yaml').is_file()
 
 
 def test_publish_removes_older_versions(catalog):
