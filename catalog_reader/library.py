@@ -5,8 +5,9 @@ import re
 import shutil
 import yaml
 
-from apps_exceptions import ValidationErrors
+from apps_exceptions import CatalogDoesNotExist, ValidationErrors
 from apps_validation.utils import safe_yaml_load
+from .dev_directory import get_ci_development_directory
 from .hash_utils import EXCLUDED_NAMES, get_hash_of_directory
 from .names import (
     APP_LIBRARY_SOURCE_DIR, get_app_library_dir_name_from_version, get_base_library_dir_name_from_version,
@@ -79,3 +80,33 @@ def copy_app_libraries(catalog_path: str, app_path: str, destination_path: str |
             get_app_library_dir_name_from_version(app_config['version']),
             ignore=shutil.ignore_patterns(*EXCLUDED_NAMES),
         )
+
+
+def prepare_dev_apps_libraries(catalog_path: str, to_prepare_apps: dict[str, list[str]] | None = None) -> None:
+    """
+    Copy the libraries into the dev directory apps, all of them or only to_prepare_apps ({train: [app, ...]}),
+    so they can be rendered and validated. The copies are not to be committed, publish makes its own
+    """
+    if not os.path.exists(catalog_path):
+        raise CatalogDoesNotExist(catalog_path)
+
+    verrors = ValidationErrors()
+    dev_directory = get_ci_development_directory(catalog_path)
+    for train_name in sorted(os.listdir(dev_directory)):
+        train_path = os.path.join(dev_directory, train_name)
+        if not os.path.isdir(train_path) or (to_prepare_apps is not None and train_name not in to_prepare_apps):
+            continue
+
+        for app_name in sorted(os.listdir(train_path)):
+            app_path = os.path.join(train_path, app_name)
+            if to_prepare_apps is not None and app_name not in to_prepare_apps[train_name]:
+                continue
+            if not os.path.isfile(os.path.join(app_path, 'app.yaml')):
+                continue
+
+            try:
+                copy_app_libraries(catalog_path, app_path)
+            except ValidationErrors as e:
+                verrors.add_child(f'dev.{train_name}.{app_name}', e)
+
+    verrors.check()

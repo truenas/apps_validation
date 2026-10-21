@@ -2,7 +2,7 @@ import os
 import subprocess
 from collections import defaultdict
 
-from apps_exceptions import CatalogDoesNotExist
+from apps_exceptions import CatalogDoesNotExist, ValidationErrors
 from catalog_reader.dev_directory import (
     DEV_DIRECTORY_RELATIVE_PATH, get_ci_development_directory, OPTIONAL_METADATA_FILES
 )
@@ -40,3 +40,20 @@ def get_changed_apps(catalog_path: str, base_branch: str = 'master') -> dict:
             to_check_apps[train_name].append(app_name)
 
     return to_check_apps
+
+
+def check_no_committed_library_copies(catalog_path: str) -> None:
+    """
+    The libraries of the dev directory apps are copied in by apps_catalog_prepare_libs and by publish,
+    a committed copy would go stale and hide what the app actually renders with
+    """
+    cp = subprocess.run(
+        ['git', '-C', catalog_path, 'ls-files', '--', f'{DEV_DIRECTORY_RELATIVE_PATH}/*/*/templates/library/*'],
+        capture_output=True, check=True,
+    )
+    if copies := cp.stdout.decode().split():
+        verrors = ValidationErrors()
+        verrors.add(
+            'library', f'{len(copies)} library files are committed, remove them from git (eg {copies[0]!r})'
+        )
+        verrors.check()
