@@ -7,7 +7,7 @@ import yaml
 from truenas_os_pyutils.io import atomic_write
 
 from apps_ci.images_info import is_main_dep
-from apps_ci.version_bump import map_renovate_bump_type, bump_version, rename_versioned_dir
+from apps_ci.version_bump import map_renovate_bump_type, bump_version
 from apps_exceptions import AppDoesNotExist, ValidationErrors
 from apps_validation.utils import safe_yaml_load
 
@@ -34,7 +34,6 @@ def update_app_version(app_path: str, bump_type: str, dep_name: str, dep_version
     if bump_type:
         old_version = app_config['version']
         app_config['version'] = bump_version(old_version, bump_type)
-        rename_versioned_dir(old_version, app_config['version'], app_dir.parent.name, app_dir)
         msg += f' and bumped version from {old_version!r} to {app_config["version"]!r}'
 
     with atomic_write(str(app_metadata_file), uid=-1, gid=-1) as f:

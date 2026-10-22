@@ -7,7 +7,7 @@ import yaml
 
 from truenas_os_pyutils.io import atomic_write
 
-from apps_ci.version_bump import bump_version, rename_versioned_dir
+from apps_ci.version_bump import bump_version
 from apps_exceptions import CatalogDoesNotExist, ValidationErrors
 from apps_validation.utils import safe_yaml_load
 from catalog_reader.dev_directory import get_ci_development_directory
@@ -107,7 +107,6 @@ def update_catalog_hashes(
             old_version = app_config['version']
             if bump_type and app_config['lib_version_hash'] != hashes[lib_version]:
                 app_config['version'] = bump_version(old_version, bump_type)
-                rename_versioned_dir(old_version, app_config['version'], train_dir.name, app_dir)
 
             app_config['lib_version_hash'] = hashes[lib_version]
             with atomic_write(str(app_metadata_file), uid=-1, gid=-1) as f:
