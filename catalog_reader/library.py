@@ -92,21 +92,21 @@ def prepare_dev_apps_libraries(catalog_path: str, to_prepare_apps: dict[str, lis
 
     verrors = ValidationErrors()
     dev_directory = get_ci_development_directory(catalog_path)
-    for train_name in sorted(os.listdir(dev_directory)):
-        train_path = os.path.join(dev_directory, train_name)
-        if not os.path.isdir(train_path) or (to_prepare_apps is not None and train_name not in to_prepare_apps):
-            continue
-
-        for app_name in sorted(os.listdir(train_path)):
-            app_path = os.path.join(train_path, app_name)
-            if to_prepare_apps is not None and app_name not in to_prepare_apps[train_name]:
-                continue
-            if not os.path.isfile(os.path.join(app_path, 'app.yaml')):
+    with os.scandir(dev_directory) as trains:
+        for train in sorted(trains, key=lambda e: e.name):
+            if not train.is_dir() or (to_prepare_apps is not None and train.name not in to_prepare_apps):
                 continue
 
-            try:
-                copy_app_libraries(catalog_path, app_path)
-            except ValidationErrors as e:
-                verrors.add_child(f'dev.{train_name}.{app_name}', e)
+            with os.scandir(train.path) as apps:
+                for app in sorted(apps, key=lambda e: e.name):
+                    if to_prepare_apps is not None and app.name not in to_prepare_apps[train.name]:
+                        continue
+                    if not os.path.isfile(os.path.join(app.path, 'app.yaml')):
+                        continue
+
+                    try:
+                        copy_app_libraries(catalog_path, app.path)
+                    except ValidationErrors as e:
+                        verrors.add_child(f'dev.{train.name}.{app.name}', e)
 
     verrors.check()
