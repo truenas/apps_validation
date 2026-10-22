@@ -1,56 +1,66 @@
-import collections
+import pathlib
 
 import pytest
+import yaml
 
 from apps_ci.scripts.catalog_update import publish_updated_apps
 
 
-@pytest.mark.parametrize('version, app_name, isdir, listdir_ver, should_work', [
-    (
-        '1.0.1',
-        'test_app',
-        [True, True, True],
-        ['1.0.0', '1.0.1'],
-        True
-    ),
-    (
-        '1.0.0',
-        'test_app',
-        [False],
-        ['1.0.0'],
-        False
-    ),
-    (
-        '1.0.1',
-        'test_app',
-        [True, True, True],
-        ['1.0.0'],
-        True
-    ),
-])
-def test_publish_updated_apps(mocker, capsys, version, app_name, isdir, listdir_ver, should_work):
-    to_publish_apps = collections.defaultdict(list)
-    to_publish_apps[version].append({'name': app_name, 'version': version})
-    mocker.patch('os.path.isdir', side_effect=isdir)
-    mocker.patch('os.makedirs')
-    mocker.patch('os.listdir', return_value=listdir_ver)
-    mocker.patch('os.path.exists', side_effect=[False, True])
-    mocker.patch('shutil.copy')
-    mocker.patch('shutil.copytree')
-    mocker.patch('shutil.move')
-    mocker.patch('shutil.rmtree')
+# What the libraries are built from is covered by catalog_reader/pytest/unit/test_app_libraries.py
 
-    mocker.patch('apps_ci.scripts.catalog_update.get_apps_to_publish', return_value=to_publish_apps)
-    mocker.patch('apps_ci.scripts.catalog_update.get_to_keep_versions', return_value=[version])
 
-    if should_work:
-        publish_updated_apps('/path/to/catalog')
-        expected_out = (
-            f'\x1b[92mOK\x1b[0m]\tPublished '
-            f'\'{app_name}\' having \'{version}\' version '
-            f'to \'{version}\' train successfully!'
-        )
-        assert expected_out in capsys.readouterr().out
+def write_file(path: pathlib.Path, content: str = '') -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(content)
 
-    else:
-        assert publish_updated_apps('/path/to/catalog') is None  # type: ignore[func-returns-value]
+
+def make_app(catalog: pathlib.Path, version: str = '1.0.1') -> pathlib.Path:
+    app = catalog / 'ix-dev/stable/test_app'
+    write_file(app / 'app.yaml', yaml.safe_dump({
+        'name': 'test_app', 'train': 'stable', 'version': version, 'lib_version': '2.0.0',
+    }))
+    write_file(app / 'item.yaml', yaml.safe_dump({'categories': []}))
+    write_file(app / 'templates/docker-compose.yaml')
+    return app
+
+
+def published_files(catalog: pathlib.Path, version: str = '1.0.1') -> set[str]:
+    version_path = catalog / 'trains/stable/test_app' / version
+    return {p.relative_to(version_path).as_posix() for p in version_path.rglob('*') if p.is_file()}
+
+
+@pytest.fixture
+def catalog(tmp_path):
+    write_file(tmp_path / 'library/2.0.0/render.py')
+    return tmp_path
+
+
+def test_publish_builds_libraries(catalog):
+    app = make_app(catalog)
+    write_file(app / 'lib/config.py')
+    # Copies lying around in the dev directory are not what gets published
+    write_file(app / 'templates/library/base_v1_0_0/render.py')
+    write_file(app / 'templates/library/stable/test_app/v1_0_0/config.py')
+
+    publish_updated_apps(str(catalog))
+
+    assert published_files(catalog) == {
+        'app.yaml',
+        'templates/docker-compose.yaml',
+        'templates/library/base_v2_0_0/render.py',
+        'templates/library/stable/test_app/v1_0_1/config.py',
+    }
+    assert (catalog / 'trains/stable/test_app/item.yaml').is_file()
+
+
+def test_publish_removes_older_versions(catalog):
+    make_app(catalog)
+    write_file(catalog / 'trains/stable/test_app/1.0.0/app.yaml')
+
+    publish_updated_apps(str(catalog))
+
+    assert sorted(p.name for p in (catalog / 'trains/stable/test_app').iterdir()) == ['1.0.1', 'item.yaml']
+
+
+def test_publish_without_dev_directory(catalog):
+    assert publish_updated_apps(str(catalog)) is None  # type: ignore[func-returns-value]
