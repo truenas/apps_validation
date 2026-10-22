@@ -3,8 +3,8 @@ import pathlib
 import pytest
 import yaml
 
-from apps_exceptions import ValidationErrors
-from catalog_reader.library import copy_app_libraries
+from apps_exceptions import CatalogDoesNotExist, ValidationErrors
+from catalog_reader.library import copy_app_libraries, prepare_dev_apps_libraries
 
 
 def write_file(path: pathlib.Path, content: str = '') -> None:
@@ -74,3 +74,35 @@ def test_copy_app_libraries_missing_library_version(catalog):
 
     # A failing app keeps the copies it had
     assert library_files(app) == {'base_v9_9_9/render.py'}
+
+
+def test_prepare_dev_apps_libraries_all_apps(catalog):
+    apps = [make_app(catalog, 'app1'), make_app(catalog, 'app2')]
+
+    prepare_dev_apps_libraries(str(catalog))
+
+    assert all(library_files(app) == {'base_v2_0_0/render.py'} for app in apps)
+
+
+def test_prepare_dev_apps_libraries_only_given_apps(catalog):
+    app1, app2 = make_app(catalog, 'app1'), make_app(catalog, 'app2')
+
+    prepare_dev_apps_libraries(str(catalog), {'stable': ['app1']})
+
+    assert library_files(app1) == {'base_v2_0_0/render.py'}
+    assert not (app2 / 'templates/library').exists()
+
+
+def test_prepare_dev_apps_libraries_reports_every_failing_app(catalog):
+    make_app(catalog, 'app1', lib_version='8.8.8')
+    make_app(catalog, 'app2', lib_version='9.9.9')
+
+    with pytest.raises(ValidationErrors) as e:
+        prepare_dev_apps_libraries(str(catalog))
+
+    assert [attribute for attribute, _, _ in e.value] == ['dev.stable.app1.lib_version', 'dev.stable.app2.lib_version']
+
+
+def test_prepare_dev_apps_libraries_missing_catalog(tmp_path):
+    with pytest.raises(CatalogDoesNotExist):
+        prepare_dev_apps_libraries(str(tmp_path / 'missing'))
