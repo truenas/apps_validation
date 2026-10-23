@@ -1,12 +1,37 @@
+import contextlib
 import pathlib
+import yaml
 
+from collections import defaultdict
 from jsonschema import validate as json_schema_validate, ValidationError as JsonValidationError
 
 from apps_exceptions import ValidationErrors
+from catalog_reader.dev_directory import get_ci_development_directory
 from catalog_reader.library import get_library_hashes, get_hashes_of_base_lib_versions, RE_VERSION
 from catalog_reader.names import get_library_path, get_library_hashes_path
 
 from .json_schema_utils import BASE_LIBRARIES_JSON_SCHEMA
+from .utils import safe_yaml_load
+
+
+def validate_used_library_versions(catalog_path: str, verrors: ValidationErrors) -> None:
+    """
+    Every dev app's lib_version has to exist in the library, validation and publish copy it from there.
+    Only changed apps get validated, so a removed version would otherwise fail a later PR changing one of its apps
+    """
+    library_path = pathlib.Path(get_library_path(catalog_path))
+    missing_versions = defaultdict(list)
+    for app_config_path in sorted(pathlib.Path(get_ci_development_directory(catalog_path)).glob('*/*/app.yaml')):
+        # A broken app.yaml is reported by the validation of that app
+        with contextlib.suppress(yaml.YAMLError):
+            with open(app_config_path, 'r') as f:
+                app_config = safe_yaml_load(f)
+            lib_version = app_config.get('lib_version') if isinstance(app_config, dict) else None
+            if lib_version and not (library_path / str(lib_version)).is_dir():
+                missing_versions[str(lib_version)].append(f'{app_config_path.parts[-3]}/{app_config_path.parts[-2]}')
+
+    for lib_version, apps in missing_versions.items():
+        verrors.add(f'library.{lib_version}', f'Library version is used by {", ".join(apps)} but does not exist')
 
 
 def validate_base_libraries(catalog_path: str, verrors: ValidationErrors) -> None:
@@ -26,6 +51,8 @@ def validate_base_libraries(catalog_path: str, verrors: ValidationErrors) -> Non
 
     if found_libs and not pathlib.Path(get_library_hashes_path(library_path)).exists():
         verrors.add('library', 'Library hashes file is missing')
+
+    validate_used_library_versions(catalog_path, verrors)
 
     verrors.check()
 
