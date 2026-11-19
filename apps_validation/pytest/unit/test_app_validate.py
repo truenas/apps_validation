@@ -380,6 +380,59 @@ def test_validate_catalog_item(mocker, catalog_path, test_yaml, train, item_yaml
         'app.yaml',
         False
     ),
+    (
+        '/mnt/mypool/ix-applications/catalogs/github_com_truenas_charts_git_master/charts/storj/1.0.4',
+        '''
+        name: storj
+        version: 1.0.4
+        train: stable
+        date_added: '2025-04-08'
+        app_version: 1.0.0.8395
+        title: storj
+        description: Test description
+        home: https://storj.com
+        sources: [https://storj.com]
+        maintainers:
+        - email: dev@ixsystems.com
+          name: truenas
+          url: https://www.truenas.com/
+        run_as_context: []
+        capabilities: []
+        host_mounts: []
+        risks:
+        - key: host_network
+          label: Host Networking
+        ''',
+        'charts.storj.versions.1.0.4',
+        WANTED_FILES_IN_ITEM_VERSION,
+        True
+    ),
+    (
+        '/mnt/mypool/ix-applications/catalogs/github_com_truenas_charts_git_master/charts/storj/1.0.4',
+        '''
+        name: storj
+        version: 1.0.4
+        train: stable
+        date_added: '2025-04-08'
+        app_version: 1.0.0.8395
+        title: storj
+        description: Test description
+        home: https://storj.com
+        sources: [https://storj.com]
+        maintainers:
+        - email: dev@ixsystems.com
+          name: truenas
+          url: https://www.truenas.com/
+        run_as_context: []
+        capabilities: []
+        host_mounts: []
+        risks:
+        - key: host_network
+        ''',
+        'charts.storj.versions.1.0.4',
+        WANTED_FILES_IN_ITEM_VERSION,
+        False
+    ),
 ])
 def test_validate_catalog_item_version(mocker, version_path, app_yaml, schema, required_files, should_work):
     mock_file = mocker.mock_open(read_data=app_yaml)
