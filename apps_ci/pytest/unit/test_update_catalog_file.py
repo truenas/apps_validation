@@ -1,6 +1,6 @@
 import pytest
 
-from apps_ci.scripts.catalog_update import update_catalog_file
+from apps_ci.scripts.catalog_update import get_trains, update_catalog_file
 from apps_exceptions import ValidationErrors
 
 
@@ -139,3 +139,41 @@ def test_update_catalog_file(mocker, capsys, mock_atomic_write, catalog_data, ve
     else:
         with pytest.raises(ValidationErrors):
             update_catalog_file('/valid/path/')
+
+
+RISKS = [{'key': 'host_network', 'label': 'Host Networking'}]
+CAPABILITIES = [{'name': 'SYS_ADMIN', 'description': 'test is able to perform system administration operations'}]
+
+
+@pytest.mark.parametrize('app_metadata, expected', [
+    (
+        {'capabilities': CAPABILITIES, 'run_as_context': [], 'risks': RISKS},
+        {'capabilities': CAPABILITIES, 'run_as_context': [], 'risks': RISKS},
+    ),
+    # Apps on older libraries have no risks
+    (
+        {'capabilities': CAPABILITIES, 'run_as_context': []},
+        {'capabilities': CAPABILITIES, 'run_as_context': [], 'risks': []},
+    ),
+])
+def test_get_trains_copies_latest_version_metadata(mocker, app_metadata, expected):
+    train_data = {
+        'community': {
+            'test': {
+                'name': 'test',
+                'latest_version': '1.0.1',
+                'versions': {
+                    '1.0.0': {'app_metadata': {'capabilities': [], 'run_as_context': [], 'risks': []}},
+                    '1.0.1': {'app_metadata': app_metadata},
+                },
+            },
+        },
+    }
+    mocker.patch('apps_ci.scripts.catalog_update.get_train_path', return_value='/valid/path/trains')
+    mocker.patch('apps_ci.scripts.catalog_update.retrieve_train_names', return_value=['community'])
+    mocker.patch('apps_ci.scripts.catalog_update.get_apps_in_trains', return_value={})
+    mocker.patch('apps_ci.scripts.catalog_update.retrieve_trains_data', return_value=(train_data, set()))
+
+    catalog_data, versions_data = get_trains('/valid/path/')
+    assert catalog_data['community']['test'] == {'name': 'test', 'latest_version': '1.0.1', **expected}
+    assert list(versions_data['community']['test']['versions']) == ['1.0.0', '1.0.1']

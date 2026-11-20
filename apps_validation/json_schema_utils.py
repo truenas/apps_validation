@@ -45,6 +45,19 @@ APP_RUN_AS_CONTEXT_SCHEMA = {
     },
 }
 
+# Elevated privileges the app may enable, generated from the app's library
+APP_RISKS_SCHEMA = {
+    'type': 'array',
+    'items': {
+        'type': 'object',
+        'properties': {
+            'key': {'type': 'string'},
+            'label': {'type': 'string'},
+        },
+        'required': ['key', 'label'],
+    },
+}
+
 APP_METADATA_JSON_SCHEMA = {
     'type': 'object',
     'properties': {
@@ -98,6 +111,7 @@ APP_METADATA_JSON_SCHEMA = {
         'lib_version_hash': {'type': 'string'},
         'run_as_context': APP_RUN_AS_CONTEXT_SCHEMA,
         'capabilities': APP_CAPABILITIES_SCHEMA,
+        'risks': APP_RISKS_SCHEMA,
         'host_mounts': {
             'type': 'array',
             'items': {
@@ -232,6 +246,7 @@ CATALOG_JSON_SCHEMA = {
                         },
                         'run_as_context': APP_RUN_AS_CONTEXT_SCHEMA,
                         'capabilities': APP_CAPABILITIES_SCHEMA,
+                        'risks': APP_RISKS_SCHEMA,
                         'maintainers': {
                             'type': 'array',
                             'items': {

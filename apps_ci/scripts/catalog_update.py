@@ -43,14 +43,13 @@ def get_trains(location: str) -> tuple[dict, dict]:
                 else:
                     catalog_data[train_name][app_name][k] = v
 
-            # We will add capabilities and run as context from latest version to catalog data now
+            # We will add capabilities, run as context and risks from latest version to catalog data now
             latest_version = app_data.get('latest_version')
-            metadata_info: dict[str, list] = {'capabilities': [], 'run_as_context': []}
+            metadata_info: dict[str, list] = {'capabilities': [], 'run_as_context': [], 'risks': []}
             if latest_version in app_data.get('versions', {}):
                 version_metadata_info = app_data['versions'][latest_version].get('app_metadata', {})
                 metadata_info.update({
-                    'capabilities': version_metadata_info.get('capabilities', metadata_info['capabilities']),
-                    'run_as_context': version_metadata_info.get('run_as_context', metadata_info['run_as_context']),
+                    key: version_metadata_info.get(key, default) for key, default in metadata_info.items()
                 })
             catalog_data[train_name][app_name].update(metadata_info)
 
